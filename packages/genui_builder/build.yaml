@@ -3,6 +3,8 @@ targets:
     builders:
       genui_builder|genui:
         enabled: true
+      genui_builder|genui_registry:
+        enabled: true
 
 builders:
   genui:
@@ -10,5 +12,13 @@ builders:
     import: "package:genui_builder/builder.dart"
     builder_factories: ["genuiBuilder"]
     build_extensions: { ".dart": [".genui.g.dart"] }
+    auto_apply: dependents
+    build_to: source
+
+  genui_registry:
+    target: ""
+    import: "package:genui_builder/builder.dart"
+    builder_factories: ["genuiRegistryBuilder"]
+    build_extensions: { "$lib$": ["genui_registry.g.dart"] }
     auto_apply: dependents
     build_to: source

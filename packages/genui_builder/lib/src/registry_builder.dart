@@ -1,0 +1,96 @@
+import 'dart:async';
+import 'package:build/build.dart';
+import 'package:glob/glob.dart';
+
+/// A global Builder that scans the ORIGINAL source files, finds the annotations,
+/// and predicts the generated paths to assemble the central registry.
+class GenUIRegistryBuilder implements Builder {
+  @override
+  Map<String, List<String>> get buildExtensions => {
+    r'$lib$': ['genui_registry.g.dart'],
+  };
+
+  @override
+  Future<void> build(BuildStep buildStep) async {
+    print(
+      '--- [GenUI] Global Registry Builder is scanning source files... ---',
+    );
+
+    final exports = <String>{};
+    final mapEntries = <String>[];
+
+    // 1. Scan ALL original .dart files in the lib folder.
+    final glob = Glob('lib/**.dart');
+    final assets = await buildStep.findAssets(glob).toList();
+
+    for (final asset in assets) {
+      if (asset.path.endsWith('.g.dart')) continue;
+
+      final content = await buildStep.readAsString(asset);
+
+      if (!content.contains('@generativeUI') &&
+          !content.contains('@GenerativeUI')) {
+        continue;
+      }
+
+      // 2. Regex magic: Find @generativeUI, ignore everything until 'class', and capture the Name.
+      final regex = RegExp(
+        r'@(?:generativeUI|GenerativeUI)[^\{]*?class\s+([a-zA-Z0-9_]+)',
+      );
+      final matches = regex.allMatches(content);
+
+      if (matches.isNotEmpty) {
+        // 3. Import the ORIGINAL file, not the generated part file!
+        // The original file exposes its generated parts automatically.
+        final originalPath = asset.uri.toString();
+        exports.add("import '$originalPath';");
+
+        // 4. Assemble the exact variables we know Phase 1 will generate.
+        for (final match in matches) {
+          final className = match.group(1);
+          if (className != null) {
+            mapEntries.add(
+              '  \$${className}Identifier: (json) => \$${className}FromJson(json),',
+            );
+          }
+        }
+      }
+    }
+
+    if (mapEntries.isEmpty) return;
+
+    // 5. Build the final registry string.
+    final buffer = StringBuffer();
+    buffer.writeln('// GENERATED CODE - DO NOT MODIFY BY HAND');
+    buffer.writeln('// ignore_for_file: type=lint');
+    buffer.writeln('');
+
+    for (final export in exports) {
+      buffer.writeln(export);
+    }
+
+    buffer.writeln('');
+    buffer.writeln(
+      '/// Global registry of all annotated Generative UI components.',
+    );
+    buffer.writeln(
+      'final Map<String, dynamic Function(Map<String, dynamic>)> globalGenUIRegistry = {',
+    );
+
+    for (final entry in mapEntries) {
+      buffer.writeln(entry);
+    }
+
+    buffer.writeln('};');
+
+    final outputAsset = AssetId(
+      buildStep.inputId.package,
+      'lib/genui_registry.g.dart',
+    );
+    await buildStep.writeAsString(outputAsset, buffer.toString());
+
+    print(
+      '--- [GenUI] Registry successfully assembled with ${mapEntries.length} components! ---',
+    );
+  }
+}
