@@ -126,10 +126,19 @@ Do not include markdown blocks like ```json or any conversational text.
   }
 
   /// Parses an incomplete JSON string streamed from an LLM and renders the components as they arrive.
-  Widget parseStream(String partialJson) {
+  /// If [isDone] is true, it stops showing loading indicators and enforces strict error reporting.
+  Widget parseStream(String partialJson, {bool isDone = false}) {
     final parsedData = _decodePartialJson(partialJson);
 
     if (parsedData == null) {
+      // If the stream is finished but we still can't decode anything, it's a hard error.
+      if (isDone) {
+        return _buildFallbackError(
+          'LLM stream finished but produced invalid JSON:\n$partialJson',
+        );
+      }
+
+      // Still streaming, show loading
       return const Padding(
         padding: EdgeInsets.all(16.0),
         child: CircularProgressIndicator.adaptive(),
@@ -137,16 +146,15 @@ Do not include markdown blocks like ```json or any conversational text.
     }
 
     if (parsedData is List) {
-      // Pass the streaming flag so incomplete children hide gracefully
-      final widgets = parseList(parsedData, isStreaming: true);
+      // If we are done, we are no longer streaming. Be strict.
+      final widgets = parseList(parsedData, isStreaming: !isDone);
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: widgets,
       );
     } else if (parsedData is Map<String, dynamic>) {
-      // Pass the streaming flag
-      return parse(parsedData, isStreaming: true);
+      return parse(parsedData, isStreaming: !isDone);
     }
 
     return _buildFallbackError(

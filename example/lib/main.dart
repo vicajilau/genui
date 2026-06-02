@@ -54,22 +54,27 @@ class MainApp extends StatelessWidget {
           backgroundColor: Colors.blueGrey,
         ),
         body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  'Rendered purely from JSON:',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                // 4. Pass the raw JSON to the engine. It returns a native Widget!
-                if (simulateLlmStream)
-                  LlmStreamWidget(engine: engine, rawJsonString: mockJsonString)
-                else
-                  LlmRawWidget(engine: engine, text: mockJsonString),
-              ],
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Rendered purely from JSON:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 16),
+                  // 4. Pass the raw JSON to the engine. It returns a native Widget!
+                  if (simulateLlmStream)
+                    LlmStreamWidget(
+                      engine: engine,
+                      rawJsonString: mockJsonString,
+                    )
+                  else
+                    LlmRawWidget(engine: engine, text: mockJsonString),
+                ],
+              ),
             ),
           ),
         ),

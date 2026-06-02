@@ -39,11 +39,12 @@ class LlmStreamWidget extends StatelessWidget {
       stream: _simulateLlmStream(),
       builder: (context, snapshot) {
         final currentText = snapshot.data ?? '';
+        final isDone = snapshot.connectionState == ConnectionState.done;
 
         return Column(
           children: [
-            // 1. Render the actual UI via GenUIEngine
-            engine.parseStream(currentText),
+            // 1. Render the actual UI via GenUIEngine passing the isDone flag
+            engine.parseStream(currentText, isDone: isDone),
 
             const Divider(height: 40),
 
