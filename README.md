@@ -20,6 +20,7 @@ GenUI is designed to get out of your way. We hated manually wiring up components
 2. **Global Auto-Discovery:** You don't need to manually register your widgets into a massive list. The `genui_builder` crawls your entire project and creates a single `globalGenUIRegistry` containing everything.
 3. **Automatic LLM Prompts:** The `GenUIEngine` knows exactly what widgets exist and what properties they accept. Call `engine.buildSystemPrompt()` to instantly get a perfectly structured text prompt containing the JSON schemas of your entire app. Just send this directly to your LLM!
 4. **Resilient Parsing:** If the LLM hallucinates a non-existent widget or forgets a required property, the engine will gracefully render a fallback error widget instead of crashing your app.
+5. **Real-time Streaming UI:** Use `engine.parseStream()` to stream raw, incomplete JSON tokens from your LLM directly into native widgets. GenUI automatically repairs partial JSON and renders the UI incrementally as it arrives.
 
 ## 📁 Workspace Structure
 

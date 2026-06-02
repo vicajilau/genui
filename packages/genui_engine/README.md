@@ -83,6 +83,30 @@ Since LLMs are prone to hallucinations, the engine is built defensively. If the 
 
 If you want to parse multiple widgets at once (for example, a list of components returned by the LLM), you can use the `engine.parseList(jsonList)` method.
 
+### 📡 Streaming UI (parseStream)
+
+If your LLM is streaming its response token by token, you can use `engine.parseStream()` inside a `StreamBuilder` to render the UI dynamically as the JSON arrives.
+
+The engine will gracefully attempt to parse incomplete JSON strings. If the UI cannot be rendered yet, it displays a loading indicator. Once enough JSON is accumulated, it builds the components in real-time. 
+
+You can pass the `isDone` flag to signal that the stream has finished. If the stream ends but the JSON remains invalid (e.g., due to a network cut or a severe LLM hallucination), the engine will output a strict fallback error widget.
+
+```dart
+StreamBuilder<String>(
+  stream: llmStream,
+  builder: (context, snapshot) {
+    final currentText = snapshot.data ?? '';
+    final isDone = snapshot.connectionState == ConnectionState.done;
+
+    // Parses partial JSON and renders native widgets on the fly!
+    return engine.parseStream(
+      currentText,
+      isDone: isDone,
+    );
+  },
+);
+```
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

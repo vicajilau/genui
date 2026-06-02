@@ -39,7 +39,7 @@ class MainApp extends StatelessWidget {
   "properties": {
     "name": "Ada Lovelace",
     "role": "Lead Architect",
-    "isActive": tr
+    "isActive": true
   }
 }
 ''';

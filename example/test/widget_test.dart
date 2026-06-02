@@ -11,7 +11,7 @@ void main() {
   ) async {
     // Build our app and trigger a frame.
     final engine = GenUIEngine(registry: globalGenUIRegistry);
-    await tester.pumpWidget(MainApp(engine: engine));
+    await tester.pumpWidget(MainApp(engine: engine, simulateLlmStream: false));
 
     // Verify that the title text is rendered.
     expect(find.text('GenUI Engine Demo'), findsOneWidget);
