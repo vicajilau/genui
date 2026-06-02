@@ -13,8 +13,12 @@ void main() {
     final engine = GenUIEngine(registry: globalGenUIRegistry);
     await tester.pumpWidget(MainApp(engine: engine, simulateLlmStream: false));
 
+    // Tap 'Start' button to begin rendering
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pumpAndSettle();
+
     // Verify that the title text is rendered.
-    expect(find.text('GenUI Engine Demo'), findsOneWidget);
+    expect(find.text('GenUI Demo'), findsOneWidget);
     expect(find.text('Rendered purely from JSON:'), findsOneWidget);
 
     // Verify that the UserCardWidget is rendered with the mocked JSON data.
