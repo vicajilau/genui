@@ -10,7 +10,16 @@ Unlike traditional Server-Driven UI (SDUI), GenUI empowers offline-first applica
 * **Compile-Time Introspection:** Uses Dart's AST (Abstract Syntax Tree) and `build_runner` to automatically extract widget schemas.
 * **Two-Phase Code Generation:** Generates highly optimized local component schemas AND automatically assembles a central `genui_registry.g.dart` index. No manual wiring required.
 * **Native Dart Workspaces:** Built on top of Dart 3.5+ Pub Workspaces for blazing-fast, conflict-free monorepo management.
-* **Developer Experience (DX):** Simply annotate your Flutter widgets with `@generativeUI` and let the build system handle the schema mapping and prompt engineering.
+* **Developer Experience (DX):** Just add `@generativeUI`. The build system handles schema mapping, global component registration, and even generates the LLM prompt for you.
+
+## ✨ The "Magic" Developer Experience (DX)
+
+GenUI is designed to get out of your way. We hated manually wiring up components and writing endless JSON schemas by hand, so we automated everything.
+
+1. **Zero Boilerplate:** Decorate your Flutter widget with `@generativeUI(format: SchemaFormat.a2ui)`. That's it.
+2. **Global Auto-Discovery:** You don't need to manually register your widgets into a massive list. The `genui_builder` crawls your entire project and creates a single `globalGenUIRegistry` containing everything.
+3. **Automatic LLM Prompts:** The `GenUIEngine` knows exactly what widgets exist and what properties they accept. Call `engine.buildSystemPrompt()` to instantly get a perfectly structured text prompt containing the JSON schemas of your entire app. Just send this directly to your LLM!
+4. **Resilient Parsing:** If the LLM hallucinates a non-existent widget or forgets a required property, the engine will gracefully render a fallback error widget instead of crashing your app.
 
 ## 📁 Workspace Structure
 
