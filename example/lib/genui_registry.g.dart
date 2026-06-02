@@ -4,5 +4,17 @@
 import 'package:example/user_card_widget.dart';
 
 /// Global registry of all annotated Generative UI components.
-final Map<String, dynamic Function(Map<String, dynamic>)> globalGenUIRegistry =
-    {$UserCardWidgetIdentifier: (json) => $UserCardWidgetFromJson(json)};
+/// Contains both the instantiator function and the JSON schema for the LLM prompt.
+final Map<
+  String,
+  ({
+    dynamic Function(Map<String, dynamic>) fromJson,
+    Map<String, dynamic> schema,
+  })
+>
+globalGenUIRegistry = {
+  $UserCardWidgetIdentifier: (
+    fromJson: (json) => $UserCardWidgetFromJson(json),
+    schema: $UserCardWidgetSchema,
+  ),
+};

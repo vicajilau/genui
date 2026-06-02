@@ -9,6 +9,12 @@ void main() {
   // This gives the engine knowledge of every @generativeUI widget in the app.
   final engine = GenUIEngine(registry: globalGenUIRegistry);
 
+  debugPrint('=========================================');
+  debugPrint('🤖 LLM SYSTEM PROMPT GENERATED AUTOMATICALLY');
+  debugPrint('=========================================');
+  debugPrint(engine.buildSystemPrompt());
+  debugPrint('=========================================');
+
   runApp(MainApp(engine: engine));
 }
 

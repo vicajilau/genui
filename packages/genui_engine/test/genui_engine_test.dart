@@ -5,18 +5,35 @@ import 'package:genui_engine/genui_engine.dart';
 
 void main() {
   group('GenUIEngine', () {
-    late Map<String, dynamic Function(Map<String, dynamic>)> registry;
+    late Map<
+      String,
+      ({
+        dynamic Function(Map<String, dynamic>) fromJson,
+        Map<String, dynamic> schema,
+      })
+    >
+    registry;
     late GenUIEngine engine;
 
     setUp(() {
       registry = {
-        'TextWidget': (props) => Text(props['text'] as String),
-        'ContainerWidget': (props) => Container(
-          color: props['color'] != null ? Color(props['color'] as int) : null,
-          child: props['child'] != null ? Text(props['child'] as String) : null,
+        'TextWidget': (
+          fromJson: (props) => Text(props['text'] as String),
+          schema: {'type': 'TextWidget'},
         ),
-        'ThrowingWidget': (props) =>
-            throw Exception('Intentional factory error'),
+        'ContainerWidget': (
+          fromJson: (props) => Container(
+            color: props['color'] != null ? Color(props['color'] as int) : null,
+            child: props['child'] != null
+                ? Text(props['child'] as String)
+                : null,
+          ),
+          schema: {'type': 'ContainerWidget'},
+        ),
+        'ThrowingWidget': (
+          fromJson: (props) => throw Exception('Intentional factory error'),
+          schema: {'type': 'ThrowingWidget'},
+        ),
       };
       engine = GenUIEngine(registry: registry);
     });

@@ -63,7 +63,21 @@ class MyApp extends StatelessWidget {
 }
 ```
 
-### Safety & Fallbacks
+### 🤖 Automatic System Prompt Generation
+
+One of the most powerful features of `genui_engine` is its ability to automatically generate the System Prompt for your LLM. Because the registry contains the auto-generated JSON schemas of all your annotated components, the engine can inject these schemas directly into the prompt. 
+
+This ensures that the LLM has perfect knowledge of what components are available and what properties they accept, drastically reducing hallucinations.
+
+```dart
+final engine = GenUIEngine(registry: globalGenUIRegistry);
+
+// Pass this string directly to your LLM as the System Prompt!
+final systemPrompt = engine.buildSystemPrompt();
+print(systemPrompt);
+```
+
+### 🛡️ Safety & Fallbacks
 
 Since LLMs are prone to hallucinations, the engine is built defensively. If the provided JSON payload contains an unregistered component `"type"`, or misses it entirely, `GenUIEngine.parse()` will seamlessly return a fallback error widget highlighting the problem instead of crashing your application.
 

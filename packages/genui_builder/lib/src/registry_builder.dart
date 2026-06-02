@@ -53,9 +53,12 @@ class GenUIRegistryBuilder implements Builder {
         for (final match in matches) {
           final className = match.group(1);
           if (className != null) {
-            mapEntries.add(
-              '  \$${className}Identifier: (json) => \$${className}FromJson(json),',
-            );
+            // We use a multiline string so each component is exactly ONE element in the list.
+            mapEntries.add('''
+  \$${className}Identifier: (
+    fromJson: (json) => \$${className}FromJson(json),
+    schema: \$${className}Schema,
+  ),''');
           }
         }
       }
@@ -78,7 +81,10 @@ class GenUIRegistryBuilder implements Builder {
       '/// Global registry of all annotated Generative UI components.',
     );
     buffer.writeln(
-      'final Map<String, dynamic Function(Map<String, dynamic>)> globalGenUIRegistry = {',
+      '/// Contains both the instantiator function and the JSON schema for the LLM prompt.',
+    );
+    buffer.writeln(
+      'final Map<String, ({dynamic Function(Map<String, dynamic>) fromJson, Map<String, dynamic> schema})> globalGenUIRegistry = {',
     );
 
     for (final entry in mapEntries) {
