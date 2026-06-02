@@ -3,12 +3,12 @@ import 'package:build/build.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:genui_annotations/genui_annotations.dart';
 
-/// Generator class for [GenerativeUi] annotations.
+/// Generator class for [GenerativeUI] annotations.
 ///
 /// This class parses the Abstract Syntax Tree (AST) of annotated classes
 /// to extract their fields and types, generating a static JSON schema
 /// representation that can be fed into a local LLM's system prompt.
-class GenerativeUiGenerator extends GeneratorForAnnotation<GenerativeUi> {
+class GenerativeUIGenerator extends GeneratorForAnnotation<GenerativeUI> {
   @override
   String generateForAnnotatedElement(
     Element element,
@@ -18,7 +18,7 @@ class GenerativeUiGenerator extends GeneratorForAnnotation<GenerativeUi> {
     // 1. Ensure the annotation is strictly applied to a class.
     if (element is! ClassElement) {
       throw InvalidGenerationSourceError(
-        'The @GenerativeUi annotation can only be applied to classes.',
+        'The @GenerativeUI annotation can only be applied to classes.',
         element: element,
       );
     }

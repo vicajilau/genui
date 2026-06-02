@@ -1,6 +1,6 @@
 import 'package:genui_annotations/genui_annotations.dart';
 
 void main() {
-  var awesome = GenerativeUi();
+  var awesome = GenerativeUI();
   print('awesome: ${awesome.name}');
 }

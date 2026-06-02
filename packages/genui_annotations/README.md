@@ -2,7 +2,7 @@
 
 The core annotations package for the GenUI ecosystem. 
 
-This lightweight package provides the `@GenerativeUi` annotation, which is used to mark Flutter widgets for compile-time introspection. By keeping annotations separate from the builder logic, this package ensures your production code remains clean and free of heavy code-generation dependencies like `analyzer` or `build_runner`.
+This lightweight package provides the `@GenerativeUI` annotation, which is used to mark Flutter widgets for compile-time introspection. By keeping annotations separate from the builder logic, this package ensures your production code remains clean and free of heavy code-generation dependencies like `analyzer` or `build_runner`.
 
 ## 📦 Installation
 
@@ -20,7 +20,7 @@ dependencies:
 
 ## 🚀 Usage
 
-Simply import the package and apply the `@GenerativeUi` annotation to any Flutter widget you want the local LLM to be able to render. You can optionally provide a custom name for the component using the `name` parameter.
+Simply import the package and apply the `@GenerativeUI` annotation to any Flutter widget you want the local LLM to be able to render. You can optionally provide a custom name for the component using the `name` parameter.
 
 ```dart
 import 'package:flutter/material.dart';
@@ -28,7 +28,7 @@ import 'package:genui_annotations/genui_annotations.dart';
 
 part 'my_button.g.dart';
 
-@GenerativeUi(name: 'CustomButton')
+@GenerativeUI(name: 'CustomButton')
 class MyButton extends StatelessWidget {
   final String label;
   final bool isPrimary;

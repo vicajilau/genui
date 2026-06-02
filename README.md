@@ -9,7 +9,7 @@ Unlike traditional Server-Driven UI (SDUI), GenUI empowers offline-first applica
 * **100% Local & Privacy-First:** No cloud accounts, no API keys, and no network latency. Everything runs on the user's device.
 * **Compile-Time Introspection:** Uses Dart's AST (Abstract Syntax Tree) and code generation to automatically extract widget schemas.
 * **Fault-Tolerant Streaming:** Designed to parse and render flat JSON arrays token-by-token, avoiding the crashes associated with deeply nested A2UI responses on small models.
-* **Developer Experience (DX):** Simply annotate your Flutter widgets with `@GenerativeUi` and let the build system handle the complex prompt engineering.
+* **Developer Experience (DX):** Simply annotate your Flutter widgets with `@GenerativeUI` and let the build system handle the complex prompt engineering.
 
 ## 📁 Workspace Structure
 
@@ -17,7 +17,7 @@ This project is a monorepo managed with [Melos](https://melos.invertase.dev/). I
 
 | Package | Description |
 |---|---|
-| [`genui_annotations`](./packages/genui_annotations) | Lightweight contract package containing the `@GenerativeUi` annotation. Safe to include in production code without bloating the app. |
+| [`genui_annotations`](./packages/genui_annotations) | Lightweight contract package containing the `@GenerativeUI` annotation. Safe to include in production code without bloating the app. |
 | [`genui_builder`](./packages/genui_builder) | The AST code generator utilizing `build_runner` and `analyzer` to extract component schemas at compile time. |
 
 *(Note: The core rendering engine and GGUF execution environment will be added as independent packages in future iterations).*
@@ -62,14 +62,14 @@ import 'package:genui_annotations/genui_annotations.dart';
 
 part 'user_card.g.dart';
 
-@GenerativeUi(name: 'UserProfileCard')
+@GenerativeUI(name: 'UserProfileCard')
 class UserCard extends StatelessWidget {
   final String username;
   final String role;
-  
+
   const UserCard({
-    super.key, 
-    required this.username, 
+    super.key,
+    required this.username,
     required this.role,
   });
 

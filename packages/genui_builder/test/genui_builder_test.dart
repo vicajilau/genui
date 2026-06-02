@@ -3,14 +3,14 @@ import 'package:test/test.dart';
 
 void main() {
   group('A group of tests', () {
-    final awesome = GenerativeUiGenerator();
+    final awesome = GenerativeUIGenerator();
 
     setUp(() {
       // Additional setup goes here.
     });
 
     test('First Test', () {
-      expect(awesome.toString(), contains('GenerativeUiGenerator'));
+      expect(awesome.toString(), contains('GenerativeUIGenerator'));
     });
   });
 }

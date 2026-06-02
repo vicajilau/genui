@@ -2,7 +2,7 @@
 
 The code generation engine for the GenUI ecosystem. 
 
-This package is responsible for the compile-time introspection of your Flutter widgets. It uses Dart's `analyzer` and `source_gen` to read the Abstract Syntax Tree (AST) of classes annotated with `@GenerativeUi` (from the `genui_annotations` package) and automatically generates the static JSON schemas required to feed local LLMs.
+This package is responsible for the compile-time introspection of your Flutter widgets. It uses Dart's `analyzer` and `source_gen` to read the Abstract Syntax Tree (AST) of classes annotated with `@GenerativeUI` (from the `genui_annotations` package) and automatically generates the static JSON schemas required to feed local LLMs.
 
 By extracting these schemas at compile time, `genui_builder` ensures type safety, eliminates manual prompt synchronization, and completely avoids the overhead of runtime reflection on mobile devices.
 
@@ -25,7 +25,7 @@ dev_dependencies:
 
 ## ⚙️ How it Works
 
-When you run the build process, `genui_builder` scans your project for any widget annotated with `@GenerativeUi`. 
+When you run the build process, `genui_builder` scans your project for any widget annotated with `@GenerativeUI`. 
 
 1. **AST Parsing:** It inspects the class fields (ignoring private and static properties).
 2. **Schema Generation:** It maps Dart types to a flat JSON-compatible schema.

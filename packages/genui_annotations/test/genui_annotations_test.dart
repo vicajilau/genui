@@ -3,14 +3,14 @@ import 'package:test/test.dart';
 
 void main() {
   group('A group of tests', () {
-    final awesome = GenerativeUi();
+    final awesome = GenerativeUI();
 
     setUp(() {
       // Additional setup goes here.
     });
 
     test('First Test', () {
-      expect(awesome.name, equals('GenerativeUi'));
+      expect(awesome.name, equals('GenerativeUI'));
     });
   });
 }
