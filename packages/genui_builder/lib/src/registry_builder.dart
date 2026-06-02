@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:build/build.dart';
 import 'package:glob/glob.dart';
+import 'package:dart_style/dart_style.dart';
 
 /// A global Builder that scans the ORIGINAL source files, finds the annotations,
 /// and predicts the generated paths to assemble the central registry.
@@ -90,7 +91,17 @@ class GenUIRegistryBuilder implements Builder {
       buildStep.inputId.package,
       'lib/genui_registry.g.dart',
     );
-    await buildStep.writeAsString(outputAsset, buffer.toString());
+
+    try {
+      final formattedCode = DartFormatter(
+        languageVersion: DartFormatter.latestLanguageVersion,
+      ).format(buffer.toString());
+      await buildStep.writeAsString(outputAsset, formattedCode);
+    } catch (e) {
+      // Fallback in case of syntax error in the generated string
+      await buildStep.writeAsString(outputAsset, buffer.toString());
+      print('--- [GenUI] Warning: Could not format generated registry: $e ---');
+    }
 
     print(
       '--- [GenUI] Registry successfully assembled with ${mapEntries.length} components! ---',
