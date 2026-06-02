@@ -89,6 +89,7 @@ Generates a schema aligned with Google's **Agent to UI (A2UI)** specification, w
   }
 }
 ```
+
 **Why use it (DX Perspective):** 
 A2UI is a standardized UI contract. If your LLM is already fine-tuned to emit the A2UI format, or if you are working in a larger ecosystem that shares Server-Driven UI definitions across Android, iOS, and Web, this format ensures strict compliance. It saves you from having to write custom parsers to translate generic JSON into your enterprise schema.
 
