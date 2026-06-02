@@ -33,9 +33,12 @@ class GenUIRegistryBuilder implements Builder {
         continue;
       }
 
-      // 2. Regex magic: Find @generativeUI, ignore everything until 'class', and capture the Name.
+      // 2. Regex: Find the `@generativeUI` or `@GenerativeUI` annotation and capture the class name.
+      // We restrict the intermediate characters `[^\{;]*?` to prevent matching across
+      // statements or block boundaries. This avoids false positives if the annotation
+      // text appears inside a comment or string.
       final regex = RegExp(
-        r'@(?:generativeUI|GenerativeUI)[^\{]*?class\s+([a-zA-Z0-9_]+)',
+        r'@(?:generativeUI|GenerativeUI)[^\{;]*?class\s+([a-zA-Z0-9_]+)',
       );
       final matches = regex.allMatches(content);
 
