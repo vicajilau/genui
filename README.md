@@ -18,11 +18,12 @@ This monorepo utilizes Dart Pub Workspaces and Melos (for script execution) to e
 
 | Package | Description |
 | --- | --- |
-| [`genui_annotations`](https://www.google.com/search?q=./packages/genui_annotations) | Lightweight contract package containing the `@generativeUI` annotation. Safe to include in production code with zero dependencies. |
-| [`genui_builder`](https://www.google.com/search?q=./packages/genui_builder) | The AST code generator utilizing `build_runner` and `analyzer` to extract component schemas and build the global registry at compile time. |
-| [`example`](https://www.google.com/search?q=./example) | The playground Flutter app demonstrating the generation and registry integration. |
+| [`genui_annotations`](./packages/genui_annotations) | Lightweight contract package containing the `@generativeUI` annotation. Safe to include in production code with zero dependencies. |
+| [`genui_builder`](./packages/genui_builder) | The AST code generator utilizing `build_runner` and `analyzer` to extract component schemas and build the global registry at compile time. |
+| [`genui_engine`](./packages/genui_engine) | The core runtime engine that safely maps JSON payloads to native Flutter widgets using the pre-compiled registry, without runtime reflection. |
+| [`example`](./example) | The playground Flutter app demonstrating the generation and registry integration. |
 
-*(Note: The core rendering engine (`genui_engine`) and LLM execution environment will be added as independent packages in future iterations).*
+*(Note: The local LLM execution environment will be added as an independent package in future iterations).*
 
 ## 🛠️ Getting Started
 
