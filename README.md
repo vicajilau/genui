@@ -1,68 +1,78 @@
 # GenUI: On-Device Generative UI for Flutter
 
-The on-device Generative UI ecosystem for Flutter. GenUI combines local LLM inference (llama.cpp via Dart FFI) with declarative widget introspection to render dynamic, privacy-first interfaces without cloud dependencies.
+The on-device Generative UI ecosystem for Flutter. GenUI combines local LLM inference with declarative widget introspection to render dynamic, privacy-first interfaces without cloud dependencies.
 
 Unlike traditional Server-Driven UI (SDUI), GenUI empowers offline-first applications by generating and rendering user interfaces strictly on-device using Small Language Models (SLMs) and GGUF files.
 
 ## 🚀 Key Features
 
 * **100% Local & Privacy-First:** No cloud accounts, no API keys, and no network latency. Everything runs on the user's device.
-* **Compile-Time Introspection:** Uses Dart's AST (Abstract Syntax Tree) and code generation to automatically extract widget schemas.
-* **Fault-Tolerant Streaming:** Designed to parse and render flat JSON arrays token-by-token, avoiding the crashes associated with deeply nested A2UI responses on small models.
-* **Developer Experience (DX):** Simply annotate your Flutter widgets with `@GenerativeUI` and let the build system handle the complex prompt engineering.
+* **Compile-Time Introspection:** Uses Dart's AST (Abstract Syntax Tree) and `build_runner` to automatically extract widget schemas.
+* **Two-Phase Code Generation:** Generates highly optimized local component schemas AND automatically assembles a central `genui_registry.g.dart` index. No manual wiring required.
+* **Native Dart Workspaces:** Built on top of Dart 3.5+ Pub Workspaces for blazing-fast, conflict-free monorepo management.
+* **Developer Experience (DX):** Simply annotate your Flutter widgets with `@generativeUI` and let the build system handle the schema mapping and prompt engineering.
 
 ## 📁 Workspace Structure
 
-This project is a monorepo managed with [Melos](https://melos.invertase.dev/). It is divided into modular packages to ensure clean dependency graphs and maximum reusability.
+This monorepo utilizes Dart Pub Workspaces and Melos (for script execution) to ensure clean dependency graphs and maximum reusability.
 
 | Package | Description |
-|---|---|
-| [`genui_annotations`](./packages/genui_annotations) | Lightweight contract package containing the `@GenerativeUI` annotation. Safe to include in production code without bloating the app. |
-| [`genui_builder`](./packages/genui_builder) | The AST code generator utilizing `build_runner` and `analyzer` to extract component schemas at compile time. |
+| --- | --- |
+| [`genui_annotations`](https://www.google.com/search?q=./packages/genui_annotations) | Lightweight contract package containing the `@generativeUI` annotation. Safe to include in production code with zero dependencies. |
+| [`genui_builder`](https://www.google.com/search?q=./packages/genui_builder) | The AST code generator utilizing `build_runner` and `analyzer` to extract component schemas and build the global registry at compile time. |
+| [`example`](https://www.google.com/search?q=./example) | The playground Flutter app demonstrating the generation and registry integration. |
 
-*(Note: The core rendering engine and GGUF execution environment will be added as independent packages in future iterations).*
+*(Note: The core rendering engine (`genui_engine`) and LLM execution environment will be added as independent packages in future iterations).*
 
 ## 🛠️ Getting Started
 
 ### Prerequisites
 
-Ensure you have the Dart SDK installed. This workspace relies on `melos` to manage local dependencies and run scripts across packages.
+Ensure you have **Dart SDK ^3.6.0** (or the equivalent Flutter SDK) installed to support modern Pub Workspaces. You also need Melos activated globally for script management.
 
 ```bash
 # Activate Melos globally
 dart pub global activate melos
+
 ```
 
-### Bootstrap the Project
+### Setup the Workspace
 
-Clone the repository and bootstrap the workspace. This command will automatically link the local packages (e.g., linking `genui_annotations` into `genui_builder`).
+Clone the repository and resolve dependencies. Thanks to Dart Workspaces, `pub get` automatically links the local packages. **Do not use `melos bootstrap`.**
 
 ```bash
-git clone https://github.com/WidgetSuite/genui.git
+git clone https://github.com/vicajilau/genui.git
 cd genui
 
-# Link dependencies and set up the workspace
-melos bootstrap
+# Link dependencies natively across the workspace
+dart pub get
+
 ```
 
-### Useful Commands
+### Code Generation
 
-This monorepo includes several custom Melos scripts for your convenience:
+This project uses a highly optimized 2-phase builder. To generate your UI schemas and the global registry, run:
 
-* `melos run build_runner`: Triggers code generation across all packages that require it.
-* `melos run analyze`: Runs the Dart analyzer across the entire workspace to check for linting errors.
+```bash
+# Triggers code generation across all workspace packages
+melos run build_runner
+
+```
 
 ## 📖 Usage Example
 
-Import the annotations package in your Flutter app and decorate the widgets you want the local LLM to be able to render.
+### 1. Annotate your Widgets
+
+Import the annotations package in your Flutter app, decorate your widgets, and include the `.genui.g.dart` part directive.
 
 ```dart
 import 'package:flutter/material.dart';
 import 'package:genui_annotations/genui_annotations.dart';
 
-part 'user_card.g.dart';
+// Must match the file name exactly
+part 'user_card.genui.g.dart';
 
-@GenerativeUI(name: 'UserProfileCard')
+@generativeUI
 class UserCard extends StatelessWidget {
   final String username;
   final String role;
@@ -83,6 +93,26 @@ class UserCard extends StatelessWidget {
     );
   }
 }
+
+```
+
+### 2. Consume the Global Registry
+
+Run the build command. GenUI will automatically generate the schema and export it to a global registry at the root of your `lib/` folder, ready to be injected into the Engine.
+
+```dart
+import 'package:flutter/material.dart';
+
+// Auto-generated by Phase 2 of GenUI Builder
+import 'genui_registry.g.dart'; 
+
+void main() {
+  // Inject the global registry into the engine. Zero manual configuration!
+  // final engine = GenUIEngine(registry: globalGenUIRegistry);
+  
+  runApp(const MainApp());
+}
+
 ```
 
 ## 📄 License
