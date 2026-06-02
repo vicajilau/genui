@@ -47,32 +47,41 @@ class GenerativeUIGenerator extends GeneratorForAnnotation<GenerativeUI> {
     buffer.writeln('');
 
     // 4. GENERATE THE SCHEMA (Public)
+    // Read the format from the annotation (defaults to 'flat')
+    final formatField = annotation.peek('format');
+    // Extract the enum accessor name, e.g. 'SchemaFormat.a2ui' or 'SchemaFormat.flat'
+    final formatName = formatField?.revive().accessor ?? 'flat';
+
     buffer.writeln('/// Auto-generated JSON Schema representation for $className.');
     buffer.writeln('const Map<String, dynamic> \$${className}Schema = {');
-    buffer.writeln('  "type": "$componentName",');
-    buffer.writeln('  "properties": {');
 
     final fieldsToProcess = <String, String>{};
 
-    // 5. Iterate through all fields in the AST class element.
+    // 5. Iterate through all fields in the AST class element to populate fieldsToProcess.
     for (var field in element.fields) {
-      // Ignore private or static properties as they are not part of the widget's public API.
       if (field.isPrivate || field.isStatic) continue;
-
       final fieldName = field.name;
-      
-      // Null safety check: If the AST detects an unnamed element, ignore it.
       if (fieldName == null || fieldName.isEmpty) continue;
-
-      // Extract the string representation of the Dart type (e.g., "String", "bool").
       final fieldType = field.type.getDisplayString();
-      
       fieldsToProcess[fieldName] = fieldType;
-
-      buffer.writeln('    "$fieldName": "$fieldType",');
     }
 
-    buffer.writeln('  }');
+    if (formatName.endsWith('a2ui')) {
+      buffer.writeln('  "component": "$componentName",');
+      buffer.writeln('  "props": {');
+      fieldsToProcess.forEach((name, type) {
+        buffer.writeln('    "$name": "$type",');
+      });
+      buffer.writeln('  }');
+    } else {
+      buffer.writeln('  "type": "$componentName",');
+      buffer.writeln('  "properties": {');
+      fieldsToProcess.forEach((name, type) {
+        buffer.writeln('    "$name": "$type",');
+      });
+      buffer.writeln('  }');
+    }
+
     buffer.writeln('};');
     buffer.writeln('');
 
