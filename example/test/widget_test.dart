@@ -6,7 +6,9 @@ import 'package:example/genui_registry.g.dart';
 import 'package:example/user_card_widget.dart';
 
 void main() {
-  testWidgets('App renders UserCardWidget from JSON', (WidgetTester tester) async {
+  testWidgets('App renders UserCardWidget from JSON', (
+    WidgetTester tester,
+  ) async {
     // Build our app and trigger a frame.
     final engine = GenUIEngine(registry: globalGenUIRegistry);
     await tester.pumpWidget(MainApp(engine: engine));
@@ -22,9 +24,11 @@ void main() {
     expect(find.text('Active'), findsOneWidget);
   });
 
-  testWidgets('Engine successfully parses arbitrary JSON to UserCardWidget', (WidgetTester tester) async {
+  testWidgets('Engine successfully parses arbitrary JSON to UserCardWidget', (
+    WidgetTester tester,
+  ) async {
     final engine = GenUIEngine(registry: globalGenUIRegistry);
-    
+
     final jsonPayload = {
       "type": "UserCardWidget",
       "properties": {

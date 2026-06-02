@@ -38,7 +38,9 @@ class GenerativeUIGenerator extends GeneratorForAnnotation<GenerativeUI> {
 
     // --- SILENCE THE LINTER ---
     // This prevents warnings in the auto-generated files.
-    buffer.writeln('// ignore_for_file: type=lint, unused_element, unused_field, non_constant_identifier_names');
+    buffer.writeln(
+      '// ignore_for_file: type=lint, unused_element, unused_field, non_constant_identifier_names',
+    );
     buffer.writeln('');
 
     // 3. GENERATE THE IDENTIFIER (Public: starts with $)
@@ -52,7 +54,9 @@ class GenerativeUIGenerator extends GeneratorForAnnotation<GenerativeUI> {
     // Extract the enum accessor name, e.g. 'SchemaFormat.a2ui' or 'SchemaFormat.flat'
     final formatName = formatField?.revive().accessor ?? 'flat';
 
-    buffer.writeln('/// Auto-generated JSON Schema representation for $className.');
+    buffer.writeln(
+      '/// Auto-generated JSON Schema representation for $className.',
+    );
     buffer.writeln('const Map<String, dynamic> \$${className}Schema = {');
 
     final fieldsToProcess = <String, String>{};
@@ -86,8 +90,12 @@ class GenerativeUIGenerator extends GeneratorForAnnotation<GenerativeUI> {
     buffer.writeln('');
 
     // 6. GENERATE THE INSTANTIATOR FUNCTION (Public)
-    buffer.writeln('/// Factory function to instantiate $className from a JSON map.');
-    buffer.writeln('$className \$${className}FromJson(Map<String, dynamic> json) {');
+    buffer.writeln(
+      '/// Factory function to instantiate $className from a JSON map.',
+    );
+    buffer.writeln(
+      '$className \$${className}FromJson(Map<String, dynamic> json) {',
+    );
     buffer.writeln('  return $className(');
 
     fieldsToProcess.forEach((name, type) {
