@@ -1,0 +1,19 @@
+name: genui
+publish_to: none
+
+environment:
+  sdk: ^3.12.0 
+
+workspace:
+  - packages/genui_annotations
+  - packages/genui_builder
+  - example
+
+dev_dependencies:
+  melos: ^7.8.0
+
+melos:
+  scripts:
+    build_runner:
+      run: melos exec -c 1 --depends-on="build_runner" -- "dart run build_runner build --delete-conflicting-outputs"
+      description: Run build_runner in all required packages.

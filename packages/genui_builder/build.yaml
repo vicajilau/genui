@@ -1,4 +1,3 @@
-# Configuration file for Dart's build system.
 targets:
   $default:
     builders:
@@ -6,12 +5,10 @@ targets:
         enabled: true
 
 builders:
-  # The identifier for your builder. Must match the factory definition.
   genui:
     target: ""
     import: "package:genui_builder/builder.dart"
     builder_factories: ["genuiBuilder"]
     build_extensions: { ".dart": [".genui.g.dart"] }
     auto_apply: dependents
-    build_to: cache
-    applies_builders: ["source_gen|combining_builder"]
+    build_to: source
