@@ -1,5 +1,5 @@
 name: genui_builder
-description: A starting point for Dart libraries or applications.
+description: AST code generator for inspecting Generative UI components.
 version: 1.0.0
 publish_to: none
 

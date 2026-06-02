@@ -1,5 +1,5 @@
 name: example
-description: "A new Flutter project."
+description: Test environment for Generative UI.
 publish_to: 'none'
 version: 0.1.0+1
 
@@ -12,6 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   genui_annotations: any
+  genui_engine: any
 
 dev_dependencies:
   flutter_test:

@@ -1,4 +1,5 @@
 name: genui
+description: Monorepo for Generative UI
 publish_to: none
 
 environment:
@@ -7,6 +8,7 @@ environment:
 workspace:
   - packages/genui_annotations
   - packages/genui_builder
+  - packages/genui_engine
   - example
 
 dev_dependencies:
