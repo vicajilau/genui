@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:genui_engine/genui_engine.dart';
 import 'genui_registry.g.dart';
 
+import 'llm_raw_widget.dart';
+import 'llm_stream_widget.dart';
+
 void main() {
   // 2. Instantiate the Engine and inject the global registry.
   // This gives the engine knowledge of every @generativeUI widget in the app.
@@ -20,22 +23,29 @@ void main() {
 
 class MainApp extends StatelessWidget {
   final GenUIEngine engine;
+  final bool simulateLlmStream;
 
-  const MainApp({super.key, required this.engine});
+  const MainApp({
+    super.key,
+    required this.engine,
+    this.simulateLlmStream = true,
+  });
+
+  // 3. Define your mock JSON payload as a single source of truth.
+  // You can edit these literals here and they will update both tests!
+  static const String mockJsonString = '''
+{
+  "type": "UserCardWidget",
+  "properties": {
+    "name": "Ada Lovelace",
+    "role": "Lead Architect",
+    "isActive": tr
+  }
+}
+''';
 
   @override
   Widget build(BuildContext context) {
-    // 3. Mock a JSON response exactly as a local LLM would generate it.
-    // Notice how the keys match the variables of your UserCardWidget.
-    final mockLlmResponse = {
-      "type": "UserCardWidget",
-      "properties": {
-        "name": "Ada Lovelace",
-        "role": "Lead Architect",
-        "isActive": true,
-      },
-    };
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -54,9 +64,11 @@ class MainApp extends StatelessWidget {
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
-
                 // 4. Pass the raw JSON to the engine. It returns a native Widget!
-                engine.parse(mockLlmResponse),
+                if (simulateLlmStream)
+                  LlmStreamWidget(engine: engine, rawJsonString: mockJsonString)
+                else
+                  LlmRawWidget(engine: engine, text: mockJsonString),
               ],
             ),
           ),
