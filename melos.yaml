@@ -1,0 +1,14 @@
+name: genui_workspace
+
+packages:
+  - "packages/**"
+  - "example"
+
+scripts:
+  build_runner:
+    run: melos exec -c 1 --depends-on="build_runner" -- "dart run build_runner build --delete-conflicting-outputs"
+    description: Run `build_runner` on all packages that require it.
+  
+  analyze:
+    run: melos exec -- "dart analyze . --fatal-infos"
+    description: Run the linter on all packages in the monorepo.
