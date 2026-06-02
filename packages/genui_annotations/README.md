@@ -53,6 +53,7 @@ class MyButton extends StatelessWidget {
     );
   }
 }
+```
 
 ### 🛠️ Supported Schema Formats
 
@@ -72,6 +73,7 @@ Generates a schema based on a standard `type` and `properties` structure.
   }
 }
 ```
+
 **Why use it (DX Perspective):** 
 This is the simplest and most intuitive format. It consumes fewer tokens and is easily understood by generic, non-specialized LLMs (like standard Gemini, GPT-4, or Claude). Use this if you are prototyping, writing your own system prompts, or using a model that isn't fine-tuned for a specific UI schema.
 
