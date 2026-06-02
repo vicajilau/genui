@@ -60,7 +60,10 @@ void main() {
 
         await tester.pumpWidget(MaterialApp(home: Scaffold(body: widget)));
 
-        expect(find.textContaining('Missing "type" or "component" key'), findsOneWidget);
+        expect(
+          find.textContaining('Missing "type" or "component" key'),
+          findsOneWidget,
+        );
         expect(find.byIcon(Icons.warning_amber_rounded), findsOneWidget);
       });
 
