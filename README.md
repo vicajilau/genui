@@ -61,7 +61,7 @@ git clone https://github.com/vicajilau/genui.git
 cd genui
 
 # Link dependencies natively across the workspace
-dart pub get
+flutter pub get
 ```
 
 ### Code Generation
