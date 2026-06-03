@@ -80,6 +80,18 @@ class GenerativeUIGenerator extends GeneratorForAnnotation<GenerativeUI> {
     buffer.writeln('const String \$${className}Identifier = "$componentName";');
     buffer.writeln('');
 
+    if (callbackFields.isNotEmpty) {
+      buffer.writeln('/// Event name constants for $className.');
+      buffer.writeln('abstract class ${className}Events {');
+      for (final callback in callbackFields) {
+        buffer.writeln(
+          '  static const String $callback = \'${className}_${callback}Event\';',
+        );
+      }
+      buffer.writeln('}');
+      buffer.writeln('');
+    }
+
     // Generate the CatalogItem compatible with package:genui
     buffer.writeln('/// Auto-generated CatalogItem for $className.');
     buffer.writeln(
@@ -146,7 +158,7 @@ class GenerativeUIGenerator extends GeneratorForAnnotation<GenerativeUI> {
         buffer.writeln('      $name: () {');
         buffer.writeln('        itemContext.dispatchEvent(');
         buffer.writeln('          UserActionEvent(');
-        buffer.writeln('            name: \'\$${className}_\$${name}Event\',');
+        buffer.writeln('            name: \'${className}_${name}Event\',');
         buffer.writeln('            sourceComponentId: itemContext.id,');
         buffer.writeln('            context: data,');
         buffer.writeln('          ),');

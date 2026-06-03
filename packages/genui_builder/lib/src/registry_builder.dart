@@ -83,10 +83,13 @@ class GenUIRegistryBuilder implements Builder {
     buffer.writeln('];');
     buffer.writeln('');
     buffer.writeln(
-      '/// Global catalog composed of all auto-generated catalog items.',
+      '/// Global catalog composed of all auto-generated catalog items combined with the official basic catalog.',
     );
     buffer.writeln('final Catalog globalGenUICatalog = Catalog(');
-    buffer.writeln('  generatedCatalogItems,');
+    buffer.writeln('  [');
+    buffer.writeln('    ...BasicCatalogItems.asCatalog().items,');
+    buffer.writeln('    ...generatedCatalogItems,');
+    buffer.writeln('  ],');
     buffer.writeln("  catalogId: 'inline_catalog',");
     buffer.writeln(');');
 
