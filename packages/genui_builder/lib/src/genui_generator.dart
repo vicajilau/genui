@@ -223,7 +223,10 @@ class GenerativeUIGenerator extends GeneratorForAnnotation<GenerativeUI> {
             if (typeStr == 'bool') fallback = 'false';
             if (typeStr == 'int') fallback = '0';
             if (typeStr == 'double') fallback = '0.0';
+            if (typeStr == 'num') fallback = '0';
             if (typeStr == 'String') fallback = '""';
+            if (typeStr.startsWith('List')) fallback = 'const []';
+            if (typeStr.startsWith('Map')) fallback = 'const {}';
 
             final defVal = defaultValues[name] ?? fallback;
             buffer.writeln(
