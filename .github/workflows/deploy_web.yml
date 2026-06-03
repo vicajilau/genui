@@ -35,11 +35,14 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: 📦 Install Melos
+        run: dart pub global activate melos
+
       - name: Get dependencies
         run: flutter pub get
 
       - name: Generate build_runner files
-        run: dart run melos run build_runner
+        run: melos run build_runner
 
       - name: Build web
         run: flutter build web --release --base-href /${{ github.event.repository.name }}/
