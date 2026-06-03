@@ -1,5 +1,6 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:genui_annotations/genui_annotations.dart';
@@ -155,12 +156,34 @@ class GenerativeUIGenerator extends GeneratorForAnnotation<GenerativeUI> {
           typeStr.startsWith('ValueChanged');
 
       if (isCallback) {
-        buffer.writeln('      $name: () {');
+        final type = parameter.type;
+        String paramList = '';
+        String contextExtra = '';
+        if (type is FunctionType) {
+          final params = type.formalParameters;
+          if (params.isNotEmpty) {
+            final paramNames = <String>[];
+            final paramDecls = <String>[];
+            for (var i = 0; i < params.length; i++) {
+              final p = params[i];
+              final pName = (p.name ?? '').isNotEmpty ? p.name! : 'arg$i';
+              paramNames.add(pName);
+              paramDecls.add('${p.type.getDisplayString()} $pName');
+            }
+            paramList = paramDecls.join(', ');
+            final extraEntries = paramNames.map((n) => "'$n': $n").join(', ');
+            contextExtra = ', ...{$extraEntries}';
+          }
+        }
+
+        buffer.writeln('      $name: ($paramList) {');
         buffer.writeln('        itemContext.dispatchEvent(');
         buffer.writeln('          UserActionEvent(');
-        buffer.writeln('            name: \'${className}_${name}Event\',');
+        buffer.writeln('            name: ${className}Events.$name,');
         buffer.writeln('            sourceComponentId: itemContext.id,');
-        buffer.writeln('            context: data,');
+        buffer.writeln('            context: {');
+        buffer.writeln('              ...data$contextExtra');
+        buffer.writeln('            },');
         buffer.writeln('          ),');
         buffer.writeln('        );');
         buffer.writeln('      },');

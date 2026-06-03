@@ -101,6 +101,33 @@ if (event.name == MyButtonEvents.onAction) {
 }
 ```
 
+### 3. Callbacks with Parameters (e.g. `ValueChanged<T>`)
+If a callback takes arguments (such as `ValueChanged<bool>` or a custom `void Function(String selectedItem)`), the generator automatically extracts these parameter signatures and forwards their runtime values inside the event's `context` map.
+
+For example, for a widget callback defined as `final ValueChanged<bool> onChanged;`, the generated adapter code binds:
+```dart
+onChanged: (bool value) {
+  itemContext.dispatchEvent(
+    UserActionEvent(
+      name: MyWidgetEvents.onChanged,
+      sourceComponentId: itemContext.id,
+      context: {
+        ...data,
+        'value': value, // Forwarded automatically!
+      },
+    ),
+  );
+}
+```
+
+You can then easily read the parameter value in your handler:
+```dart
+if (event.name == MyWidgetEvents.onChanged) {
+  final bool newValue = event.context['value'] as bool;
+  // Handle state change...
+}
+```
+
 ---
 
 ## ⚙️ Code Generation

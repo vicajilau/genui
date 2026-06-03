@@ -38,9 +38,9 @@ final CatalogItem $TaskItemWidgetCatalogItem = CatalogItem(
       onToggle: () {
         itemContext.dispatchEvent(
           UserActionEvent(
-            name: 'TaskItemWidget_onToggleEvent',
+            name: TaskItemWidgetEvents.onToggle,
             sourceComponentId: itemContext.id,
-            context: data,
+            context: {...data},
           ),
         );
       },

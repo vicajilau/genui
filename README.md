@@ -166,6 +166,8 @@ void handleWidgetEvent(String eventJson) {
 }
 ```
 
+*Note: For callbacks that take arguments (e.g. `ValueChanged<bool> onChanged`), parameter names and values are automatically appended to the event's `context` map (e.g. `event.context['value']`).*
+
 ---
 
 ## 📄 License
