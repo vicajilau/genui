@@ -29,7 +29,6 @@ class _ComposedScreenState extends State<ComposedScreen>
   final ApiKeyService _apiKeyService = ApiKeyService();
   final GeminiService _geminiService = GeminiService();
   late final GeminiChatController _chatController;
-  StreamSubscription? _errorSubscription;
 
   // App States
   String _geminiApiKey = '';
@@ -45,18 +44,6 @@ class _ComposedScreenState extends State<ComposedScreen>
       getApiKey: () => _geminiApiKey,
     );
 
-    // Listen to streaming and model errors
-    _errorSubscription = _chatController.errors.listen((errorMsg) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('AI Error: $errorMsg'),
-            backgroundColor: Colors.red.shade700,
-          ),
-        );
-      }
-    });
-
     _loadStoredApiKey();
   }
 
@@ -64,7 +51,6 @@ class _ComposedScreenState extends State<ComposedScreen>
   void dispose() {
     _tabController.dispose();
     _scrollController.dispose();
-    _errorSubscription?.cancel();
     _chatController.dispose();
     super.dispose();
   }
@@ -215,6 +201,79 @@ class _ComposedScreenState extends State<ComposedScreen>
                         Color(0xFF6366F1),
                       ),
                     ),
+                  ),
+                ),
+              ),
+            if (_chatController.hasError)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 8.0),
+                child: Container(
+                  padding: const EdgeInsets.all(14.0),
+                  decoration: BoxDecoration(
+                    color: const Color(0x26EF4444),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0x66EF4444)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.error_outline_rounded,
+                        color: Color(0xFFF87171),
+                        size: 20,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Connection Error',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              _chatController.lastErrorMessage ??
+                                  'Network request failed.',
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 11,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          _chatController.retry();
+                          _scrollToBottom();
+                        },
+                        icon: const Icon(Icons.replay_rounded, size: 16),
+                        label: const Text('Retry'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFEF4444),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
+                          ),
+                          textStyle: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

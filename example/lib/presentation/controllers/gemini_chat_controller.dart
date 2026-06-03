@@ -17,6 +17,8 @@ class GeminiChatController extends ChangeNotifier {
   final List<Map<String, dynamic>> _geminiHistory = [];
   bool _isWaiting = false;
   bool _isFirstChunkOfResponse = true;
+  bool _hasError = false;
+  String? _lastErrorMessage;
 
   late SurfaceController _aiController;
   late A2uiTransportAdapter _aiTransport;
@@ -29,6 +31,8 @@ class GeminiChatController extends ChangeNotifier {
 
   List<ChatTimelineItem> get chatHistory => _chatHistory;
   bool get isWaiting => _isWaiting;
+  bool get hasError => _hasError;
+  String? get lastErrorMessage => _lastErrorMessage;
   SurfaceController get aiController => _aiController;
   Stream<String> get errors => _errorController.stream;
 
@@ -74,6 +78,8 @@ class GeminiChatController extends ChangeNotifier {
         notifyListeners();
       } else if (event is ConversationError) {
         _isWaiting = false;
+        _hasError = true;
+        _lastErrorMessage = event.error.toString();
         _errorController.add(event.error.toString());
         notifyListeners();
       } else {
@@ -86,6 +92,16 @@ class GeminiChatController extends ChangeNotifier {
   Future<void> sendUserPrompt(String text) async {
     final trimmed = text.trim();
     if (trimmed.isEmpty) return;
+
+    if (_hasError) {
+      _hasError = false;
+      _lastErrorMessage = null;
+      // If the last item in gemini history was a user prompt that failed to get a response,
+      // and the user is writing a new prompt instead of retrying, remove the failed one from history.
+      if (_geminiHistory.isNotEmpty && _geminiHistory.last['role'] == 'user') {
+        _geminiHistory.removeLast();
+      }
+    }
 
     _chatHistory.add(ChatTimelineItem(isUser: true, text: trimmed));
     notifyListeners();
@@ -116,8 +132,17 @@ class GeminiChatController extends ChangeNotifier {
 
     _isFirstChunkOfResponse = true;
     _isWaiting = true;
+    _hasError = false;
+    _lastErrorMessage = null;
     notifyListeners();
 
+    await _streamResponseFromGemini(apiKey, systemInstruction);
+  }
+
+  Future<void> _streamResponseFromGemini(
+    String apiKey,
+    String systemInstruction,
+  ) async {
     try {
       final responseStream = _geminiService.streamGenerateContent(
         apiKey: apiKey,
@@ -137,12 +162,47 @@ class GeminiChatController extends ChangeNotifier {
           {'text': responseBuffer.toString()},
         ],
       });
+
+      _hasError = false;
+      _lastErrorMessage = null;
     } catch (e) {
+      _hasError = true;
+      _lastErrorMessage = e.toString();
       _errorController.add(e.toString());
       rethrow;
     } finally {
       _isWaiting = false;
       notifyListeners();
+    }
+  }
+
+  Future<void> retry() async {
+    if (!_hasError) return;
+
+    final apiKey = _getApiKey();
+    if (apiKey.isEmpty) {
+      throw StateError('Gemini API Key is not configured.');
+    }
+
+    // Clean up last partial model message if any from chat history
+    if (_chatHistory.isNotEmpty &&
+        !_chatHistory.last.isUser &&
+        _chatHistory.last.surfaceId == null) {
+      _chatHistory.removeLast();
+    }
+
+    _isFirstChunkOfResponse = true;
+    _isWaiting = true;
+    _hasError = false;
+    _lastErrorMessage = null;
+    notifyListeners();
+
+    final systemInstruction = _buildSystemInstruction();
+
+    try {
+      await _streamResponseFromGemini(apiKey, systemInstruction);
+    } catch (e) {
+      // Errors are already handled inside _streamResponseFromGemini
     }
   }
 

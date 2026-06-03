@@ -41,6 +41,18 @@ class CustomButton extends StatelessWidget {
         return Colors.teal;
       case 'pink':
         return Colors.pink;
+      case 'yellow':
+        return const Color(0xFFFACC15); // A premium vibrant yellow
+      case 'lime':
+        return Colors.lime;
+      case 'cyan':
+        return Colors.cyan;
+      case 'black':
+        return Colors.black;
+      case 'white':
+        return Colors.white;
+      case 'brown':
+        return Colors.brown;
       case 'grey':
       case 'gray':
         return Colors.grey;
