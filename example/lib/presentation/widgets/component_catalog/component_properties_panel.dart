@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flex_color_picker/flex_color_picker.dart';
 
 /// A widget panel that renders the property editor controls (text fields, sliders,
 /// toggles, and dropdowns) for modifying the active catalog component's properties.
@@ -79,14 +80,14 @@ class ComponentPropertiesPanel extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            ..._buildComponentEditorControls(),
+            ..._buildComponentEditorControls(context),
           ],
         ),
       ),
     );
   }
 
-  List<Widget> _buildComponentEditorControls() {
+  List<Widget> _buildComponentEditorControls(BuildContext context) {
     switch (selectedComponent) {
       case 'CustomButton':
         return [
@@ -96,8 +97,9 @@ class ComponentPropertiesPanel extends StatelessWidget {
             onChanged: onBtnLabelChanged,
           ),
           const SizedBox(height: 16),
-          _buildTextField(
-            label: 'Color (name or hex, e.g. indigo, #4F46E5)',
+          _buildColorField(
+            context: context,
+            label: 'Color',
             value: btnColor,
             onChanged: onBtnColorChanged,
           ),
@@ -222,6 +224,125 @@ class ComponentPropertiesPanel extends StatelessWidget {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(color: Color(0xFF6366F1)),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Color _parseColor(String colorStr) {
+    var hex = colorStr.replaceAll("#", "").trim();
+    if (hex.startsWith("0x")) hex = hex.substring(2);
+    if (hex.length == 6) hex = "FF$hex";
+    if (hex.length == 8) {
+      final intVal = int.tryParse(hex, radix: 16);
+      if (intVal != null) return Color(intVal);
+    }
+    return const Color(0xFF6366F1);
+  }
+
+  Widget _buildColorField({
+    required BuildContext context,
+    required String label,
+    required String value,
+    required ValueChanged<String> onChanged,
+  }) {
+    final currentColor = _parseColor(value);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            color: Colors.white70,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 6),
+        InkWell(
+          onTap: () async {
+            final Color newColor = await showColorPickerDialog(
+              context,
+              currentColor,
+              title: Text(
+                'Select Button Color',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              width: 40,
+              height: 40,
+              spacing: 8,
+              runSpacing: 8,
+              borderRadius: 8,
+              wheelDiameter: 200,
+              enableOpacity: false,
+              showColorCode: true,
+              colorCodeHasColor: true,
+              showColorName: true,
+              pickersEnabled: const <ColorPickerType, bool>{
+                ColorPickerType.both: false,
+                ColorPickerType.primary: true,
+                ColorPickerType.accent: true,
+                ColorPickerType.bw: false,
+                ColorPickerType.custom: false,
+                ColorPickerType.wheel: true,
+              },
+            );
+
+            final hexStr =
+                '#${newColor.toARGB32().toRadixString(16).padLeft(8, '0').toUpperCase()}';
+            onChanged(hexStr);
+          },
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: const Color(0x33000000),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.white12),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: currentColor,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white24, width: 1.5),
+                    boxShadow: [
+                      BoxShadow(
+                        // ignore: deprecated_member_use
+                        color: currentColor.withOpacity(0.4),
+                        blurRadius: 6,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    value.toUpperCase(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'monospace',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                const Icon(
+                  Icons.color_lens_rounded,
+                  color: Color(0xFF818CF8),
+                  size: 20,
+                ),
+              ],
             ),
           ),
         ),

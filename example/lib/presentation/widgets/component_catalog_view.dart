@@ -33,7 +33,7 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
 
   // CustomButton properties
   String _btnLabel = 'Hello world';
-  String _btnColor = 'red';
+  String _btnColor = '#6366F1';
 
   // TaskItemWidget properties
   String _taskTitle = 'Design Generative UI Architecture';
