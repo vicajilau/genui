@@ -32,11 +32,13 @@ class _ComposedScreenState extends State<ComposedScreen>
 
   // App States
   String _geminiApiKey = '';
+  bool _isSettingsDialogOpen = false;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(_handleTabChange);
 
     // Initialize the Chat Controller with dynamic API Key getter
     _chatController = GeminiChatController(
@@ -49,10 +51,17 @@ class _ComposedScreenState extends State<ComposedScreen>
 
   @override
   void dispose() {
+    _tabController.removeListener(_handleTabChange);
     _tabController.dispose();
     _scrollController.dispose();
     _chatController.dispose();
     super.dispose();
+  }
+
+  void _handleTabChange() {
+    if (_tabController.index == 1 && !_tabController.indexIsChanging) {
+      _promptForApiKeyIfNeeded();
+    }
   }
 
   Future<void> _loadStoredApiKey() async {
@@ -61,6 +70,8 @@ class _ComposedScreenState extends State<ComposedScreen>
       setState(() {
         _geminiApiKey = key;
       });
+    } else {
+      _promptForApiKeyIfNeeded();
     }
   }
 
@@ -79,19 +90,44 @@ class _ComposedScreenState extends State<ComposedScreen>
       setState(() {
         _geminiApiKey = '';
       });
+      _promptForApiKeyIfNeeded();
     }
   }
 
-  void _showSettingsDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => SettingsDialog(
-        initialApiKey: _geminiApiKey,
-        onValidate: _apiKeyService.isValidApiKey,
-        onSave: _saveApiKey,
-        onDelete: _deleteApiKey,
-      ),
-    );
+  Future<void> _showSettingsDialog() async {
+    if (_isSettingsDialogOpen || !mounted) {
+      return;
+    }
+
+    _isSettingsDialogOpen = true;
+    try {
+      await showDialog(
+        context: context,
+        builder: (context) => SettingsDialog(
+          initialApiKey: _geminiApiKey,
+          onValidate: _apiKeyService.isValidApiKey,
+          onSave: _saveApiKey,
+          onDelete: _deleteApiKey,
+        ),
+      );
+    } finally {
+      _isSettingsDialogOpen = false;
+    }
+  }
+
+  void _promptForApiKeyIfNeeded() {
+    if (!mounted ||
+        _tabController.index != 1 ||
+        _geminiApiKey.isNotEmpty ||
+        _isSettingsDialogOpen) {
+      return;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _geminiApiKey.isEmpty && !_isSettingsDialogOpen) {
+        _showSettingsDialog();
+      }
+    });
   }
 
   void _scrollToBottom() {
@@ -167,6 +203,7 @@ class _ComposedScreenState extends State<ComposedScreen>
       return ApiKeyWarningCard(
         onValidate: _apiKeyService.isValidApiKey,
         onSave: _saveApiKey,
+        onOpenSettings: _showSettingsDialog,
       );
     }
 

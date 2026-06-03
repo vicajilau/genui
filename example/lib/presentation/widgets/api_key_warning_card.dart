@@ -6,11 +6,13 @@ import 'package:url_launcher/url_launcher.dart';
 class ApiKeyWarningCard extends StatelessWidget {
   final bool Function(String) onValidate;
   final Future<void> Function(String) onSave;
+  final Future<void> Function() onOpenSettings;
 
   const ApiKeyWarningCard({
     super.key,
     required this.onValidate,
     required this.onSave,
+    required this.onOpenSettings,
   });
 
   Future<void> _openGeminiApiKeyUrl() async {
@@ -78,51 +80,26 @@ class ApiKeyWarningCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              TextField(
-                obscureText: true,
-                style: const TextStyle(color: Colors.white, fontSize: 14),
-                decoration: InputDecoration(
-                  labelText: 'Enter Gemini API Key',
-                  labelStyle: const TextStyle(color: Colors.white54),
-                  hintText: 'AIzaSy...',
-                  hintStyle: const TextStyle(color: Colors.white30),
-                  prefixIcon: const Icon(
-                    Icons.lock_outline_rounded,
-                    color: Colors.white30,
-                    size: 20,
+              TextButton.icon(
+                onPressed: onOpenSettings,
+                icon: const Icon(Icons.settings, size: 18),
+                label: const Text(
+                  'OPEN SETTINGS',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                ),
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: const Color(0xFF334155),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
                   ),
-                  filled: true,
-                  fillColor: const Color(0xFF0F172A), // Slate 900
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: Color(0xFF6366F1),
-                      width: 1.5,
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0x336366F1)),
-                  ),
-                  border: OutlineInputBorder(
+                  shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                onSubmitted: (val) {
-                  final trimmed = val.trim();
-                  if (onValidate(trimmed)) {
-                    onSave(trimmed);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text('Invalid Gemini API Key format.'),
-                        backgroundColor: Colors.red.shade700,
-                      ),
-                    );
-                  }
-                },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
