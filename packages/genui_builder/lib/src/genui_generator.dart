@@ -1,13 +1,14 @@
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:build/build.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:genui_annotations/genui_annotations.dart';
 
 /// Generator class for [GenerativeUI] annotations.
 ///
-/// This class parses the Abstract Syntax Tree (AST) of annotated classes
-/// to extract their fields and types, generating a static JSON schema
-/// representation that can be fed into a local LLM's system prompt.
+/// This class parses the unnamed constructor of annotated classes
+/// to extract fields and types, generating a [CatalogItem] representation
+/// that integrates directly with the official flutter/genui package.
 class GenerativeUIGenerator extends GeneratorForAnnotation<GenerativeUI> {
   @override
   String generateForAnnotatedElement(
@@ -15,7 +16,6 @@ class GenerativeUIGenerator extends GeneratorForAnnotation<GenerativeUI> {
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
-    // 1. Ensure the annotation is strictly applied to a class.
     if (element is! ClassElement) {
       throw InvalidGenerationSourceError(
         'The @GenerativeUI annotation can only be applied to classes.',
@@ -23,87 +23,160 @@ class GenerativeUIGenerator extends GeneratorForAnnotation<GenerativeUI> {
       );
     }
 
-    // Extract the Dart class name. Add a null safety check just in case.
     final className = element.name;
     if (className == null || className.isEmpty) {
       return '';
     }
 
-    // 2. Extract the component name.
-    // Uses the custom name from the annotation if provided, otherwise defaults to the Dart class name.
     final customName = annotation.peek('name')?.stringValue;
     final componentName = customName ?? className;
 
+    final constructor = element.unnamedConstructor;
+    if (constructor == null) {
+      throw InvalidGenerationSourceError(
+        'The class $className must have an unnamed constructor to be generated.',
+        element: element,
+      );
+    }
+
+    final fieldsToProcess = <String, String>{}; // name -> Dart Type
+    final callbackFields = <String>{};
+    final requiredFields = <String>[];
+    final defaultValues = <String, String>{};
+
+    for (var parameter in constructor.formalParameters) {
+      final name = parameter.name;
+      if (name == null || name == 'key') continue;
+
+      final typeStr = parameter.type.getDisplayString();
+      final isCallback =
+          typeStr == 'VoidCallback' ||
+          typeStr.contains('Function') ||
+          typeStr.endsWith('Callback') ||
+          typeStr.startsWith('ValueChanged');
+
+      if (isCallback) {
+        callbackFields.add(name);
+      } else {
+        fieldsToProcess[name] = typeStr;
+        if (parameter.isRequired) {
+          requiredFields.add(name);
+        }
+        if (parameter.hasDefaultValue && parameter.defaultValueCode != null) {
+          defaultValues[name] = parameter.defaultValueCode!;
+        }
+      }
+    }
+
     final buffer = StringBuffer();
 
-    // --- SILENCE THE LINTER ---
-    // This prevents warnings in the auto-generated files.
     buffer.writeln(
       '// ignore_for_file: type=lint, unused_element, unused_field, non_constant_identifier_names',
     );
     buffer.writeln('');
 
-    // 3. GENERATE THE IDENTIFIER (Public: starts with $)
+    // Generate the Identifier
     buffer.writeln('/// The mapped identifier for $className.');
     buffer.writeln('const String \$${className}Identifier = "$componentName";');
     buffer.writeln('');
 
-    // 4. GENERATE THE SCHEMA (Public)
-    // Read the format from the annotation (defaults to 'flat')
-    final formatField = annotation.peek('format');
-    // Extract the enum accessor name, e.g. 'SchemaFormat.a2ui' or 'SchemaFormat.flat'
-    final formatName = formatField?.revive().accessor ?? 'flat';
-
+    // Generate the CatalogItem compatible with package:genui
+    buffer.writeln('/// Auto-generated CatalogItem for $className.');
     buffer.writeln(
-      '/// Auto-generated JSON Schema representation for $className.',
+      'final CatalogItem \$${className}CatalogItem = CatalogItem(',
     );
-    buffer.writeln('const Map<String, dynamic> \$${className}Schema = {');
-
-    final fieldsToProcess = <String, String>{};
-
-    // 5. Iterate through all fields in the AST class element to populate fieldsToProcess.
-    for (var field in element.fields) {
-      if (field.isPrivate || field.isStatic) continue;
-      final fieldName = field.name;
-      if (fieldName == null || fieldName.isEmpty) continue;
-      final fieldType = field.type.getDisplayString();
-      fieldsToProcess[fieldName] = fieldType;
-    }
-
-    if (formatName.endsWith('a2ui')) {
-      buffer.writeln('  "component": "$componentName",');
-      buffer.writeln('  "props": {');
-      fieldsToProcess.forEach((name, type) {
-        buffer.writeln('    "$name": "$type",');
-      });
-      buffer.writeln('  }');
-    } else {
-      buffer.writeln('  "type": "$componentName",');
-      buffer.writeln('  "properties": {');
-      fieldsToProcess.forEach((name, type) {
-        buffer.writeln('    "$name": "$type",');
-      });
-      buffer.writeln('  }');
-    }
-
-    buffer.writeln('};');
-    buffer.writeln('');
-
-    // 6. GENERATE THE INSTANTIATOR FUNCTION (Public)
-    buffer.writeln(
-      '/// Factory function to instantiate $className from a JSON map.',
-    );
-    buffer.writeln(
-      '$className \$${className}FromJson(Map<String, dynamic> json) {',
-    );
-    buffer.writeln('  return $className(');
+    buffer.writeln('  name: \$${className}Identifier,');
+    buffer.writeln('  dataSchema: S.object(');
+    buffer.writeln('    description: "Auto-generated schema for $className.",');
+    buffer.writeln('    properties: {');
 
     fieldsToProcess.forEach((name, type) {
-      buffer.writeln('    $name: json["$name"] as $type,');
+      String schemaMethod;
+      switch (type) {
+        case 'String':
+          schemaMethod = 'S.string(description: "The $name property.")';
+          break;
+        case 'int':
+          schemaMethod = 'S.integer(description: "The $name property.")';
+          break;
+        case 'double':
+        case 'num':
+          schemaMethod = 'S.number(description: "The $name property.")';
+          break;
+        case 'bool':
+          schemaMethod = 'S.boolean(description: "The $name property.")';
+          break;
+        default:
+          schemaMethod = 'S.string(description: "The $name property.")';
+      }
+      buffer.writeln('      "$name": $schemaMethod,');
     });
 
-    buffer.writeln('  );');
-    buffer.writeln('}');
+    buffer.writeln('    },');
+
+    if (requiredFields.isNotEmpty) {
+      final reqListStr = requiredFields.map((f) => '"$f"').join(', ');
+      buffer.writeln('    required: [$reqListStr],');
+    }
+
+    buffer.writeln('  ),');
+
+    // widgetBuilder implementation
+    buffer.writeln('  widgetBuilder: (itemContext) {');
+    buffer.writeln(
+      '    final data = itemContext.data as Map<String, dynamic>;',
+    );
+    buffer.writeln('    return $className(');
+
+    for (var parameter in constructor.formalParameters) {
+      final name = parameter.name;
+      if (name == null || name == 'key') continue;
+
+      final typeStr = parameter.type.getDisplayString();
+      final isNullable =
+          parameter.type.nullabilitySuffix == NullabilitySuffix.question;
+
+      final isCallback =
+          typeStr == 'VoidCallback' ||
+          typeStr.contains('Function') ||
+          typeStr.endsWith('Callback') ||
+          typeStr.startsWith('ValueChanged');
+
+      if (isCallback) {
+        buffer.writeln('      $name: () {');
+        buffer.writeln('        itemContext.dispatchEvent(');
+        buffer.writeln('          UserActionEvent(');
+        buffer.writeln('            name: \'\$${className}_\$${name}Event\',');
+        buffer.writeln('            sourceComponentId: itemContext.id,');
+        buffer.writeln('            context: data,');
+        buffer.writeln('          ),');
+        buffer.writeln('        );');
+        buffer.writeln('      },');
+      } else {
+        if (parameter.isRequired) {
+          buffer.writeln('      $name: data["$name"] as $typeStr,');
+        } else {
+          if (isNullable) {
+            buffer.writeln('      $name: data["$name"] as $typeStr?,');
+          } else {
+            var fallback = 'null';
+            if (typeStr == 'bool') fallback = 'false';
+            if (typeStr == 'int') fallback = '0';
+            if (typeStr == 'double') fallback = '0.0';
+            if (typeStr == 'String') fallback = '""';
+
+            final defVal = defaultValues[name] ?? fallback;
+            buffer.writeln(
+              '      $name: (data["$name"] as $typeStr?) ?? $defVal,',
+            );
+          }
+        }
+      }
+    }
+
+    buffer.writeln('    );');
+    buffer.writeln('  },');
+    buffer.writeln(');');
 
     return buffer.toString();
   }

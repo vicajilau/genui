@@ -1,138 +1,155 @@
 import 'package:flutter/material.dart';
-
-// 1. Import the Engine and the auto-generated Registry
-import 'package:genui_engine/genui_engine.dart';
+import 'package:genui/genui.dart';
 import 'genui_registry.g.dart';
-
-import 'llm_raw_widget.dart';
-import 'llm_stream_widget.dart';
+import 'widgets/user_card_widget.dart';
 
 void main() {
-  // 2. Instantiate the Engine and inject the global registry.
-  // This gives the engine knowledge of every @generativeUI widget in the app.
-  final engine = GenUIEngine(registry: globalGenUIRegistry);
-
-  debugPrint('=========================================');
-  debugPrint('🤖 LLM SYSTEM PROMPT GENERATED AUTOMATICALLY');
-  debugPrint('=========================================');
-  debugPrint(engine.buildSystemPrompt());
-  debugPrint('=========================================');
-
-  runApp(MainApp(engine: engine));
+  runApp(const MainApp());
 }
 
-class MainApp extends StatefulWidget {
-  final GenUIEngine engine;
-  final bool simulateLlmStream;
-
-  const MainApp({
-    super.key,
-    required this.engine,
-    this.simulateLlmStream = true,
-  });
-
-  // 3. Define your mock JSON payload as a single source of truth.
-  // You can edit these literals here and they will update both tests!
-  static const String mockJsonString = '''
-{
-  "type": "UserCardWidget",
-  "properties": {
-    "name": "Ada Lovelace",
-    "role": "Lead Architect",
-    "isActive": true
-  }
-}
-''';
-
-  @override
-  State<MainApp> createState() => _MainAppState();
-}
-
-class _MainAppState extends State<MainApp> {
-  late bool _simulateStream;
-  bool _hasStarted = false;
-  Key _widgetKey = UniqueKey();
-
-  @override
-  void initState() {
-    super.initState();
-    _simulateStream = widget.simulateLlmStream;
-  }
-
-  void _startOrRestart() {
-    setState(() {
-      _hasStarted = true;
-      _widgetKey = UniqueKey();
-    });
-  }
+class MainApp extends StatelessWidget {
+  const MainApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('GenUI Demo'),
-          backgroundColor: Colors.blueGrey,
-          actions: [
-            Row(
-              children: [
-                const Text('Static', style: TextStyle(color: Colors.white)),
-                Switch(
-                  value: _simulateStream,
-                  activeThumbColor: Colors.white,
-                  onChanged: (val) {
-                    setState(() {
-                      _simulateStream = val;
-                      _hasStarted = false; // Reset on toggle
-                    });
-                  },
-                ),
-                const Text('Stream', style: TextStyle(color: Colors.white)),
-                const SizedBox(width: 16),
-              ],
-            ),
-          ],
-        ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: _startOrRestart,
-          icon: Icon(_hasStarted ? Icons.refresh : Icons.play_arrow),
-          label: Text(_hasStarted ? 'Restart' : 'Start'),
-        ),
-        body: Center(
-          child: !_hasStarted
-              ? const Text(
-                  'Press Start to render the UI from JSON',
+      title: 'GenUI Demo',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey),
+        useMaterial3: true,
+      ),
+      home: const GenUIDemoScreen(),
+    );
+  }
+}
+
+class GenUIDemoScreen extends StatefulWidget {
+  const GenUIDemoScreen({super.key});
+
+  @override
+  State<GenUIDemoScreen> createState() => _GenUIDemoScreenState();
+}
+
+class _GenUIDemoScreenState extends State<GenUIDemoScreen> {
+  late final SurfaceController _controller;
+  late final SurfaceContext _surfaceContext;
+  bool _isRendered = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // 1. Initialize SurfaceController with our auto-generated Catalog
+    _controller = SurfaceController(catalogs: [globalGenUICatalog]);
+    _surfaceContext = _controller.contextFor('demo_surface');
+  }
+
+  void _renderUI() {
+    // 2. Send A2UI message to create the surface
+    _controller.handleMessage(
+      CreateSurface(
+        surfaceId: 'demo_surface',
+        catalogId: 'inline_catalog',
+        sendDataModel: false,
+      ),
+    );
+
+    // 3. Send A2UI message to update components inside the surface
+    _controller.handleMessage(
+      UpdateComponents(
+        surfaceId: 'demo_surface',
+        components: [
+          const Component(
+            id: 'root',
+            type: $UserCardWidgetIdentifier,
+            properties: {
+              'name': 'Ada Lovelace',
+              'role': 'Lead Architect',
+              'isActive': true,
+            },
+          ),
+        ],
+      ),
+    );
+
+    setState(() {
+      _isRendered = true;
+    });
+  }
+
+  void _clearUI() {
+    _controller.handleMessage(DeleteSurface(surfaceId: 'demo_surface'));
+    setState(() {
+      _isRendered = false;
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('GenUI Demo'),
+        backgroundColor: Colors.blueGrey.shade100,
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (!_isRendered)
+                const Text(
+                  'Press "Render UI" to build the Widget from JSON properties',
+                  textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 16, color: Colors.grey),
                 )
-              : SingleChildScrollView(
+              else
+                Card(
+                  elevation: 4,
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Rendered purely from JSON:',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          'Rendered by official package:genui Surface Widget:',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blueGrey,
+                          ),
                         ),
                         const SizedBox(height: 16),
-                        // 4. Pass the raw JSON to the engine. It returns a native Widget!
-                        if (_simulateStream)
-                          LlmStreamWidget(
-                            key: _widgetKey,
-                            engine: widget.engine,
-                            rawJsonString: MainApp.mockJsonString,
-                          )
-                        else
-                          LlmRawWidget(
-                            key: _widgetKey,
-                            engine: widget.engine,
-                            text: MainApp.mockJsonString,
-                          ),
+                        // 4. Render the dynamic Surface widget using our auto-generated CatalogItem!
+                        Surface(surfaceContext: _surfaceContext),
                       ],
                     ),
                   ),
                 ),
+              const SizedBox(height: 32),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: _isRendered ? null : _renderUI,
+                    icon: const Icon(Icons.play_arrow),
+                    label: const Text('Render UI'),
+                  ),
+                  const SizedBox(width: 16),
+                  OutlinedButton.icon(
+                    onPressed: _isRendered ? _clearUI : null,
+                    icon: const Icon(Icons.clear),
+                    label: const Text('Clear'),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

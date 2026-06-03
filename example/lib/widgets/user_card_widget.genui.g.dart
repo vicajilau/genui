@@ -12,17 +12,24 @@ part of 'user_card_widget.dart';
 /// The mapped identifier for UserCardWidget.
 const String $UserCardWidgetIdentifier = "UserCardWidget";
 
-/// Auto-generated JSON Schema representation for UserCardWidget.
-const Map<String, dynamic> $UserCardWidgetSchema = {
-  "type": "UserCardWidget",
-  "properties": {"name": "String", "role": "String", "isActive": "bool"},
-};
-
-/// Factory function to instantiate UserCardWidget from a JSON map.
-UserCardWidget $UserCardWidgetFromJson(Map<String, dynamic> json) {
-  return UserCardWidget(
-    name: json["name"] as String,
-    role: json["role"] as String,
-    isActive: json["isActive"] as bool,
-  );
-}
+/// Auto-generated CatalogItem for UserCardWidget.
+final CatalogItem $UserCardWidgetCatalogItem = CatalogItem(
+  name: $UserCardWidgetIdentifier,
+  dataSchema: S.object(
+    description: "Auto-generated schema for UserCardWidget.",
+    properties: {
+      "name": S.string(description: "The name property."),
+      "role": S.string(description: "The role property."),
+      "isActive": S.boolean(description: "The isActive property."),
+    },
+    required: ["name", "role"],
+  ),
+  widgetBuilder: (itemContext) {
+    final data = itemContext.data as Map<String, dynamic>;
+    return UserCardWidget(
+      name: data["name"] as String,
+      role: data["role"] as String,
+      isActive: (data["isActive"] as bool?) ?? false,
+    );
+  },
+);

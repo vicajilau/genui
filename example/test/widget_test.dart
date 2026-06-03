@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:genui_engine/genui_engine.dart';
+import 'package:genui/genui.dart';
 import 'package:example/main.dart';
 import 'package:example/genui_registry.g.dart';
 import 'package:example/widgets/user_card_widget.dart';
@@ -10,16 +10,24 @@ void main() {
     WidgetTester tester,
   ) async {
     // Build our app and trigger a frame.
-    final engine = GenUIEngine(registry: globalGenUIRegistry);
-    await tester.pumpWidget(MainApp(engine: engine, simulateLlmStream: false));
+    await tester.pumpWidget(const MainApp());
 
-    // Tap 'Start' button to begin rendering
-    await tester.tap(find.byType(FloatingActionButton));
+    // Verify initial instructions text
+    expect(
+      find.text('Press "Render UI" to build the Widget from JSON properties'),
+      findsOneWidget,
+    );
+
+    // Tap 'Render UI' button to begin rendering
+    await tester.tap(find.byType(ElevatedButton));
     await tester.pumpAndSettle();
 
     // Verify that the title text is rendered.
     expect(find.text('GenUI Demo'), findsOneWidget);
-    expect(find.text('Rendered purely from JSON:'), findsOneWidget);
+    expect(
+      find.text('Rendered by official package:genui Surface Widget:'),
+      findsOneWidget,
+    );
 
     // Verify that the UserCardWidget is rendered with the mocked JSON data.
     expect(find.byType(UserCardWidget), findsOneWidget);
@@ -28,23 +36,40 @@ void main() {
     expect(find.text('Active'), findsOneWidget);
   });
 
-  testWidgets('Engine successfully parses arbitrary JSON to UserCardWidget', (
+  testWidgets('Catalog builds UserCardWidget from CatalogItemContext', (
     WidgetTester tester,
   ) async {
-    final engine = GenUIEngine(registry: globalGenUIRegistry);
+    final catalog = globalGenUICatalog;
 
-    final jsonPayload = {
-      "type": "UserCardWidget",
-      "properties": {
-        "name": "Alan Turing",
-        "role": "Computer Scientist",
-        "isActive": false,
-      },
-    };
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Builder(
+            builder: (BuildContext context) {
+              final catalogContext = CatalogItemContext(
+                id: 'test_node',
+                type: $UserCardWidgetIdentifier,
+                data: const {
+                  'name': 'Alan Turing',
+                  'role': 'Computer Scientist',
+                  'isActive': false,
+                },
+                dispatchEvent: (_) {},
+                buildChild: (_, [_]) => const SizedBox.shrink(),
+                buildContext: context,
+                dataContext: DataContext(InMemoryDataModel(), DataPath.root),
+                getComponent: (_) => null,
+                getCatalogItem: (_) => null,
+                surfaceId: 'test_surface',
+                reportError: (_, [_]) {},
+              );
 
-    final widget = engine.parse(jsonPayload);
-
-    await tester.pumpWidget(MaterialApp(home: Scaffold(body: widget)));
+              return catalog.buildWidget(catalogContext);
+            },
+          ),
+        ),
+      ),
+    );
 
     expect(find.byType(UserCardWidget), findsOneWidget);
     expect(find.text('Alan Turing'), findsOneWidget);

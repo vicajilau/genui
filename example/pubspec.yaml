@@ -12,7 +12,8 @@ dependencies:
   flutter:
     sdk: flutter
   genui_annotations: any
-  genui_engine: any
+  genui: any
+  json_schema_builder: any
 
 dev_dependencies:
   flutter_test:

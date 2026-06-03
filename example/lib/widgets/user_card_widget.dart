@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:genui/genui.dart';
 import 'package:genui_annotations/genui_annotations.dart';
+import 'package:json_schema_builder/json_schema_builder.dart';
 
 part 'user_card_widget.genui.g.dart';
 

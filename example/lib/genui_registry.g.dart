@@ -1,20 +1,16 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, unused_import
+
+import 'package:genui/genui.dart';
+import 'package:json_schema_builder/json_schema_builder.dart';
 
 import 'package:example/widgets/user_card_widget.dart';
 
-/// Global registry of all annotated Generative UI components.
-/// Contains both the instantiator function and the JSON schema for the LLM prompt.
-final Map<
-  String,
-  ({
-    dynamic Function(Map<String, dynamic>) fromJson,
-    Map<String, dynamic> schema,
-  })
->
-globalGenUIRegistry = {
-  $UserCardWidgetIdentifier: (
-    fromJson: (json) => $UserCardWidgetFromJson(json),
-    schema: $UserCardWidgetSchema,
-  ),
-};
+/// Global list of all auto-generated Generative UI CatalogItems.
+final List<CatalogItem> generatedCatalogItems = [$UserCardWidgetCatalogItem];
+
+/// Global catalog composed of all auto-generated catalog items.
+final Catalog globalGenUICatalog = Catalog(
+  generatedCatalogItems,
+  catalogId: 'inline_catalog',
+);

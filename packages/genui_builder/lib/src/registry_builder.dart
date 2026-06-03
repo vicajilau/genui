@@ -4,7 +4,7 @@ import 'package:glob/glob.dart';
 import 'package:dart_style/dart_style.dart';
 
 /// A global Builder that scans the ORIGINAL source files, finds the annotations,
-/// and predicts the generated paths to assemble the central registry.
+/// and predicts the generated paths to assemble the central Catalog.
 class GenUIRegistryBuilder implements Builder {
   @override
   Map<String, List<String>> get buildExtensions => {
@@ -14,7 +14,7 @@ class GenUIRegistryBuilder implements Builder {
   @override
   Future<void> build(BuildStep buildStep) async {
     print(
-      '--- [GenUI] Global Registry Builder is scanning source files... ---',
+      '--- [GenUI] Global Registry Builder is scanning source files for CatalogItems... ---',
     );
 
     final exports = <String>{};
@@ -34,31 +34,20 @@ class GenUIRegistryBuilder implements Builder {
         continue;
       }
 
-      // 2. Regex: Find the `@generativeUI` or `@GenerativeUI` annotation and capture the class name.
-      // We restrict the intermediate characters `[^\{;]*?` to prevent matching across
-      // statements or block boundaries. This avoids false positives if the annotation
-      // text appears inside a comment or string.
+      // Find the `@generativeUI` or `@GenerativeUI` annotation and capture the class name.
       final regex = RegExp(
         r'@(?:generativeUI|GenerativeUI)[^\{;]*?class\s+([a-zA-Z0-9_]+)',
       );
       final matches = regex.allMatches(content);
 
       if (matches.isNotEmpty) {
-        // 3. Import the ORIGINAL file, not the generated part file!
-        // The original file exposes its generated parts automatically.
         final originalPath = asset.uri.toString();
         exports.add("import '$originalPath';");
 
-        // 4. Assemble the exact variables we know Phase 1 will generate.
         for (final match in matches) {
           final className = match.group(1);
           if (className != null) {
-            // We use a multiline string so each component is exactly ONE element in the list.
-            mapEntries.add('''
-  \$${className}Identifier: (
-    fromJson: (json) => \$${className}FromJson(json),
-    schema: \$${className}Schema,
-  ),''');
+            mapEntries.add('  \$${className}CatalogItem,');
           }
         }
       }
@@ -69,7 +58,12 @@ class GenUIRegistryBuilder implements Builder {
     // 5. Build the final registry string.
     final buffer = StringBuffer();
     buffer.writeln('// GENERATED CODE - DO NOT MODIFY BY HAND');
-    buffer.writeln('// ignore_for_file: type=lint');
+    buffer.writeln('// ignore_for_file: type=lint, unused_import');
+    buffer.writeln('');
+    buffer.writeln("import 'package:genui/genui.dart';");
+    buffer.writeln(
+      "import 'package:json_schema_builder/json_schema_builder.dart';",
+    );
     buffer.writeln('');
 
     for (final export in exports) {
@@ -78,20 +72,23 @@ class GenUIRegistryBuilder implements Builder {
 
     buffer.writeln('');
     buffer.writeln(
-      '/// Global registry of all annotated Generative UI components.',
+      '/// Global list of all auto-generated Generative UI CatalogItems.',
     );
-    buffer.writeln(
-      '/// Contains both the instantiator function and the JSON schema for the LLM prompt.',
-    );
-    buffer.writeln(
-      'final Map<String, ({dynamic Function(Map<String, dynamic>) fromJson, Map<String, dynamic> schema})> globalGenUIRegistry = {',
-    );
+    buffer.writeln('final List<CatalogItem> generatedCatalogItems = [');
 
     for (final entry in mapEntries) {
       buffer.writeln(entry);
     }
 
-    buffer.writeln('};');
+    buffer.writeln('];');
+    buffer.writeln('');
+    buffer.writeln(
+      '/// Global catalog composed of all auto-generated catalog items.',
+    );
+    buffer.writeln('final Catalog globalGenUICatalog = Catalog(');
+    buffer.writeln('  generatedCatalogItems,');
+    buffer.writeln("  catalogId: 'inline_catalog',");
+    buffer.writeln(');');
 
     final outputAsset = AssetId(
       buildStep.inputId.package,
@@ -104,13 +101,12 @@ class GenUIRegistryBuilder implements Builder {
       ).format(buffer.toString());
       await buildStep.writeAsString(outputAsset, formattedCode);
     } catch (e) {
-      // Fallback in case of syntax error in the generated string
       await buildStep.writeAsString(outputAsset, buffer.toString());
       print('--- [GenUI] Warning: Could not format generated registry: $e ---');
     }
 
     print(
-      '--- [GenUI] Registry successfully assembled with ${mapEntries.length} components! ---',
+      '--- [GenUI] Registry successfully assembled with ${mapEntries.length} CatalogItems! ---',
     );
   }
 }
