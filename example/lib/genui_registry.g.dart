@@ -4,10 +4,10 @@
 import 'package:genui/genui.dart';
 import 'package:json_schema_builder/json_schema_builder.dart';
 
-import 'package:example/widgets/catalog/custom_button.dart';
-import 'package:example/widgets/catalog/stats_widget.dart';
-import 'package:example/widgets/catalog/task_item_widget.dart';
-import 'package:example/widgets/catalog/user_card_widget.dart';
+import 'package:example/presentation/widgets/catalog/custom_button.dart';
+import 'package:example/presentation/widgets/catalog/stats_widget.dart';
+import 'package:example/presentation/widgets/catalog/task_item_widget.dart';
+import 'package:example/presentation/widgets/catalog/user_card_widget.dart';
 
 /// Global list of all auto-generated Generative UI CatalogItems.
 final List<CatalogItem> generatedCatalogItems = [

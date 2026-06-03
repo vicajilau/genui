@@ -22,13 +22,17 @@ final CatalogItem $CustomButtonCatalogItem = CatalogItem(
   name: $CustomButtonIdentifier,
   dataSchema: S.object(
     description: "Auto-generated schema for CustomButton.",
-    properties: {"label": S.string(description: "The label property.")},
+    properties: {
+      "label": S.string(description: "The label property."),
+      "color": S.string(description: "The color property."),
+    },
     required: ["label"],
   ),
   widgetBuilder: (itemContext) {
     final data = itemContext.data as Map<String, dynamic>;
     return CustomButton(
       label: data["label"] as String,
+      color: data["color"] as String?,
       onPressed: () {
         itemContext.dispatchEvent(
           UserActionEvent(

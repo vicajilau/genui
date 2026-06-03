@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:genui/genui.dart';
 import 'package:example/main.dart';
 import 'package:example/genui_registry.g.dart';
-import 'package:example/widgets/catalog/user_card_widget.dart';
+import 'package:example/presentation/widgets/catalog/user_card_widget.dart';
 
 void main() {
   testWidgets('App renders UserCardWidget from JSON', (

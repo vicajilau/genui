@@ -192,7 +192,7 @@ class GenerativeUIGenerator extends GeneratorForAnnotation<GenerativeUI> {
           buffer.writeln('      $name: data["$name"] as $typeStr,');
         } else {
           if (isNullable) {
-            buffer.writeln('      $name: data["$name"] as $typeStr?,');
+            buffer.writeln('      $name: data["$name"] as $typeStr,');
           } else {
             var fallback = 'null';
             if (typeStr == 'bool') fallback = 'false';

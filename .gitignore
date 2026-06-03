@@ -2,6 +2,8 @@
 # Created by `dart pub`
 .dart_tool/
 .vscode/
+.idea/
+*.iml
 build/
 
 # Avoid committing pubspec.lock for library packages; see
