@@ -45,7 +45,7 @@ jobs:
         run: melos run build_runner
 
       - name: Build web
-        run: flutter build web --release --base-href /${{ github.event.repository.name }}/
+        run: flutter build web --wasm --base-href /${{ github.event.repository.name }}/
         working-directory: example
 
       - name: Setup Pages
