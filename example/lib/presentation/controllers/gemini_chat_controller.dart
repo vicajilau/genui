@@ -110,6 +110,17 @@ class GeminiChatController extends ChangeNotifier {
   }
 
   Future<void> _onSendToGemini(ChatMessage message) async {
+    // Intercept and discard validation/runtime error reports to prevent infinite network request loops.
+    for (final part in message.parts) {
+      if (part.isUiInteractionPart) {
+        final interaction = part.asUiInteractionPart!.interaction;
+        if (interaction.contains('"error":')) {
+          // Return early to discard this error message and prevent network loops
+          return;
+        }
+      }
+    }
+
     final apiKey = _getApiKey();
     if (apiKey.isEmpty) {
       throw StateError('Gemini API Key is not configured.');
@@ -292,6 +303,8 @@ Always follow these rules strictly.
     _geminiHistory.clear();
     _isWaiting = false;
     _isFirstChunkOfResponse = true;
+    _hasError = false;
+    _lastErrorMessage = null;
 
     _conversationEventSub?.cancel();
     _incomingMessagesSub?.cancel();

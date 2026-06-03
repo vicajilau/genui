@@ -188,10 +188,10 @@ class _ComposedScreenState extends State<ComposedScreen>
           controller: _tabController,
           children: [
             // Tab 1: Component Catalog
-            const ComponentCatalogView(),
+            const KeepAliveWrapper(child: ComponentCatalogView()),
 
             // Tab 2: Gemini AI Chat
-            _buildGeminiChatTab(),
+            KeepAliveWrapper(child: _buildGeminiChatTab()),
           ],
         ),
       ),
@@ -325,5 +325,28 @@ class _ComposedScreenState extends State<ComposedScreen>
         );
       },
     );
+  }
+}
+
+/// A wrapper widget that preserves the state of its child across tab switches
+/// by mixing in [AutomaticKeepAliveClientMixin].
+class KeepAliveWrapper extends StatefulWidget {
+  final Widget child;
+
+  const KeepAliveWrapper({super.key, required this.child});
+
+  @override
+  State<KeepAliveWrapper> createState() => _KeepAliveWrapperState();
+}
+
+class _KeepAliveWrapperState extends State<KeepAliveWrapper>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return widget.child;
   }
 }

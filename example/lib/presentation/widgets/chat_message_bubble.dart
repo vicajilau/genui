@@ -104,6 +104,7 @@ class ChatMessageBubble extends StatelessWidget {
                   padding: const EdgeInsets.all(16.0),
                   child: Surface(
                     surfaceContext: controller.contextFor(item.surfaceId!),
+                    actionDelegate: ChatUiActionDelegate(controller),
                   ),
                 ),
               ],
@@ -144,5 +145,89 @@ class ChatMessageBubble extends StatelessWidget {
         );
       }
     }
+  }
+}
+
+class ChatUiActionDelegate implements ActionDelegate {
+  final SurfaceController controller;
+
+  const ChatUiActionDelegate(this.controller);
+
+  @override
+  bool handleEvent(
+    BuildContext context,
+    UiEvent event,
+    SurfaceContext genUiContext,
+    Widget Function(SurfaceDefinition, Catalog, String, DataContext)
+    buildWidget,
+  ) {
+    if (event is! UserActionEvent) return false;
+
+    if (event.name == 'TaskItemWidget_onToggleEvent') {
+      final surfaceId = genUiContext.surfaceId;
+      final definition = genUiContext.definition.value;
+      if (definition == null) return false;
+
+      final componentId = event.sourceComponentId;
+      final component = definition.components[componentId];
+      if (component == null) return false;
+
+      // 1. Prepare updated components list
+      final List<Component> updatedComponents = [];
+
+      // Toggle the target task completion status
+      final currentIsCompleted =
+          component.properties['isCompleted'] as bool? ?? false;
+      final newIsCompleted = !currentIsCompleted;
+
+      final updatedTask = Component(
+        id: component.id,
+        type: component.type,
+        properties: {...component.properties, 'isCompleted': newIsCompleted},
+      );
+      updatedComponents.add(updatedTask);
+
+      // 2. Count total/completed tasks across all components on this surface
+      int totalTasks = 0;
+      int completedTasks = 0;
+
+      for (final comp in definition.components.values) {
+        if (comp.type == 'TaskItemWidget') {
+          totalTasks++;
+          final isComp = (comp.id == componentId)
+              ? newIsCompleted
+              : (comp.properties['isCompleted'] as bool? ?? false);
+          if (isComp) {
+            completedTasks++;
+          }
+        }
+      }
+
+      // 3. Scan and update any StatsWidget on the surface
+      for (final comp in definition.components.values) {
+        if (comp.type == 'StatsWidget') {
+          updatedComponents.add(
+            Component(
+              id: comp.id,
+              type: comp.type,
+              properties: {
+                ...comp.properties,
+                'totalTasks': totalTasks,
+                'completedTasks': completedTasks,
+              },
+            ),
+          );
+        }
+      }
+
+      // 4. Dispatch UpdateComponents locally
+      controller.handleMessage(
+        UpdateComponents(surfaceId: surfaceId, components: updatedComponents),
+      );
+
+      return true; // Return true to stop network request propagation
+    }
+
+    return false;
   }
 }
