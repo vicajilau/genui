@@ -5,12 +5,17 @@ import 'package:genui/genui.dart';
 import 'package:genui_annotations/genui_annotations.dart';
 
 import '../../genui_registry.g.dart';
+import 'component_catalog/component_catalog_panel.dart';
+import 'component_catalog/component_json_inspector_panel.dart';
+import 'component_catalog/component_properties_panel.dart';
 import 'interactive_surface.dart';
 import 'catalog/custom_button.dart';
 import 'catalog/stats_widget.dart';
 import 'catalog/task_item_widget.dart';
 import 'catalog/user_card_widget.dart';
 
+/// A widget that presents the interactive Component Catalog, permitting developers
+/// to select components, edit properties, inspect payloads, and view live renders.
 class ComponentCatalogView extends StatefulWidget {
   const ComponentCatalogView({super.key});
 
@@ -18,7 +23,11 @@ class ComponentCatalogView extends StatefulWidget {
   State<ComponentCatalogView> createState() => _ComponentCatalogViewState();
 }
 
+/// The active state of [ComponentCatalogView] that manages selection states,
+/// property configurations for all catalog items, and UI events.
 class _ComponentCatalogViewState extends State<ComponentCatalogView> {
+  bool _isCatalogExpanded = true;
+
   // Component Catalog States
   String _selectedComponent = $CustomButtonIdentifier;
 
@@ -120,60 +129,20 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
       builder: (context, constraints) {
         final isWide = constraints.maxWidth > 800;
 
-        final sidebar = Container(
-          width: isWide ? 280 : double.infinity,
-          decoration: BoxDecoration(
-            color: const Color(0x0DFFFFFF),
-            border: Border(
-              right: isWide
-                  ? const BorderSide(color: Colors.white10)
-                  : BorderSide.none,
-              bottom: isWide
-                  ? BorderSide.none
-                  : const BorderSide(color: Colors.white10),
-            ),
-          ),
-          child: ListView(
-            shrinkWrap: !isWide,
-            physics: isWide
-                ? const ClampingScrollPhysics()
-                : const NeverScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-            children: [
-              const Padding(
-                padding: EdgeInsets.only(left: 12, bottom: 12),
-                child: Text(
-                  'COMPONENTS',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white38,
-                    letterSpacing: 1.5,
-                  ),
-                ),
-              ),
-              _buildSidebarItem(
-                $CustomButtonIdentifier,
-                Icons.smart_button_rounded,
-                'Custom Button',
-              ),
-              _buildSidebarItem(
-                $TaskItemWidgetIdentifier,
-                Icons.task_alt_rounded,
-                'Task Item',
-              ),
-              _buildSidebarItem(
-                $StatsWidgetIdentifier,
-                Icons.bar_chart_rounded,
-                'Stats Summary',
-              ),
-              _buildSidebarItem(
-                $UserCardWidgetIdentifier,
-                Icons.person_outline_rounded,
-                'User Card',
-              ),
-            ],
-          ),
+        final sidebar = ComponentCatalogPanel(
+          isWide: isWide,
+          isExpanded: _isCatalogExpanded,
+          onToggleExpanded: () {
+            setState(() {
+              _isCatalogExpanded = !_isCatalogExpanded;
+            });
+          },
+          selectedComponent: _selectedComponent,
+          onComponentSelected: (component) {
+            setState(() {
+              _selectedComponent = component;
+            });
+          },
         );
 
         final previewAndControls = Expanded(
@@ -264,15 +233,117 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(child: _buildPropertiesPanel()),
+                      Expanded(
+                        child: ComponentPropertiesPanel(
+                          selectedComponent: _selectedComponent,
+                          btnLabel: _btnLabel,
+                          onBtnLabelChanged: (val) =>
+                              setState(() => _btnLabel = val),
+                          btnColor: _btnColor,
+                          onBtnColorChanged: (val) =>
+                              setState(() => _btnColor = val),
+                          taskTitle: _taskTitle,
+                          onTaskTitleChanged: (val) =>
+                              setState(() => _taskTitle = val),
+                          taskCompleted: _taskCompleted,
+                          onTaskCompletedChanged: (val) =>
+                              setState(() => _taskCompleted = val),
+                          taskPriority: _taskPriority,
+                          onTaskPriorityChanged: (val) =>
+                              setState(() => _taskPriority = val),
+                          statsTotal: _statsTotal,
+                          onStatsTotalChanged: (val) => setState(() {
+                            _statsTotal = val;
+                            if (_statsCompleted > _statsTotal) {
+                              _statsCompleted = _statsTotal;
+                            }
+                          }),
+                          statsCompleted: _statsCompleted,
+                          onStatsCompletedChanged: (val) =>
+                              setState(() => _statsCompleted = val),
+                          userName: _userName,
+                          onUserNameChanged: (val) =>
+                              setState(() => _userName = val),
+                          userRole: _userRole,
+                          onUserRoleChanged: (val) =>
+                              setState(() => _userRole = val),
+                          userActive: _userActive,
+                          onUserActiveChanged: (val) =>
+                              setState(() => _userActive = val),
+                        ),
+                      ),
                       const SizedBox(width: 24),
-                      Expanded(child: _buildJsonInspectorPanel()),
+                      Expanded(
+                        child: ComponentJsonInspectorPanel(
+                          jsonStr: _getSelectedComponentJson(),
+                          onCopy: () {
+                            Clipboard.setData(
+                              ClipboardData(text: _getSelectedComponentJson()),
+                            );
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'A2UI JSON payload copied to clipboard!',
+                                ),
+                                duration: Duration(seconds: 1),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                     ],
                   )
                 else ...[
-                  _buildPropertiesPanel(),
+                  ComponentPropertiesPanel(
+                    selectedComponent: _selectedComponent,
+                    btnLabel: _btnLabel,
+                    onBtnLabelChanged: (val) => setState(() => _btnLabel = val),
+                    btnColor: _btnColor,
+                    onBtnColorChanged: (val) => setState(() => _btnColor = val),
+                    taskTitle: _taskTitle,
+                    onTaskTitleChanged: (val) =>
+                        setState(() => _taskTitle = val),
+                    taskCompleted: _taskCompleted,
+                    onTaskCompletedChanged: (val) =>
+                        setState(() => _taskCompleted = val),
+                    taskPriority: _taskPriority,
+                    onTaskPriorityChanged: (val) =>
+                        setState(() => _taskPriority = val),
+                    statsTotal: _statsTotal,
+                    onStatsTotalChanged: (val) => setState(() {
+                      _statsTotal = val;
+                      if (_statsCompleted > _statsTotal) {
+                        _statsCompleted = _statsTotal;
+                      }
+                    }),
+                    statsCompleted: _statsCompleted,
+                    onStatsCompletedChanged: (val) =>
+                        setState(() => _statsCompleted = val),
+                    userName: _userName,
+                    onUserNameChanged: (val) => setState(() => _userName = val),
+                    userRole: _userRole,
+                    onUserRoleChanged: (val) => setState(() => _userRole = val),
+                    userActive: _userActive,
+                    onUserActiveChanged: (val) =>
+                        setState(() => _userActive = val),
+                  ),
                   const SizedBox(height: 24),
-                  _buildJsonInspectorPanel(),
+                  ComponentJsonInspectorPanel(
+                    jsonStr: _getSelectedComponentJson(),
+                    onCopy: () {
+                      Clipboard.setData(
+                        ClipboardData(text: _getSelectedComponentJson()),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'A2UI JSON payload copied to clipboard!',
+                          ),
+                          duration: Duration(seconds: 1),
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ],
             ),
@@ -289,35 +360,6 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
     );
   }
 
-  Widget _buildSidebarItem(String componentName, IconData icon, String label) {
-    final isSelected = _selectedComponent == componentName;
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      child: ListTile(
-        onTap: () {
-          setState(() {
-            _selectedComponent = componentName;
-          });
-        },
-        selected: isSelected,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        selectedTileColor: const Color(0x1A6366F1),
-        leading: Icon(
-          icon,
-          color: isSelected ? const Color(0xFF818CF8) : Colors.white60,
-        ),
-        title: Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.white70,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            fontSize: 14,
-          ),
-        ),
-      ),
-    );
-  }
-
   String _getComponentDisplayName(String component) {
     return switch (component) {
       $CustomButtonIdentifier => 'CustomButton',
@@ -326,373 +368,5 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
       $UserCardWidgetIdentifier => 'UserCardWidget',
       _ => component,
     };
-  }
-
-  Widget _buildPropertiesPanel() {
-    return Card(
-      color: const Color(0x1F1E293B),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: Colors.white10),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Row(
-              children: [
-                Icon(Icons.tune_rounded, color: Color(0xFF818CF8), size: 18),
-                SizedBox(width: 8),
-                Text(
-                  'PROPERTIES',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white38,
-                    letterSpacing: 1.5,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            ..._buildComponentEditorControls(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  List<Widget> _buildComponentEditorControls() {
-    switch (_selectedComponent) {
-      case $CustomButtonIdentifier:
-        return [
-          _buildTextField(
-            label: 'Label',
-            value: _btnLabel,
-            onChanged: (val) => setState(() => _btnLabel = val),
-          ),
-          const SizedBox(height: 16),
-          _buildTextField(
-            label: 'Color (name or hex, e.g. indigo, #4F46E5)',
-            value: _btnColor,
-            onChanged: (val) => setState(() => _btnColor = val),
-          ),
-        ];
-
-      case $TaskItemWidgetIdentifier:
-        return [
-          _buildTextField(
-            label: 'Title',
-            value: _taskTitle,
-            onChanged: (val) => setState(() => _taskTitle = val),
-          ),
-          const SizedBox(height: 16),
-          _buildSwitchField(
-            label: 'Completed',
-            value: _taskCompleted,
-            onChanged: (val) => setState(() => _taskCompleted = val),
-          ),
-          const SizedBox(height: 16),
-          _buildDropdownField(
-            label: 'Priority',
-            value: _taskPriority,
-            items: ['high', 'medium', 'low'],
-            onChanged: (val) => setState(() => _taskPriority = val ?? 'low'),
-          ),
-        ];
-
-      case $StatsWidgetIdentifier:
-        return [
-          _buildSliderField(
-            label: 'Total Tasks',
-            value: _statsTotal.toDouble(),
-            min: 0,
-            max: 20,
-            divisions: 20,
-            onChanged: (val) => setState(() {
-              _statsTotal = val.toInt();
-              if (_statsCompleted > _statsTotal) {
-                _statsCompleted = _statsTotal;
-              }
-            }),
-          ),
-          const SizedBox(height: 16),
-          _buildSliderField(
-            label: 'Completed Tasks',
-            value: _statsCompleted.toDouble(),
-            min: 0,
-            max: _statsTotal > 0 ? _statsTotal.toDouble() : 1,
-            divisions: _statsTotal > 0 ? _statsTotal : 1,
-            onChanged: (val) => setState(() => _statsCompleted = val.toInt()),
-          ),
-        ];
-
-      case $UserCardWidgetIdentifier:
-        return [
-          _buildTextField(
-            label: 'Name',
-            value: _userName,
-            onChanged: (val) => setState(() => _userName = val),
-          ),
-          const SizedBox(height: 16),
-          _buildTextField(
-            label: 'Role',
-            value: _userRole,
-            onChanged: (val) => setState(() => _userRole = val),
-          ),
-          const SizedBox(height: 16),
-          _buildSwitchField(
-            label: 'Active',
-            value: _userActive,
-            onChanged: (val) => setState(() => _userActive = val),
-          ),
-        ];
-
-      default:
-        return [
-          const Text(
-            'No properties to edit',
-            style: TextStyle(color: Colors.white70),
-          ),
-        ];
-    }
-  }
-
-  Widget _buildTextField({
-    required String label,
-    required String value,
-    required ValueChanged<String> onChanged,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Colors.white70,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 6),
-        TextField(
-          controller: TextEditingController.fromValue(
-            TextEditingValue(
-              text: value,
-              selection: TextSelection.collapsed(offset: value.length),
-            ),
-          ),
-          onChanged: onChanged,
-          style: const TextStyle(color: Colors.white, fontSize: 14),
-          decoration: InputDecoration(
-            isDense: true,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 10,
-            ),
-            filled: true,
-            fillColor: const Color(0x33000000),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Colors.white12),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Color(0xFF6366F1)),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDropdownField({
-    required String label,
-    required String value,
-    required List<String> items,
-    required ValueChanged<String?> onChanged,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Colors.white70,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 6),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          decoration: BoxDecoration(
-            color: const Color(0x33000000),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.white12),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: value,
-              isExpanded: true,
-              dropdownColor: const Color(0xFF0F172A),
-              style: const TextStyle(color: Colors.white, fontSize: 14),
-              onChanged: onChanged,
-              items: items.map<DropdownMenuItem<String>>((String val) {
-                return DropdownMenuItem<String>(value: val, child: Text(val));
-              }).toList(),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSwitchField({
-    required String label,
-    required bool value,
-    required ValueChanged<bool> onChanged,
-  }) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Colors.white70,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Switch(
-          value: value,
-          onChanged: onChanged,
-          activeTrackColor: const Color(0xFF6366F1),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSliderField({
-    required String label,
-    required double value,
-    required double min,
-    required double max,
-    int? divisions,
-    required ValueChanged<double> onChanged,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.white70,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              value.toInt().toString(),
-              style: const TextStyle(
-                fontSize: 12,
-                color: Color(0xFF818CF8),
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-        Slider(
-          value: value,
-          min: min,
-          max: max,
-          divisions: divisions,
-          activeColor: const Color(0xFF6366F1),
-          inactiveColor: Colors.white12,
-          onChanged: onChanged,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildJsonInspectorPanel() {
-    final jsonStr = _getSelectedComponentJson();
-    return Card(
-      color: const Color(0x1F1E293B),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: Colors.white10),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Row(
-                  children: [
-                    Icon(
-                      Icons.code_rounded,
-                      color: Color(0xFF06B6D4),
-                      size: 18,
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      'A2UI PAYLOAD',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white38,
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                  ],
-                ),
-                IconButton(
-                  icon: const Icon(
-                    Icons.copy_rounded,
-                    color: Colors.white70,
-                    size: 16,
-                  ),
-                  tooltip: 'Copy JSON payload',
-                  onPressed: () {
-                    Clipboard.setData(ClipboardData(text: jsonStr));
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('A2UI JSON payload copied to clipboard!'),
-                        duration: Duration(seconds: 1),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFF090D16),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: SelectableText(
-                jsonStr,
-                style: const TextStyle(
-                  fontFamily: 'monospace',
-                  fontSize: 12,
-                  color: Color(0xFFA5F3FC),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

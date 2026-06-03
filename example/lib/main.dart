@@ -5,6 +5,7 @@ void main() {
   runApp(const MainApp());
 }
 
+/// The main entry point widget for the GenUI Playground application.
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 

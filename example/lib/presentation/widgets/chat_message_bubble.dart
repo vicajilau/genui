@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:genui/genui.dart';
 import '../../data/models/chat_timeline_item.dart';
 
+/// A widget that renders a single item in the chat timeline, styled as either
+/// a user speech bubble, an AI assistant text bubble, or a custom GenUI Surface.
 class ChatMessageBubble extends StatelessWidget {
   final ChatTimelineItem item;
   final SurfaceController controller;

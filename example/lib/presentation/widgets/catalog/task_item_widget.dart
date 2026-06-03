@@ -6,6 +6,8 @@ import 'package:json_schema_builder/json_schema_builder.dart';
 part 'task_item_widget.genui.g.dart';
 
 @generativeUI
+/// A custom interactive widget representing a single checklist task item.
+/// Renders with a title, completion checkbox, and custom priority pill badges.
 class TaskItemWidget extends StatelessWidget {
   final String title;
   final bool isCompleted;

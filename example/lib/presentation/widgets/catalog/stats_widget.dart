@@ -6,6 +6,8 @@ import 'package:json_schema_builder/json_schema_builder.dart';
 part 'stats_widget.genui.g.dart';
 
 @generativeUI
+/// A custom progress reporting widget showing completed vs total tasks
+/// using a text summary label and a graphical linear progress indicator bar.
 class StatsWidget extends StatelessWidget {
   final int totalTasks;
   final int completedTasks;

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+/// A custom input bar widget at the bottom of the chat interface containing
+/// the text input, a clear chat action button, and a gradient submit button.
 class ChatInputBar extends StatefulWidget {
   final ValueChanged<String> onSend;
   final VoidCallback onClear;
@@ -10,6 +12,8 @@ class ChatInputBar extends StatefulWidget {
   State<ChatInputBar> createState() => _ChatInputBarState();
 }
 
+/// The active state of [ChatInputBar] that manages the text input controller
+/// and submission triggers.
 class _ChatInputBarState extends State<ChatInputBar> {
   final TextEditingController _promptController = TextEditingController();
 

@@ -6,6 +6,8 @@ import 'package:json_schema_builder/json_schema_builder.dart';
 part 'user_card_widget.genui.g.dart';
 
 @generativeUI
+/// A custom widget presenting a user profile card containing a name, role,
+/// active status, and initials avatar with status coloring.
 class UserCardWidget extends StatelessWidget {
   final String name;
   final String role;

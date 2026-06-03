@@ -6,6 +6,8 @@ import 'package:json_schema_builder/json_schema_builder.dart';
 part 'custom_button.genui.g.dart';
 
 @generativeUI
+/// A custom interactive button widget that renders a labeled elevated button.
+/// Supports a custom label, flexible color parsing, and click event callbacks.
 class CustomButton extends StatelessWidget {
   final String label;
   final String? color;

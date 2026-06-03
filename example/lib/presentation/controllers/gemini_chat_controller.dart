@@ -6,6 +6,9 @@ import '../../data/models/chat_timeline_item.dart';
 import '../../data/services/gemini_service.dart';
 import '../../genui_registry.g.dart';
 
+/// A controller managing the state and events of the Gemini AI chat,
+/// including prompt sending, response streaming, A2UI action interception,
+/// and surface controller linking.
 class GeminiChatController extends ChangeNotifier {
   final GeminiService _geminiService;
   final String Function() _getApiKey;

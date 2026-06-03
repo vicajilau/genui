@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+/// A dialog widget that allows users to securely add, view, validate,
+/// or delete their Gemini API key.
 class SettingsDialog extends StatefulWidget {
   final String initialApiKey;
   final bool Function(String) onValidate;
@@ -19,6 +21,8 @@ class SettingsDialog extends StatefulWidget {
   State<SettingsDialog> createState() => _SettingsDialogState();
 }
 
+/// The active state of [SettingsDialog] that manages visibility toggle
+/// and text input lifecycle.
 class _SettingsDialogState extends State<SettingsDialog> {
   late final TextEditingController _controller;
   bool _isVisible = false;

@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 
+/// A simple utility service for encrypting and decrypting sensitive data,
+/// such as API keys, using device-keyed XOR obfuscation and Base64 encoding.
 class EncryptionService {
   static const String _salt = 'GenUiPlaygroundSalt2026';
 

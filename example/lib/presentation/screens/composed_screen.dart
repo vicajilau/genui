@@ -9,6 +9,8 @@ import '../widgets/chat_message_bubble.dart';
 import '../widgets/settings_dialog.dart';
 import '../widgets/component_catalog_view.dart';
 
+/// The main playground screen container holding the TabBarView, Settings API configuration,
+/// the interactive Component Catalog, and the live Gemini AI Chat view.
 class ComposedScreen extends StatefulWidget {
   const ComposedScreen({super.key});
 
@@ -16,6 +18,8 @@ class ComposedScreen extends StatefulWidget {
   State<ComposedScreen> createState() => _ComposedScreenState();
 }
 
+/// The active state of [ComposedScreen] that initializes controllers, handles key persistence,
+/// tab navigation, error popups, and manages the view layout.
 class _ComposedScreenState extends State<ComposedScreen>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;

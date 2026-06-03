@@ -28,6 +28,8 @@ class InteractiveSurface extends StatefulWidget {
   State<InteractiveSurface> createState() => _InteractiveSurfaceState();
 }
 
+/// The active state of [InteractiveSurface] which instantiates the [SurfaceController]
+/// and subscribes to declarative updates and user actions.
 class _InteractiveSurfaceState extends State<InteractiveSurface> {
   late final SurfaceController _controller;
   StreamSubscription? _eventSubscription;

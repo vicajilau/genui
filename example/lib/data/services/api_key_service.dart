@@ -1,6 +1,8 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../utils/encryption_service.dart';
 
+/// A service responsible for managing the secure persistence, retrieval,
+/// and format validation of the Gemini API Key.
 class ApiKeyService {
   static const String _geminiApiKeyKey = 'gemini_api_key';
 

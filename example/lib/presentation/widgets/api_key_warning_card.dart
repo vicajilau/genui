@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+/// A widget displaying a warning screen and API key entry input field when
+/// the Gemini API Key is missing or unconfigured.
 class ApiKeyWarningCard extends StatelessWidget {
   final bool Function(String) onValidate;
   final Future<void> Function(String) onSave;

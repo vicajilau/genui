@@ -4,6 +4,8 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
+/// A custom Dio network interceptor that intercepts and logs outgoing AI requests,
+/// streaming AI responses, and network exceptions in a readable visual format.
 class AiLoggingInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import '../interceptors/ai_logging_interceptor.dart';
 
+/// A service that handles streaming API calls to the Gemini API (using dio and Server-Sent Events).
 class GeminiService {
   late final Dio _dio;
 
