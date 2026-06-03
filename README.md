@@ -120,6 +120,7 @@ import 'genui_registry.g.dart';
 
 void main() {
   // Inject the global catalog into the official SurfaceController
+  // Note: globalGenUICatalog automatically includes Google's official layout elements (Row, Column, Text, etc.) alongside your custom widgets!
   final controller = SurfaceController(catalogs: [globalGenUICatalog]);
 
   runApp(MainApp(controller: controller));
@@ -141,6 +142,26 @@ class MainApp extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+```
+
+### 3. Handle Events Type-Safely
+
+If your widget defines interactive callbacks (like `VoidCallback onToggle`), you can parse and process them cleanly using `GenUiEvent` and auto-generated event constants:
+
+```dart
+import 'package:genui_annotations/genui_annotations.dart';
+// Import the generated events:
+import 'widgets/user_card.genui.g.dart';
+
+void handleWidgetEvent(String eventJson) {
+  final event = GenUiEvent.parse(eventJson);
+  if (event == null) return;
+
+  if (event.name == UserCardEvents.onToggle) {
+    print('UserCard clicked for component ID: ${event.sourceComponentId}');
+    print('Widget properties context: ${event.context}');
   }
 }
 ```

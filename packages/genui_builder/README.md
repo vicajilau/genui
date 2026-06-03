@@ -46,7 +46,7 @@ Once local files are analyzed, a secondary global builder takes over.
 
 1. **Source Scanning:** It scans your original `.dart` files to detect all GenUI component schemas.
 2. **Centralized Indexing:** It compiles a single, root-level file (`lib/genui_registry.g.dart`) containing a list of all items and a global `Catalog` (`globalGenUICatalog`).
-3. **Zero Configuration:** This allows you to instantly inject all generated catalog items into a `SurfaceController` with a single catalog reference, removing manual wiring.
+3. **Zero Configuration:** This compiles all generated catalog items and automatically combines them with Google's official basic layout elements (Row, Column, Text, etc.). You can instantly inject the unified `globalGenUICatalog` into a `SurfaceController` with a single catalog reference.
 
 ---
 

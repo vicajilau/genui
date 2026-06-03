@@ -70,6 +70,39 @@ This will register the component as `PrimaryActionButton` in the schema and the 
 
 ---
 
+## 📡 Interactivity & Event Handling
+
+If your widget defines one or more callback properties (like `VoidCallback onAction`), `genui_builder` automatically maps them to dispatch dynamic `UserActionEvent`s containing the widget's properties payload.
+
+To simplify reading these events without parsing JSON or using hardcoded magic strings, the package provides a unified `GenUiEvent` deserializer and auto-generates event name constants.
+
+### 1. Using `GenUiEvent`
+Import `package:genui_annotations/genui_annotations.dart` in your main screen to parse incoming event JSON payloads from the `SurfaceController.onSubmit` stream:
+
+```dart
+_eventSubscription = controller.onSubmit.listen((ChatMessage message) {
+  for (final part in message.parts.uiInteractionParts) {
+    final event = GenUiEvent.parse(part.interaction);
+    if (event == null) continue;
+
+    print('Event name: ${event.name}');
+    print('Component ID: ${event.sourceComponentId}');
+    print('Widget Properties (Context): ${event.context}');
+  }
+});
+```
+
+### 2. Auto-generated Event Constants
+The builder automatically generates a typed namespace helper class named `${WidgetClassName}Events` for every widget with callbacks. You can use these constants to handle events type-safely:
+
+```dart
+if (event.name == MyButtonEvents.onAction) {
+  // Handle the action safely!
+}
+```
+
+---
+
 ## ⚙️ Code Generation
 
 Once your widgets are annotated, run the build command to generate the static `CatalogItem` definitions and the central `Catalog` file:
