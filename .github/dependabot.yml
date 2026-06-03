@@ -9,26 +9,8 @@ updates:
     schedule:
       interval: "weekly"
 
-  # Dart/Pub dependencies - Workspace Root
+  # Dart/Pub dependencies - Workspace Root (resolves the entire workspace automatically)
   - package-ecosystem: "pub"
     directory: "/"
-    schedule:
-      interval: "weekly"
-
-  # Dart/Pub dependencies - Example App Playground
-  - package-ecosystem: "pub"
-    directory: "/example"
-    schedule:
-      interval: "weekly"
-
-  # Dart/Pub dependencies - genui_annotations Package
-  - package-ecosystem: "pub"
-    directory: "/packages/genui_annotations"
-    schedule:
-      interval: "weekly"
-
-  # Dart/Pub dependencies - genui_builder Package
-  - package-ecosystem: "pub"
-    directory: "/packages/genui_builder"
     schedule:
       interval: "weekly"
