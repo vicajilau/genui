@@ -119,6 +119,11 @@ class GenerativeUIGenerator extends GeneratorForAnnotation<GenerativeUI> {
         case 'bool':
           schemaMethod = 'S.boolean(description: "The $name property.")';
           break;
+        case 'Color':
+        case 'Color?':
+          schemaMethod =
+              'S.string(description: "The $name property in hex format (e.g., #FF6366F1).")';
+          break;
         default:
           schemaMethod = 'S.string(description: "The $name property.")';
       }
@@ -188,7 +193,27 @@ class GenerativeUIGenerator extends GeneratorForAnnotation<GenerativeUI> {
         buffer.writeln('        );');
         buffer.writeln('      },');
       } else {
-        if (parameter.isRequired) {
+        if (typeStr == 'Color' || typeStr == 'Color?') {
+          final fallback = typeStr == 'Color'
+              ? 'const Color(0xFF000000)'
+              : 'null';
+          buffer.writeln('      $name: (() {');
+          buffer.writeln('        final val = data["$name"];');
+          buffer.writeln('        if (val is! String) return $fallback;');
+          buffer.writeln('        var hex = val.replaceAll("#", "").trim();');
+          buffer.writeln(
+            '        if (hex.startsWith("0x")) hex = hex.substring(2);',
+          );
+          buffer.writeln('        if (hex.length == 6) hex = "FF\$hex";');
+          buffer.writeln('        if (hex.length == 8) {');
+          buffer.writeln(
+            '          final intVal = int.tryParse(hex, radix: 16);',
+          );
+          buffer.writeln('          if (intVal != null) return Color(intVal);');
+          buffer.writeln('        }');
+          buffer.writeln('        return $fallback;');
+          buffer.writeln('      })(),');
+        } else if (parameter.isRequired) {
           buffer.writeln('      $name: data["$name"] as $typeStr,');
         } else {
           if (isNullable) {

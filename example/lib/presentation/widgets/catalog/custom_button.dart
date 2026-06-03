@@ -10,7 +10,9 @@ part 'custom_button.genui.g.dart';
 /// Supports a custom label, flexible color parsing, and click event callbacks.
 class CustomButton extends StatelessWidget {
   final String label;
-  final String? color;
+
+  /// The background color of the button.
+  final Color? color;
   final VoidCallback onPressed;
 
   const CustomButton({
@@ -20,60 +22,9 @@ class CustomButton extends StatelessWidget {
     required this.onPressed,
   });
 
-  Color? _parseColor(String? input) {
-    if (input == null) return null;
-    switch (input.toLowerCase().trim()) {
-      case 'red':
-        return Colors.red;
-      case 'green':
-        return Colors.green;
-      case 'blue':
-        return Colors.blue;
-      case 'indigo':
-        return const Color(0xFF6366F1);
-      case 'purple':
-        return const Color(0xFF8B5CF6);
-      case 'amber':
-        return const Color(0xFFF59E0B);
-      case 'orange':
-        return Colors.orange;
-      case 'teal':
-        return Colors.teal;
-      case 'pink':
-        return Colors.pink;
-      case 'yellow':
-        return const Color(0xFFFACC15); // A premium vibrant yellow
-      case 'lime':
-        return Colors.lime;
-      case 'cyan':
-        return Colors.cyan;
-      case 'black':
-        return Colors.black;
-      case 'white':
-        return Colors.white;
-      case 'brown':
-        return Colors.brown;
-      case 'grey':
-      case 'gray':
-        return Colors.grey;
-    }
-    // Attempt hex parsing
-    var hex = input.replaceAll('#', '').trim();
-    if (hex.startsWith('0x')) hex = hex.substring(2);
-    if (hex.length == 6) hex = 'FF$hex';
-    if (hex.length == 8) {
-      final val = int.tryParse(hex, radix: 16);
-      if (val != null) return Color(val);
-    }
-    return null;
-  }
-
   @override
   Widget build(BuildContext context) {
-    final parsedColor = _parseColor(color);
-    final backgroundColor =
-        parsedColor ??
-        const Color(0xFF6366F1); // Indigo as default premium theme
+    final backgroundColor = color ?? const Color(0xFF6366F1);
     final foregroundColor =
         ThemeData.estimateBrightnessForColor(backgroundColor) ==
             Brightness.light

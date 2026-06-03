@@ -24,7 +24,9 @@ final CatalogItem $CustomButtonCatalogItem = CatalogItem(
     description: "Auto-generated schema for CustomButton.",
     properties: {
       "label": S.string(description: "The label property."),
-      "color": S.string(description: "The color property."),
+      "color": S.string(
+        description: "The color property in hex format (e.g., #FF6366F1).",
+      ),
     },
     required: ["label"],
   ),
@@ -32,7 +34,18 @@ final CatalogItem $CustomButtonCatalogItem = CatalogItem(
     final data = itemContext.data as Map<String, dynamic>;
     return CustomButton(
       label: data["label"] as String,
-      color: data["color"] as String?,
+      color: (() {
+        final val = data["color"];
+        if (val is! String) return null;
+        var hex = val.replaceAll("#", "").trim();
+        if (hex.startsWith("0x")) hex = hex.substring(2);
+        if (hex.length == 6) hex = "FF$hex";
+        if (hex.length == 8) {
+          final intVal = int.tryParse(hex, radix: 16);
+          if (intVal != null) return Color(intVal);
+        }
+        return null;
+      })(),
       onPressed: () {
         itemContext.dispatchEvent(
           UserActionEvent(
