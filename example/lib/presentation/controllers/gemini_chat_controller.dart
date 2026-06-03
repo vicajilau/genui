@@ -25,6 +25,7 @@ class GeminiChatController extends ChangeNotifier {
   late Conversation _aiConversation;
   StreamSubscription? _conversationEventSub;
   StreamSubscription? _incomingMessagesSub;
+  int _surfaceCounter = 0;
 
   final StreamController<String> _errorController =
       StreamController<String>.broadcast();
@@ -42,13 +43,17 @@ class GeminiChatController extends ChangeNotifier {
   }) {
     _aiController = SurfaceController(catalogs: [globalGenUICatalog]);
     _aiTransport = A2uiTransportAdapter(onSend: _onSendToGemini);
+    final uniqueTransport = UniqueSurfaceTransport(
+      _aiTransport,
+      () => _surfaceCounter,
+    );
     _aiConversation = Conversation(
       controller: _aiController,
-      transport: _aiTransport,
+      transport: uniqueTransport,
     );
 
     _setupConversationSub();
-    _setupIncomingMessagesSub();
+    _setupIncomingMessagesSub(uniqueTransport);
   }
 
   void _setupConversationSub() {
@@ -110,6 +115,7 @@ class GeminiChatController extends ChangeNotifier {
   }
 
   Future<void> _onSendToGemini(ChatMessage message) async {
+    _surfaceCounter++;
     // Intercept and discard validation/runtime error reports to prevent infinite network request loops.
     for (final part in message.parts) {
       if (part.isUiInteractionPart) {
@@ -282,9 +288,9 @@ Always follow these rules strictly.
 ''';
   }
 
-  void _setupIncomingMessagesSub() {
+  void _setupIncomingMessagesSub(Transport transport) {
     _incomingMessagesSub?.cancel();
-    _incomingMessagesSub = _aiTransport.incomingMessages.listen((message) {
+    _incomingMessagesSub = transport.incomingMessages.listen((message) {
       if (message is UpdateComponents) {
         if (!_aiController.registry.hasSurface(message.surfaceId)) {
           _aiController.handleMessage(
@@ -305,6 +311,7 @@ Always follow these rules strictly.
     _isFirstChunkOfResponse = true;
     _hasError = false;
     _lastErrorMessage = null;
+    _surfaceCounter = 0;
 
     _conversationEventSub?.cancel();
     _incomingMessagesSub?.cancel();
@@ -314,13 +321,17 @@ Always follow these rules strictly.
 
     _aiController = SurfaceController(catalogs: [globalGenUICatalog]);
     _aiTransport = A2uiTransportAdapter(onSend: _onSendToGemini);
+    final uniqueTransport = UniqueSurfaceTransport(
+      _aiTransport,
+      () => _surfaceCounter,
+    );
     _aiConversation = Conversation(
       controller: _aiController,
-      transport: _aiTransport,
+      transport: uniqueTransport,
     );
 
     _setupConversationSub();
-    _setupIncomingMessagesSub();
+    _setupIncomingMessagesSub(uniqueTransport);
     notifyListeners();
   }
 
@@ -334,4 +345,65 @@ Always follow these rules strictly.
     _errorController.close();
     super.dispose();
   }
+}
+
+class UniqueSurfaceTransport implements Transport {
+  final Transport _delegate;
+  final int Function() _getSurfaceCounter;
+
+  UniqueSurfaceTransport(this._delegate, this._getSurfaceCounter);
+
+  @override
+  Stream<String> get incomingText => _delegate.incomingText;
+
+  @override
+  Stream<A2uiMessage> get incomingMessages {
+    return _delegate.incomingMessages.map((message) {
+      final suffix = '_${_getSurfaceCounter()}';
+
+      switch (message) {
+        case CreateSurface(
+          :final surfaceId,
+          :final catalogId,
+          :final theme,
+          :final sendDataModel,
+        ):
+          if (surfaceId == 'composed_surface') {
+            return CreateSurface(
+              surfaceId: '$surfaceId$suffix',
+              catalogId: catalogId,
+              theme: theme,
+              sendDataModel: sendDataModel,
+            );
+          }
+        case UpdateComponents(:final surfaceId, :final components):
+          if (surfaceId == 'composed_surface') {
+            return UpdateComponents(
+              surfaceId: '$surfaceId$suffix',
+              components: components,
+            );
+          }
+        case UpdateDataModel(:final surfaceId, :final path, :final value):
+          if (surfaceId == 'composed_surface') {
+            return UpdateDataModel(
+              surfaceId: '$surfaceId$suffix',
+              path: path,
+              value: value,
+            );
+          }
+        case DeleteSurface(:final surfaceId):
+          if (surfaceId == 'composed_surface') {
+            return DeleteSurface(surfaceId: '$surfaceId$suffix');
+          }
+      }
+      return message;
+    });
+  }
+
+  @override
+  Future<void> sendRequest(ChatMessage message) =>
+      _delegate.sendRequest(message);
+
+  @override
+  void dispose() => _delegate.dispose();
 }
