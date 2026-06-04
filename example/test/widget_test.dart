@@ -359,9 +359,24 @@ void main() {
                 data: const {
                   'title': 'System Status Log',
                   'events': [
-                    {'title': 'Server Started', 'description': 'Main cluster operational.', 'timestamp': '10:00 AM', 'status': 'completed'},
-                    {'title': 'Backup Database', 'description': 'Replicating storage.', 'timestamp': '10:15 AM', 'status': 'active'},
-                    {'title': 'Health Check', 'description': 'Verify nodes.', 'timestamp': '11:00 AM', 'status': 'pending'},
+                    {
+                      'title': 'Server Started',
+                      'description': 'Main cluster operational.',
+                      'timestamp': '10:00 AM',
+                      'status': 'completed',
+                    },
+                    {
+                      'title': 'Backup Database',
+                      'description': 'Replicating storage.',
+                      'timestamp': '10:15 AM',
+                      'status': 'active',
+                    },
+                    {
+                      'title': 'Health Check',
+                      'description': 'Verify nodes.',
+                      'timestamp': '11:00 AM',
+                      'status': 'pending',
+                    },
                   ],
                 },
                 dispatchEvent: (_) {},

@@ -166,7 +166,7 @@ class ChatUiActionDelegate implements ActionDelegate {
     if (event.name == 'AttachmentListWidget_onTapItemEvent') {
       final fileName = event.context['fileName'] as String? ?? 'archivo';
       final messenger = ScaffoldMessenger.of(context);
-      
+
       messenger.clearSnackBars();
       messenger.showSnackBar(
         SnackBar(
@@ -188,7 +188,7 @@ class ChatUiActionDelegate implements ActionDelegate {
           backgroundColor: const Color(0xFF6366F1),
         ),
       );
-      
+
       Future.delayed(const Duration(seconds: 1), () {
         messenger.clearSnackBars();
         messenger.showSnackBar(
@@ -199,7 +199,7 @@ class ChatUiActionDelegate implements ActionDelegate {
           ),
         );
       });
-      
+
       return true;
     }
 
@@ -215,16 +215,20 @@ class ChatUiActionDelegate implements ActionDelegate {
       final eventTitle = event.context['eventTitle'] as String?;
       if (eventTitle == null) return false;
 
-      final currentEvents = component.properties['events'] as List<dynamic>? ?? [];
+      final currentEvents =
+          component.properties['events'] as List<dynamic>? ?? [];
       final updatedEvents = currentEvents.map((e) {
         if (e is Map) {
           final eMap = Map<String, dynamic>.from(e);
-          final currentTitle = (eMap['title'] as String?) ??
-                               (eMap['label'] as String?) ??
-                               (eMap['name'] as String?);
+          final currentTitle =
+              (eMap['title'] as String?) ??
+              (eMap['label'] as String?) ??
+              (eMap['name'] as String?);
           if (currentTitle == eventTitle) {
             final currentStatus = eMap['status'] as String? ?? 'pending';
-            eMap['status'] = currentStatus == 'completed' ? 'pending' : 'completed';
+            eMap['status'] = currentStatus == 'completed'
+                ? 'pending'
+                : 'completed';
           }
           return eMap;
         }
@@ -238,10 +242,7 @@ class ChatUiActionDelegate implements ActionDelegate {
             Component(
               id: component.id,
               type: component.type,
-              properties: {
-                ...component.properties,
-                'events': updatedEvents,
-              },
+              properties: {...component.properties, 'events': updatedEvents},
             ),
           ],
         ),

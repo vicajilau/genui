@@ -70,10 +70,11 @@ class TimelineWidget extends StatelessWidget {
               itemBuilder: (context, index) {
                 final item = events[index];
                 final mapItem = item is Map ? item : <String, dynamic>{};
-                final eventTitle = (mapItem['title'] as String?) ??
-                                   (mapItem['label'] as String?) ??
-                                   (mapItem['name'] as String?) ??
-                                   'Event';
+                final eventTitle =
+                    (mapItem['title'] as String?) ??
+                    (mapItem['label'] as String?) ??
+                    (mapItem['name'] as String?) ??
+                    'Event';
                 final description = mapItem['description'] as String?;
                 final timestamp = mapItem['timestamp'] as String?;
                 final status = (mapItem['status'] as String?) ?? 'pending';
@@ -84,9 +85,17 @@ class TimelineWidget extends StatelessWidget {
                 final (nodeColor, iconData, isGlow) = (() {
                   switch (status.toLowerCase()) {
                     case 'completed':
-                      return (const Color(0xFF10B981), Icons.check_circle_rounded, false);
+                      return (
+                        const Color(0xFF10B981),
+                        Icons.check_circle_rounded,
+                        false,
+                      );
                     case 'active':
-                      return (const Color(0xFF3B82F6), Icons.radio_button_checked_rounded, true);
+                      return (
+                        const Color(0xFF3B82F6),
+                        Icons.radio_button_checked_rounded,
+                        true,
+                      );
                     case 'pending':
                     default:
                       return (Colors.white24, Icons.circle_outlined, false);
@@ -94,10 +103,15 @@ class TimelineWidget extends StatelessWidget {
                 })();
 
                 return InkWell(
-                  onTap: onTapEvent != null ? () => onTapEvent!(eventTitle) : null,
+                  onTap: onTapEvent != null
+                      ? () => onTapEvent!(eventTitle)
+                      : null,
                   borderRadius: BorderRadius.circular(8),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 4.0),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 4.0,
+                      horizontal: 4.0,
+                    ),
                     child: IntrinsicHeight(
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -130,7 +144,9 @@ class TimelineWidget extends StatelessWidget {
                                 Expanded(
                                   child: Container(
                                     width: 2,
-                                    margin: const EdgeInsets.symmetric(vertical: 4),
+                                    margin: const EdgeInsets.symmetric(
+                                      vertical: 4,
+                                    ),
                                     color: Colors.white10,
                                   ),
                                 ),
@@ -143,7 +159,8 @@ class TimelineWidget extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Expanded(
                                       child: Text(
@@ -151,23 +168,28 @@ class TimelineWidget extends StatelessWidget {
                                         style: TextStyle(
                                           fontSize: 13,
                                           fontWeight: FontWeight.bold,
-                                          color: status.toLowerCase() == 'pending'
+                                          color:
+                                              status.toLowerCase() == 'pending'
                                               ? Colors.white54
                                               : Colors.white,
                                         ),
                                       ),
                                     ),
-                                    if (timestamp != null && timestamp.isNotEmpty)
+                                    if (timestamp != null &&
+                                        timestamp.isNotEmpty)
                                       Text(
                                         timestamp,
                                         style: TextStyle(
                                           fontSize: 11,
-                                          color: Colors.white.withValues(alpha: 0.35),
+                                          color: Colors.white.withValues(
+                                            alpha: 0.35,
+                                          ),
                                         ),
                                       ),
                                   ],
                                 ),
-                                if (description != null && description.isNotEmpty) ...[
+                                if (description != null &&
+                                    description.isNotEmpty) ...[
                                   const SizedBox(height: 3),
                                   Text(
                                     description,

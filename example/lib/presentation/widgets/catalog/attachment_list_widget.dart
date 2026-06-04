@@ -137,59 +137,61 @@ class AttachmentListWidget extends StatelessWidget {
                         ),
                       ),
                       child: Row(
-                    children: [
-                      // File icon with type-specific color glow
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: iconColor.withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(fileIcon, color: iconColor, size: 18),
-                      ),
-                      const SizedBox(width: 12),
-                      // Details (name, size)
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              name,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
+                        children: [
+                          // File icon with type-specific color glow
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: iconColor.withValues(alpha: 0.1),
+                              shape: BoxShape.circle,
                             ),
-                            if (size != null && size.isNotEmpty) ...[
-                              const SizedBox(height: 2),
-                              Text(
-                                size,
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: Colors.white.withValues(alpha: 0.4),
+                            child: Icon(fileIcon, color: iconColor, size: 18),
+                          ),
+                          const SizedBox(width: 12),
+                          // Details (name, size)
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ],
-                        ),
+                                if (size != null && size.isNotEmpty) ...[
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    size,
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: Colors.white.withValues(
+                                        alpha: 0.4,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          // Action icon
+                          Icon(
+                            Icons.open_in_new_rounded,
+                            color: Colors.white.withValues(alpha: 0.4),
+                            size: 16,
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 8),
-                      // Action icon
-                      Icon(
-                        Icons.open_in_new_rounded,
-                        color: Colors.white.withValues(alpha: 0.4),
-                        size: 16,
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
-            );
-          }).toList(),
+                );
+              }).toList(),
             ),
         ],
       ),
