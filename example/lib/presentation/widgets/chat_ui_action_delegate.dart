@@ -40,7 +40,10 @@ class ChatUiActionDelegate implements ActionDelegate {
               Expanded(
                 child: Text(
                   'Downloading "$fileName"...',
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ],
@@ -56,7 +59,10 @@ class ChatUiActionDelegate implements ActionDelegate {
           SnackBar(
             content: Text(
               '¡"$fileName" downloaded successfully!',
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
             ),
             backgroundColor: const Color(0xFF10B981),
             behavior: SnackBarBehavior.floating,
@@ -126,7 +132,10 @@ class ChatUiActionDelegate implements ActionDelegate {
         SnackBar(
           content: Text(
             'Acción ejecutada: "$actionLabel"',
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w500,
+            ),
           ),
           duration: const Duration(seconds: 1),
           backgroundColor: const Color(0xFF10B981),
@@ -188,7 +197,10 @@ class ChatUiActionDelegate implements ActionDelegate {
         SnackBar(
           content: Text(
             'Status of "$eventTitle" updated.',
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w500,
+            ),
           ),
           duration: const Duration(milliseconds: 700),
           backgroundColor: const Color(0xFF3B82F6),

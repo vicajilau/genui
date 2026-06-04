@@ -50,7 +50,9 @@ class _SettingsDialogState extends State<SettingsDialog> {
     }
   }
 
-  Future<void> _handlePaste(void Function(void Function()) setDialogState) async {
+  Future<void> _handlePaste(
+    void Function(void Function()) setDialogState,
+  ) async {
     final data = await Clipboard.getData(Clipboard.kTextPlain);
     final text = data?.text?.trim() ?? '';
     if (text.isNotEmpty) {
@@ -97,15 +99,8 @@ class _SettingsDialogState extends State<SettingsDialog> {
           ),
           backgroundColor: const Color(0xFF1E293B), // Slate 800
           behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.only(
-            bottom: 90,
-            left: 24,
-            right: 24,
-          ),
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 12,
-          ),
+          margin: const EdgeInsets.only(bottom: 90, left: 24, right: 24),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
             side: BorderSide(
@@ -117,11 +112,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
         ),
       );
     } else {
-      CenteredToast.show(
-        context,
-        message: message,
-        isSuccess: isSuccess,
-      );
+      CenteredToast.show(context, message: message, isSuccess: isSuccess);
     }
   }
 
@@ -130,7 +121,11 @@ class _SettingsDialogState extends State<SettingsDialog> {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.warning_amber_rounded, color: Colors.orangeAccent, size: 18),
+            const Icon(
+              Icons.warning_amber_rounded,
+              color: Colors.orangeAccent,
+              size: 18,
+            ),
             const SizedBox(width: 10),
             Text(
               message,
@@ -144,9 +139,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
         backgroundColor: const Color(0xFF1E293B),
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 1),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }

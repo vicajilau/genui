@@ -83,10 +83,12 @@ class _ChatInputBarState extends State<ChatInputBar> {
                 ),
                 child: Focus(
                   onKeyEvent: (FocusNode node, KeyEvent event) {
-                    final isEnter = event.logicalKey == LogicalKeyboardKey.enter ||
-                                    event.logicalKey == LogicalKeyboardKey.numpadEnter;
+                    final isEnter =
+                        event.logicalKey == LogicalKeyboardKey.enter ||
+                        event.logicalKey == LogicalKeyboardKey.numpadEnter;
                     if (isEnter) {
-                      final isShiftPressed = HardwareKeyboard.instance.isShiftPressed;
+                      final isShiftPressed =
+                          HardwareKeyboard.instance.isShiftPressed;
                       if (isShiftPressed) {
                         if (event is KeyDownEvent) {
                           final text = _promptController.text;
@@ -95,15 +97,12 @@ class _ChatInputBarState extends State<ChatInputBar> {
                           final end = selection.end;
                           if (start < 0 || end < 0) {
                             _promptController.text = '$text\n';
-                            _promptController.selection = TextSelection.collapsed(
-                              offset: _promptController.text.length,
-                            );
+                            _promptController.selection =
+                                TextSelection.collapsed(
+                                  offset: _promptController.text.length,
+                                );
                           } else {
-                            final newText = text.replaceRange(
-                              start,
-                              end,
-                              '\n',
-                            );
+                            final newText = text.replaceRange(start, end, '\n');
                             _promptController.value = TextEditingValue(
                               text: newText,
                               selection: TextSelection.collapsed(
