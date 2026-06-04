@@ -17,6 +17,7 @@ import 'catalog/metric_chart_widget.dart';
 import 'catalog/priority_pill_widget.dart';
 import 'catalog/attachment_list_widget.dart';
 import 'catalog/timeline_widget.dart';
+import 'catalog/alert_banner_widget.dart';
 
 /// A widget that presents the interactive Component Catalog, permitting developers
 /// to select components, edit properties, inspect payloads, and view live renders.
@@ -73,6 +74,12 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
   String _timelineEventsJson =
       '[\n  {"title": "Project Initiated", "description": "Kickoff meeting scheduled with client.", "timestamp": "Monday", "status": "completed"},\n  {"title": "Design Mockups", "description": "Review visual layouts and typography guidelines.", "timestamp": "Tuesday", "status": "active"},\n  {"title": "API Integration", "description": "Connect UI surfaces to local and remote data handlers.", "timestamp": "Thursday", "status": "pending"}\n]';
 
+  // AlertBannerWidget properties
+  String _alertType = 'warning';
+  String _alertMessage =
+      'System memory is currently running high (85% utilization).';
+  String _alertActionLabel = 'Resolve';
+
   // Catalog Event Handler
   void _handleCatalogWidgetEvent(String eventJson) {
     final event = GenUiEvent.parse(eventJson);
@@ -113,6 +120,23 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
         SnackBar(
           content: Text('Attachment item clicked: "$fileName"'),
           duration: const Duration(seconds: 1),
+        ),
+      );
+    } else if (event.name == AlertBannerWidgetEvents.onAction) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Alert Action clicked! Label: "${event.context['actionLabel']}"',
+          ),
+          duration: const Duration(seconds: 1),
+          backgroundColor: const Color(0xFF6366F1),
+        ),
+      );
+    } else if (event.name == AlertBannerWidgetEvents.onDismiss) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Alert Banner dismissed!'),
+          duration: Duration(seconds: 1),
         ),
       );
     }
@@ -168,6 +192,14 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
           return const [];
         })();
         return {'title': _timelineTitle, 'events': decodedEvents};
+      case $AlertBannerWidgetIdentifier:
+        return {
+          'type': _alertType,
+          'message': _alertMessage,
+          'actionLabel': _alertActionLabel.trim().isEmpty
+              ? null
+              : _alertActionLabel.trim(),
+        };
       default:
         return {};
     }
@@ -370,6 +402,15 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
                           timelineEventsJson: _timelineEventsJson,
                           onTimelineEventsJsonChanged: (val) =>
                               setState(() => _timelineEventsJson = val),
+                          alertType: _alertType,
+                          onAlertTypeChanged: (val) =>
+                              setState(() => _alertType = val),
+                          alertMessage: _alertMessage,
+                          onAlertMessageChanged: (val) =>
+                              setState(() => _alertMessage = val),
+                          alertActionLabel: _alertActionLabel,
+                          onAlertActionLabelChanged: (val) =>
+                              setState(() => _alertActionLabel = val),
                         ),
                       ),
                       const SizedBox(width: 24),
@@ -456,6 +497,15 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
                     timelineEventsJson: _timelineEventsJson,
                     onTimelineEventsJsonChanged: (val) =>
                         setState(() => _timelineEventsJson = val),
+                    alertType: _alertType,
+                    onAlertTypeChanged: (val) =>
+                        setState(() => _alertType = val),
+                    alertMessage: _alertMessage,
+                    onAlertMessageChanged: (val) =>
+                        setState(() => _alertMessage = val),
+                    alertActionLabel: _alertActionLabel,
+                    onAlertActionLabelChanged: (val) =>
+                        setState(() => _alertActionLabel = val),
                   ),
                   const SizedBox(height: 24),
                   ComponentJsonInspectorPanel(
@@ -500,6 +550,7 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
       $PriorityPillWidgetIdentifier => 'PriorityPillWidget',
       $AttachmentListWidgetIdentifier => 'AttachmentListWidget',
       $TimelineWidgetIdentifier => 'TimelineWidget',
+      $AlertBannerWidgetIdentifier => 'AlertBannerWidget',
       _ => component,
     };
   }

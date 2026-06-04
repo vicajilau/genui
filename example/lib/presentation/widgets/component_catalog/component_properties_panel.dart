@@ -47,6 +47,12 @@ class ComponentPropertiesPanel extends StatelessWidget {
     required this.onTimelineTitleChanged,
     required this.timelineEventsJson,
     required this.onTimelineEventsJsonChanged,
+    required this.alertType,
+    required this.onAlertTypeChanged,
+    required this.alertMessage,
+    required this.onAlertMessageChanged,
+    required this.alertActionLabel,
+    required this.onAlertActionLabelChanged,
   });
 
   final String selectedComponent;
@@ -90,6 +96,12 @@ class ComponentPropertiesPanel extends StatelessWidget {
   final ValueChanged<String> onTimelineTitleChanged;
   final String timelineEventsJson;
   final ValueChanged<String> onTimelineEventsJsonChanged;
+  final String alertType;
+  final ValueChanged<String> onAlertTypeChanged;
+  final String alertMessage;
+  final ValueChanged<String> onAlertMessageChanged;
+  final String alertActionLabel;
+  final ValueChanged<String> onAlertActionLabelChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -293,6 +305,33 @@ class ComponentPropertiesPanel extends StatelessWidget {
             value: timelineEventsJson,
             onChanged: onTimelineEventsJsonChanged,
             maxLines: 6,
+          ),
+        ];
+
+      case 'AlertBannerWidget':
+        return [
+          _buildDropdownField(
+            label: 'Type',
+            value: alertType,
+            items: const ['success', 'info', 'warning', 'error'],
+            onChanged: (value) {
+              if (value != null) {
+                onAlertTypeChanged(value);
+              }
+            },
+          ),
+          const SizedBox(height: 16),
+          _buildTextField(
+            label: 'Message',
+            value: alertMessage,
+            onChanged: onAlertMessageChanged,
+            maxLines: 3,
+          ),
+          const SizedBox(height: 16),
+          _buildTextField(
+            label: 'Action Label (Optional)',
+            value: alertActionLabel,
+            onChanged: onAlertActionLabelChanged,
           ),
         ];
 

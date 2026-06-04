@@ -203,6 +203,70 @@ class ChatUiActionDelegate implements ActionDelegate {
       return true;
     }
 
+    if (event.name == 'AlertBannerWidget_onDismissEvent') {
+      final surfaceId = genUiContext.surfaceId;
+      final definition = genUiContext.definition.value;
+      if (definition == null) return false;
+
+      final componentId = event.sourceComponentId;
+      final parentComponent = definition.components['root'];
+      final List<Component> finalUpdatedComponents = [];
+
+      if (parentComponent != null) {
+        final currentChildren = List<String>.from(
+          parentComponent.properties['children'] as List<dynamic>? ?? [],
+        );
+        currentChildren.remove(componentId);
+
+        finalUpdatedComponents.add(
+          Component(
+            id: parentComponent.id,
+            type: parentComponent.type,
+            properties: {
+              ...parentComponent.properties,
+              'children': currentChildren,
+            },
+          ),
+        );
+      }
+
+      controller.handleMessage(
+        UpdateComponents(
+          surfaceId: surfaceId,
+          components: finalUpdatedComponents,
+        ),
+      );
+
+      final messenger = ScaffoldMessenger.of(context);
+      messenger.clearSnackBars();
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('Alerta descartada localmente.'),
+          duration: Duration(milliseconds: 700),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+
+      return true;
+    }
+
+    if (event.name == 'AlertBannerWidget_onActionEvent') {
+      final actionLabel = event.context['actionLabel'] as String? ?? 'Acción';
+      final messenger = ScaffoldMessenger.of(context);
+
+      messenger.clearSnackBars();
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text('Acción ejecutada: "$actionLabel"'),
+          duration: const Duration(seconds: 1),
+          backgroundColor: const Color(0xFF10B981),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+
+      return true;
+    }
+
     if (event.name == 'TimelineWidget_onTapEventEvent') {
       final surfaceId = genUiContext.surfaceId;
       final definition = genUiContext.definition.value;

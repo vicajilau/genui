@@ -8,6 +8,7 @@ import 'package:example/presentation/widgets/catalog/metric_chart_widget.dart';
 import 'package:example/presentation/widgets/catalog/priority_pill_widget.dart';
 import 'package:example/presentation/widgets/catalog/attachment_list_widget.dart';
 import 'package:example/presentation/widgets/catalog/timeline_widget.dart';
+import 'package:example/presentation/widgets/catalog/alert_banner_widget.dart';
 
 void main() {
   testWidgets('App renders UserCardWidget from JSON', (
@@ -402,5 +403,49 @@ void main() {
     expect(find.text('Main cluster operational.'), findsOneWidget);
     expect(find.text('Backup Database'), findsOneWidget);
     expect(find.text('Health Check'), findsOneWidget);
+  });
+
+  testWidgets('Catalog builds AlertBannerWidget from CatalogItemContext', (
+    WidgetTester tester,
+  ) async {
+    final catalog = globalGenUICatalog;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Builder(
+            builder: (BuildContext context) {
+              final catalogContext = CatalogItemContext(
+                id: 'test_node_alert',
+                type: $AlertBannerWidgetIdentifier,
+                data: const {
+                  'type': 'warning',
+                  'message': 'Storage quota is approaching 90% utilization.',
+                  'actionLabel': 'Resolve Now',
+                },
+                dispatchEvent: (_) {},
+                buildChild: (_, [_]) => const SizedBox.shrink(),
+                buildContext: context,
+                dataContext: DataContext(InMemoryDataModel(), DataPath.root),
+                getComponent: (_) => null,
+                getCatalogItem: (_) => null,
+                surfaceId: 'test_surface',
+                reportError: (_, [_]) {},
+              );
+
+              return catalog.buildWidget(catalogContext);
+            },
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(AlertBannerWidget), findsOneWidget);
+    expect(
+      find.text('Storage quota is approaching 90% utilization.'),
+      findsOneWidget,
+    );
+    expect(find.text('Resolve Now'), findsOneWidget);
+    expect(find.byIcon(Icons.warning_amber_rounded), findsOneWidget);
   });
 }
