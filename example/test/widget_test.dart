@@ -7,6 +7,7 @@ import 'package:example/presentation/widgets/catalog/user_card_widget.dart';
 import 'package:example/presentation/widgets/catalog/metric_chart_widget.dart';
 import 'package:example/presentation/widgets/catalog/priority_pill_widget.dart';
 import 'package:example/presentation/widgets/catalog/attachment_list_widget.dart';
+import 'package:example/presentation/widgets/catalog/timeline_widget.dart';
 
 void main() {
   testWidgets('App renders UserCardWidget from JSON', (
@@ -340,5 +341,51 @@ void main() {
     expect(find.text('Project Files'), findsOneWidget);
     expect(find.text('document.pdf'), findsOneWidget);
     expect(find.text('1.5 MB'), findsOneWidget);
+  });
+
+  testWidgets('Catalog builds TimelineWidget from CatalogItemContext', (
+    WidgetTester tester,
+  ) async {
+    final catalog = globalGenUICatalog;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Builder(
+            builder: (BuildContext context) {
+              final catalogContext = CatalogItemContext(
+                id: 'test_node_timeline',
+                type: $TimelineWidgetIdentifier,
+                data: const {
+                  'title': 'System Status Log',
+                  'events': [
+                    {'title': 'Server Started', 'description': 'Main cluster operational.', 'timestamp': '10:00 AM', 'status': 'completed'},
+                    {'title': 'Backup Database', 'description': 'Replicating storage.', 'timestamp': '10:15 AM', 'status': 'active'},
+                    {'title': 'Health Check', 'description': 'Verify nodes.', 'timestamp': '11:00 AM', 'status': 'pending'},
+                  ],
+                },
+                dispatchEvent: (_) {},
+                buildChild: (_, [_]) => const SizedBox.shrink(),
+                buildContext: context,
+                dataContext: DataContext(InMemoryDataModel(), DataPath.root),
+                getComponent: (_) => null,
+                getCatalogItem: (_) => null,
+                surfaceId: 'test_surface',
+                reportError: (_, [_]) {},
+              );
+
+              return catalog.buildWidget(catalogContext);
+            },
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(TimelineWidget), findsOneWidget);
+    expect(find.text('System Status Log'), findsOneWidget);
+    expect(find.text('Server Started'), findsOneWidget);
+    expect(find.text('Main cluster operational.'), findsOneWidget);
+    expect(find.text('Backup Database'), findsOneWidget);
+    expect(find.text('Health Check'), findsOneWidget);
   });
 }

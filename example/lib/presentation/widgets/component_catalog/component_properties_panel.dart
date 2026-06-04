@@ -43,6 +43,10 @@ class ComponentPropertiesPanel extends StatelessWidget {
     required this.onAttachmentTitleChanged,
     required this.attachmentItemsJson,
     required this.onAttachmentItemsJsonChanged,
+    required this.timelineTitle,
+    required this.onTimelineTitleChanged,
+    required this.timelineEventsJson,
+    required this.onTimelineEventsJsonChanged,
   });
 
   final String selectedComponent;
@@ -82,6 +86,10 @@ class ComponentPropertiesPanel extends StatelessWidget {
   final ValueChanged<String> onAttachmentTitleChanged;
   final String attachmentItemsJson;
   final ValueChanged<String> onAttachmentItemsJsonChanged;
+  final String timelineTitle;
+  final ValueChanged<String> onTimelineTitleChanged;
+  final String timelineEventsJson;
+  final ValueChanged<String> onTimelineEventsJsonChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -269,6 +277,22 @@ class ComponentPropertiesPanel extends StatelessWidget {
             value: attachmentItemsJson,
             onChanged: onAttachmentItemsJsonChanged,
             maxLines: 5,
+          ),
+        ];
+
+      case 'TimelineWidget':
+        return [
+          _buildTextField(
+            label: 'Title',
+            value: timelineTitle,
+            onChanged: onTimelineTitleChanged,
+          ),
+          const SizedBox(height: 16),
+          _buildTextField(
+            label: 'Events JSON',
+            value: timelineEventsJson,
+            onChanged: onTimelineEventsJsonChanged,
+            maxLines: 6,
           ),
         ];
 

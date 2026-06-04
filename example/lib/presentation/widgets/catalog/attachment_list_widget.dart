@@ -10,11 +10,13 @@ part 'attachment_list_widget.genui.g.dart';
 class AttachmentListWidget extends StatelessWidget {
   final List<dynamic> items;
   final String title;
+  final void Function(String fileName)? onTapItem;
 
   const AttachmentListWidget({
     super.key,
     required this.items,
     this.title = 'Attachments',
+    this.onTapItem,
   });
 
   @override
@@ -117,20 +119,24 @@ class AttachmentListWidget extends StatelessWidget {
                   }
                 })();
 
-                return Container(
-                  margin: const EdgeInsets.symmetric(vertical: 6),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 10,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0x0DFFFFFF),
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: InkWell(
+                    onTap: onTapItem != null ? () => onTapItem!(name) : null,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.05),
-                    ),
-                  ),
-                  child: Row(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0x0DFFFFFF),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.05),
+                        ),
+                      ),
+                      child: Row(
                     children: [
                       // File icon with type-specific color glow
                       Container(
@@ -180,8 +186,10 @@ class AttachmentListWidget extends StatelessWidget {
                       ),
                     ],
                   ),
-                );
-              }).toList(),
+                ),
+              ),
+            );
+          }).toList(),
             ),
         ],
       ),

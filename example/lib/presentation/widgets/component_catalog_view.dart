@@ -16,6 +16,7 @@ import 'catalog/user_card_widget.dart';
 import 'catalog/metric_chart_widget.dart';
 import 'catalog/priority_pill_widget.dart';
 import 'catalog/attachment_list_widget.dart';
+import 'catalog/timeline_widget.dart';
 
 /// A widget that presents the interactive Component Catalog, permitting developers
 /// to select components, edit properties, inspect payloads, and view live renders.
@@ -67,6 +68,11 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
   String _attachmentItemsJson =
       '[\n  {"name": "Project Proposal.pdf", "type": "pdf", "size": "2.4 MB"},\n  {"name": "Design Mockup.png", "type": "image", "size": "1.8 MB"}\n]';
 
+  // TimelineWidget properties
+  String _timelineTitle = 'Activity Timeline';
+  String _timelineEventsJson =
+      '[\n  {"title": "Project Initiated", "description": "Kickoff meeting scheduled with client.", "timestamp": "Monday", "status": "completed"},\n  {"title": "Design Mockups", "description": "Review visual layouts and typography guidelines.", "timestamp": "Tuesday", "status": "active"},\n  {"title": "API Integration", "description": "Connect UI surfaces to local and remote data handlers.", "timestamp": "Thursday", "status": "pending"}\n]';
+
   // Catalog Event Handler
   void _handleCatalogWidgetEvent(String eventJson) {
     final event = GenUiEvent.parse(eventJson);
@@ -90,6 +96,22 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
           content: Text(
             'TaskItemWidget checkbox toggled! Title: "${event.context['title']}"',
           ),
+          duration: const Duration(seconds: 1),
+        ),
+      );
+    } else if (event.name == TimelineWidgetEvents.onTapEvent) {
+      final eventTitle = event.context['eventTitle'] as String? ?? 'Event';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Timeline Event tapped: "$eventTitle"'),
+          duration: const Duration(seconds: 1),
+        ),
+      );
+    } else if (event.name == AttachmentListWidgetEvents.onTapItem) {
+      final fileName = event.context['fileName'] as String? ?? 'File';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Attachment item clicked: "$fileName"'),
           duration: const Duration(seconds: 1),
         ),
       );
@@ -137,6 +159,15 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
           return const [];
         })();
         return {'title': _attachmentTitle, 'items': decodedItems};
+      case $TimelineWidgetIdentifier:
+        final List<dynamic> decodedEvents = (() {
+          try {
+            final parsed = jsonDecode(_timelineEventsJson);
+            if (parsed is List) return parsed;
+          } catch (_) {}
+          return const [];
+        })();
+        return {'title': _timelineTitle, 'events': decodedEvents};
       default:
         return {};
     }
@@ -333,6 +364,12 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
                           attachmentItemsJson: _attachmentItemsJson,
                           onAttachmentItemsJsonChanged: (val) =>
                               setState(() => _attachmentItemsJson = val),
+                          timelineTitle: _timelineTitle,
+                          onTimelineTitleChanged: (val) =>
+                              setState(() => _timelineTitle = val),
+                          timelineEventsJson: _timelineEventsJson,
+                          onTimelineEventsJsonChanged: (val) =>
+                              setState(() => _timelineEventsJson = val),
                         ),
                       ),
                       const SizedBox(width: 24),
@@ -413,6 +450,12 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
                     attachmentItemsJson: _attachmentItemsJson,
                     onAttachmentItemsJsonChanged: (val) =>
                         setState(() => _attachmentItemsJson = val),
+                    timelineTitle: _timelineTitle,
+                    onTimelineTitleChanged: (val) =>
+                        setState(() => _timelineTitle = val),
+                    timelineEventsJson: _timelineEventsJson,
+                    onTimelineEventsJsonChanged: (val) =>
+                        setState(() => _timelineEventsJson = val),
                   ),
                   const SizedBox(height: 24),
                   ComponentJsonInspectorPanel(
@@ -456,6 +499,7 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
       $MetricChartWidgetIdentifier => 'MetricChartWidget',
       $PriorityPillWidgetIdentifier => 'PriorityPillWidget',
       $AttachmentListWidgetIdentifier => 'AttachmentListWidget',
+      $TimelineWidgetIdentifier => 'TimelineWidget',
       _ => component,
     };
   }

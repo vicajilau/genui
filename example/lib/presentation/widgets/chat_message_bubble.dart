@@ -163,6 +163,104 @@ class ChatUiActionDelegate implements ActionDelegate {
   ) {
     if (event is! UserActionEvent) return false;
 
+    if (event.name == 'AttachmentListWidget_onTapItemEvent') {
+      final fileName = event.context['fileName'] as String? ?? 'archivo';
+      final messenger = ScaffoldMessenger.of(context);
+      
+      messenger.clearSnackBars();
+      messenger.showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const SizedBox(
+                width: 14,
+                height: 14,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(child: Text('Downloading "$fileName"...')),
+            ],
+          ),
+          duration: const Duration(seconds: 1),
+          backgroundColor: const Color(0xFF6366F1),
+        ),
+      );
+      
+      Future.delayed(const Duration(seconds: 1), () {
+        messenger.clearSnackBars();
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text('¡"$fileName" downloaded successfully!'),
+            backgroundColor: const Color(0xFF10B981),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      });
+      
+      return true;
+    }
+
+    if (event.name == 'TimelineWidget_onTapEventEvent') {
+      final surfaceId = genUiContext.surfaceId;
+      final definition = genUiContext.definition.value;
+      if (definition == null) return false;
+
+      final componentId = event.sourceComponentId;
+      final component = definition.components[componentId];
+      if (component == null) return false;
+
+      final eventTitle = event.context['eventTitle'] as String?;
+      if (eventTitle == null) return false;
+
+      final currentEvents = component.properties['events'] as List<dynamic>? ?? [];
+      final updatedEvents = currentEvents.map((e) {
+        if (e is Map) {
+          final eMap = Map<String, dynamic>.from(e);
+          final currentTitle = (eMap['title'] as String?) ??
+                               (eMap['label'] as String?) ??
+                               (eMap['name'] as String?);
+          if (currentTitle == eventTitle) {
+            final currentStatus = eMap['status'] as String? ?? 'pending';
+            eMap['status'] = currentStatus == 'completed' ? 'pending' : 'completed';
+          }
+          return eMap;
+        }
+        return e;
+      }).toList();
+
+      controller.handleMessage(
+        UpdateComponents(
+          surfaceId: surfaceId,
+          components: [
+            Component(
+              id: component.id,
+              type: component.type,
+              properties: {
+                ...component.properties,
+                'events': updatedEvents,
+              },
+            ),
+          ],
+        ),
+      );
+
+      final messenger = ScaffoldMessenger.of(context);
+      messenger.clearSnackBars();
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text('Status of "$eventTitle" updated.'),
+          duration: const Duration(milliseconds: 700),
+          backgroundColor: const Color(0xFF3B82F6),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+
+      return true;
+    }
+
     if (event.name == 'TaskItemWidget_onToggleEvent') {
       final surfaceId = genUiContext.surfaceId;
       final definition = genUiContext.definition.value;

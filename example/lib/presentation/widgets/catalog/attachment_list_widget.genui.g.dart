@@ -12,6 +12,11 @@ part of 'attachment_list_widget.dart';
 /// The mapped identifier for AttachmentListWidget.
 const String $AttachmentListWidgetIdentifier = "AttachmentListWidget";
 
+/// Event name constants for AttachmentListWidget.
+abstract class AttachmentListWidgetEvents {
+  static const String onTapItem = 'AttachmentListWidget_onTapItemEvent';
+}
+
 /// Auto-generated CatalogItem for AttachmentListWidget.
 final CatalogItem $AttachmentListWidgetCatalogItem = CatalogItem(
   name: $AttachmentListWidgetIdentifier,
@@ -28,6 +33,18 @@ final CatalogItem $AttachmentListWidgetCatalogItem = CatalogItem(
     return AttachmentListWidget(
       items: (data["items"] as List<dynamic>?) ?? const [],
       title: (data["title"] as String?) ?? 'Attachments',
+      onTapItem: (String fileName) {
+        itemContext.dispatchEvent(
+          UserActionEvent(
+            name: AttachmentListWidgetEvents.onTapItem,
+            sourceComponentId: itemContext.id,
+            context: {
+              ...data,
+              ...{'fileName': fileName},
+            },
+          ),
+        );
+      },
     );
   },
 );
