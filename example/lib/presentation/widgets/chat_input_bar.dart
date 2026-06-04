@@ -1,12 +1,20 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// A custom input bar widget at the bottom of the chat interface containing
 /// the text input, a clear chat action button, and a gradient submit button.
 class ChatInputBar extends StatefulWidget {
   final ValueChanged<String> onSend;
   final VoidCallback onClear;
+  final bool autofocus;
 
-  const ChatInputBar({super.key, required this.onSend, required this.onClear});
+  const ChatInputBar({
+    super.key,
+    required this.onSend,
+    required this.onClear,
+    this.autofocus = false,
+  });
 
   @override
   State<ChatInputBar> createState() => _ChatInputBarState();
@@ -16,10 +24,12 @@ class ChatInputBar extends StatefulWidget {
 /// and submission triggers.
 class _ChatInputBarState extends State<ChatInputBar> {
   final TextEditingController _promptController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void dispose() {
     _promptController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -32,6 +42,12 @@ class _ChatInputBarState extends State<ChatInputBar> {
 
   @override
   Widget build(BuildContext context) {
+    final isDesktop =
+        kIsWeb ||
+        defaultTargetPlatform == TargetPlatform.macOS ||
+        defaultTargetPlatform == TargetPlatform.windows ||
+        defaultTargetPlatform == TargetPlatform.linux;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
       decoration: const BoxDecoration(
@@ -65,19 +81,80 @@ class _ChatInputBarState extends State<ChatInputBar> {
                   horizontal: 16.0,
                   vertical: 4.0,
                 ),
-                child: TextField(
-                  controller: _promptController,
-                  style: const TextStyle(
-                    color: Color(0xFFE2E8F0),
-                    fontSize: 14,
+                child: Focus(
+                  onKeyEvent: (FocusNode node, KeyEvent event) {
+                    final isEnter = event.logicalKey == LogicalKeyboardKey.enter ||
+                                    event.logicalKey == LogicalKeyboardKey.numpadEnter;
+                    if (isEnter) {
+                      final isShiftPressed = HardwareKeyboard.instance.isShiftPressed;
+                      if (isShiftPressed) {
+                        if (event is KeyDownEvent) {
+                          final text = _promptController.text;
+                          final selection = _promptController.selection;
+                          final start = selection.start;
+                          final end = selection.end;
+                          if (start < 0 || end < 0) {
+                            _promptController.text = '$text\n';
+                            _promptController.selection = TextSelection.collapsed(
+                              offset: _promptController.text.length,
+                            );
+                          } else {
+                            final newText = text.replaceRange(
+                              start,
+                              end,
+                              '\n',
+                            );
+                            _promptController.value = TextEditingValue(
+                              text: newText,
+                              selection: TextSelection.collapsed(
+                                offset: start + 1,
+                              ),
+                            );
+                          }
+
+                          // Scroll to bottom if cursor is at or near the end of the text
+                          if (start >= text.length - 1) {
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (_scrollController.hasClients) {
+                                _scrollController.jumpTo(
+                                  _scrollController.position.maxScrollExtent,
+                                );
+                              }
+                            });
+                          }
+                        }
+                        return KeyEventResult.handled;
+                      } else {
+                        if (event is KeyDownEvent) {
+                          _submit();
+                        }
+                        return KeyEventResult.handled;
+                      }
+                    }
+                    return KeyEventResult.ignored;
+                  },
+                  child: TextField(
+                    controller: _promptController,
+                    scrollController: _scrollController,
+                    minLines: 1,
+                    maxLines: 5,
+                    autofocus: widget.autofocus,
+                    keyboardType: TextInputType.multiline,
+                    textInputAction: isDesktop
+                        ? TextInputAction.send
+                        : TextInputAction.newline,
+                    style: const TextStyle(
+                      color: Color(0xFFE2E8F0),
+                      fontSize: 14,
+                    ),
+                    decoration: const InputDecoration(
+                      hintText: 'Ask Gemini to create widgets...',
+                      hintStyle: TextStyle(color: Colors.white38),
+                      border: InputBorder.none,
+                      isDense: true,
+                    ),
+                    onSubmitted: null,
                   ),
-                  decoration: const InputDecoration(
-                    hintText: 'Ask Gemini to create widgets...',
-                    hintStyle: TextStyle(color: Colors.white38),
-                    border: InputBorder.none,
-                    isDense: true,
-                  ),
-                  onSubmitted: (_) => _submit(),
                 ),
               ),
             ),

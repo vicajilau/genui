@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 /// A widget displaying a warning screen and API key entry input field when
 /// the Gemini API Key is missing or unconfigured.
@@ -14,13 +13,6 @@ class ApiKeyWarningCard extends StatelessWidget {
     required this.onSave,
     required this.onOpenSettings,
   });
-
-  Future<void> _openGeminiApiKeyUrl() async {
-    final url = Uri.parse('https://aistudio.google.com/app/apikey');
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,26 +90,6 @@ class ApiKeyWarningCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton.icon(
-                    onPressed: _openGeminiApiKeyUrl,
-                    icon: const Icon(Icons.open_in_new_rounded, size: 16),
-                    label: const Text(
-                      'GET GEMINI API KEY',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                      ),
-                    ),
-                    style: TextButton.styleFrom(
-                      foregroundColor: const Color(0xFF06B6D4), // Cyan
-                    ),
-                  ),
-                ],
               ),
             ],
           ),

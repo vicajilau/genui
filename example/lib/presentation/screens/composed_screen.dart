@@ -59,6 +59,12 @@ class _ComposedScreenState extends State<ComposedScreen>
   }
 
   void _handleTabChange() {
+    if (mounted) {
+      setState(() {});
+    }
+    if (_tabController.indexIsChanging) {
+      FocusManager.instance.primaryFocus?.unfocus();
+    }
     if (_tabController.index == 1 && !_tabController.indexIsChanging) {
       _promptForApiKeyIfNeeded();
     }
@@ -108,6 +114,7 @@ class _ComposedScreenState extends State<ComposedScreen>
           onValidate: _apiKeyService.isValidApiKey,
           onSave: _saveApiKey,
           onDelete: _deleteApiKey,
+          isChatVisible: _tabController.index == 1 && _geminiApiKey.isNotEmpty,
         ),
       );
     } finally {
@@ -320,6 +327,7 @@ class _ComposedScreenState extends State<ComposedScreen>
                 _scrollToBottom();
               },
               onClear: _chatController.clearChat,
+              autofocus: _tabController.index == 1,
             ),
           ],
         );
