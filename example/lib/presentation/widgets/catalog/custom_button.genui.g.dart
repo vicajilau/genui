@@ -33,7 +33,7 @@ final CatalogItem $CustomButtonCatalogItem = CatalogItem(
   widgetBuilder: (itemContext) {
     final data = itemContext.data as Map<String, dynamic>;
     return CustomButton(
-      label: data["label"] as String,
+      label: (data["label"] as String?) ?? "",
       color: (() {
         final val = data["color"];
         if (val is! String) return null;

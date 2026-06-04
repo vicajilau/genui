@@ -92,4 +92,45 @@ void main() {
     expect(find.text('Computer Scientist'), findsOneWidget);
     expect(find.text('OFFLINE'), findsOneWidget);
   });
+
+  testWidgets('Catalog builds UserCardWidget with avatarUrl', (
+    WidgetTester tester,
+  ) async {
+    final catalog = globalGenUICatalog;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Builder(
+            builder: (BuildContext context) {
+              final catalogContext = CatalogItemContext(
+                id: 'test_node_avatar',
+                type: $UserCardWidgetIdentifier,
+                data: const {
+                  'name': 'Grace Hopper',
+                  'role': 'Computer Scientist',
+                  'isActive': true,
+                  'avatarUrl': 'https://example.com/avatar.jpg',
+                },
+                dispatchEvent: (_) {},
+                buildChild: (_, [_]) => const SizedBox.shrink(),
+                buildContext: context,
+                dataContext: DataContext(InMemoryDataModel(), DataPath.root),
+                getComponent: (_) => null,
+                getCatalogItem: (_) => null,
+                surfaceId: 'test_surface',
+                reportError: (_, [_]) {},
+              );
+
+              return catalog.buildWidget(catalogContext);
+            },
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(UserCardWidget), findsOneWidget);
+    expect(find.byType(ClipOval), findsOneWidget);
+    expect(find.byType(Image), findsOneWidget);
+  });
 }

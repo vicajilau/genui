@@ -32,9 +32,9 @@ final CatalogItem $TaskItemWidgetCatalogItem = CatalogItem(
   widgetBuilder: (itemContext) {
     final data = itemContext.data as Map<String, dynamic>;
     return TaskItemWidget(
-      title: data["title"] as String,
-      isCompleted: data["isCompleted"] as bool,
-      priority: data["priority"] as String,
+      title: (data["title"] as String?) ?? "",
+      isCompleted: (data["isCompleted"] as bool?) ?? false,
+      priority: (data["priority"] as String?) ?? "",
       onToggle: () {
         itemContext.dispatchEvent(
           UserActionEvent(

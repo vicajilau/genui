@@ -213,13 +213,9 @@ class GenerativeUIGenerator extends GeneratorForAnnotation<GenerativeUI> {
           buffer.writeln('        }');
           buffer.writeln('        return $fallback;');
           buffer.writeln('      })(),');
-        } else if (parameter.isRequired) {
-          buffer.writeln('      $name: data["$name"] as $typeStr,');
         } else {
-          if (isNullable) {
-            buffer.writeln('      $name: data["$name"] as $typeStr,');
-          } else {
-            var fallback = 'null';
+          var fallback = 'null';
+          if (!isNullable) {
             if (typeStr == 'bool') fallback = 'false';
             if (typeStr == 'int') fallback = '0';
             if (typeStr == 'double') fallback = '0.0';
@@ -227,11 +223,40 @@ class GenerativeUIGenerator extends GeneratorForAnnotation<GenerativeUI> {
             if (typeStr == 'String') fallback = '""';
             if (typeStr.startsWith('List')) fallback = 'const []';
             if (typeStr.startsWith('Map')) fallback = 'const {}';
+          }
 
-            final defVal = defaultValues[name] ?? fallback;
-            buffer.writeln(
-              '      $name: (data["$name"] as $typeStr?) ?? $defVal,',
-            );
+          if (parameter.isRequired) {
+            if (isNullable) {
+              buffer.writeln('      $name: data["$name"] as $typeStr,');
+            } else {
+              if (fallback != 'null') {
+                buffer.writeln(
+                  '      $name: (data["$name"] as $typeStr?) ?? $fallback,',
+                );
+              } else {
+                buffer.writeln('      $name: data["$name"] as $typeStr,');
+              }
+            }
+          } else {
+            if (isNullable) {
+              final defVal = defaultValues[name];
+              if (defVal != null) {
+                buffer.writeln(
+                  '      $name: (data["$name"] as $typeStr) ?? $defVal,',
+                );
+              } else {
+                buffer.writeln('      $name: data["$name"] as $typeStr,');
+              }
+            } else {
+              final defVal = defaultValues[name] ?? fallback;
+              if (defVal != 'null') {
+                buffer.writeln(
+                  '      $name: (data["$name"] as $typeStr?) ?? $defVal,',
+                );
+              } else {
+                buffer.writeln('      $name: data["$name"] as $typeStr,');
+              }
+            }
           }
         }
       }

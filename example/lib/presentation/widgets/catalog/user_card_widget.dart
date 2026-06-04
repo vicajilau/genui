@@ -12,12 +12,14 @@ class UserCardWidget extends StatelessWidget {
   final String name;
   final String role;
   final bool isActive;
+  final String? avatarUrl;
 
   const UserCardWidget({
     super.key,
     required this.name,
     required this.role,
     this.isActive = false,
+    this.avatarUrl,
   });
 
   @override
@@ -73,15 +75,33 @@ class UserCardWidget extends StatelessWidget {
                   : [],
             ),
             alignment: Alignment.center,
-            child: Text(
-              initials,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                letterSpacing: 0.5,
-              ),
-            ),
+            child: avatarUrl != null && avatarUrl!.isNotEmpty
+                ? ClipOval(
+                    child: Image.network(
+                      avatarUrl!,
+                      width: 48,
+                      height: 48,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Text(
+                        initials,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                  )
+                : Text(
+                    initials,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
           ),
           const SizedBox(width: 16),
           // User Details

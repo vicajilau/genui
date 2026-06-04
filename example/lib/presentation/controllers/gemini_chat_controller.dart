@@ -229,6 +229,13 @@ class GeminiChatController extends ChangeNotifier {
     ]);
     final capabilitiesJson = jsonEncode(capabilities.toJson());
 
+    final schemasDesc = StringBuffer();
+    for (final item in globalGenUICatalog.items) {
+      final schema = item.dataSchema.toJson();
+      schemasDesc.writeln('- Component: "${item.name}"');
+      schemasDesc.writeln('  Schema: ${jsonEncode(schema)}');
+    }
+
     return '''
 You are a GenUI assistant that helps users manage their task board and team.
 You must interact with the user by generating dynamic user interfaces using the A2UI protocol.
@@ -261,6 +268,10 @@ All A2UI JSON messages MUST be enclosed inside a markdown `json` code block:
 You can only use components described in the following capabilities schema:
 $capabilitiesJson
 
+### AVAILABLE COMPONENTS AND SCHEMAS
+Here is the detailed schema for each supported component. You must strictly use the properties, component names, and types defined here:
+$schemasDesc
+
 ### PROTOCOL SPECIFICATION
 1. Creating/Updating a surface:
    To render a UI, you must send an `updateComponents` message wrapped in a version "v0.9" envelope:
@@ -269,9 +280,9 @@ $capabilitiesJson
      - "surfaceId": "composed_surface" (always use this ID)
      - "components": a JSON array (list) of component definitions.
    Every component definition must be a single JSON object with:
-   - "id": a unique string ID.
-   - "component": the name of the component (e.g. "Column", "Text", "UserCardWidget", "StatsWidget", "TaskItemWidget", "CustomButton").
-   - Any component properties (e.g., "label", "children", "title", "isCompleted") must be defined as sibling keys directly within the same object (do not nest under a "properties" key).
+     - "id": a unique string ID.
+     - "component": the name of the component.
+     - Any component properties must be defined as sibling keys directly within the same object (do not nest under a "properties" key).
 
 2. Component Relationships:
    - The root component must have ID "root" and component type "Column".

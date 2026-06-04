@@ -21,15 +21,17 @@ final CatalogItem $UserCardWidgetCatalogItem = CatalogItem(
       "name": S.string(description: "The name property."),
       "role": S.string(description: "The role property."),
       "isActive": S.boolean(description: "The isActive property."),
+      "avatarUrl": S.string(description: "The avatarUrl property."),
     },
     required: ["name", "role"],
   ),
   widgetBuilder: (itemContext) {
     final data = itemContext.data as Map<String, dynamic>;
     return UserCardWidget(
-      name: data["name"] as String,
-      role: data["role"] as String,
+      name: (data["name"] as String?) ?? "",
+      role: (data["role"] as String?) ?? "",
       isActive: (data["isActive"] as bool?) ?? false,
+      avatarUrl: data["avatarUrl"] as String?,
     );
   },
 );

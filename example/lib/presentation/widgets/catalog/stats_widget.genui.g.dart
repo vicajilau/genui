@@ -26,8 +26,8 @@ final CatalogItem $StatsWidgetCatalogItem = CatalogItem(
   widgetBuilder: (itemContext) {
     final data = itemContext.data as Map<String, dynamic>;
     return StatsWidget(
-      totalTasks: data["totalTasks"] as int,
-      completedTasks: data["completedTasks"] as int,
+      totalTasks: (data["totalTasks"] as int?) ?? 0,
+      completedTasks: (data["completedTasks"] as int?) ?? 0,
     );
   },
 );
