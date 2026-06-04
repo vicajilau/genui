@@ -13,6 +13,9 @@ import 'catalog/custom_button.dart';
 import 'catalog/stats_widget.dart';
 import 'catalog/task_item_widget.dart';
 import 'catalog/user_card_widget.dart';
+import 'catalog/metric_chart_widget.dart';
+import 'catalog/priority_pill_widget.dart';
+import 'catalog/attachment_list_widget.dart';
 
 /// A widget that presents the interactive Component Catalog, permitting developers
 /// to select components, edit properties, inspect payloads, and view live renders.
@@ -48,6 +51,21 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
   String _userName = 'Ada Lovelace';
   String _userRole = 'Lead Architect';
   bool _userActive = true;
+
+  // MetricChartWidget properties
+  String _metricTitle = 'Project Completion';
+  double _metricValue = 0.85;
+  String _metricLegend = 'Completed';
+  String _metricColor = '#6366F1';
+
+  // PriorityPillWidget properties
+  String _pillPriority = 'high';
+  String _pillLabel = 'High Priority';
+
+  // AttachmentListWidget properties
+  String _attachmentTitle = 'Attachments';
+  String _attachmentItemsJson =
+      '[\n  {"name": "Project Proposal.pdf", "type": "pdf", "size": "2.4 MB"},\n  {"name": "Design Mockup.png", "type": "image", "size": "1.8 MB"}\n]';
 
   // Catalog Event Handler
   void _handleCatalogWidgetEvent(String eventJson) {
@@ -98,6 +116,27 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
         return {'totalTasks': _statsTotal, 'completedTasks': _statsCompleted};
       case $UserCardWidgetIdentifier:
         return {'name': _userName, 'role': _userRole, 'isActive': _userActive};
+      case $MetricChartWidgetIdentifier:
+        return {
+          'title': _metricTitle,
+          'value': _metricValue,
+          'legendLabel': _metricLegend,
+          'colorHex': _metricColor.trim(),
+        };
+      case $PriorityPillWidgetIdentifier:
+        return {
+          'priority': _pillPriority,
+          'label': _pillLabel.trim().isEmpty ? null : _pillLabel.trim(),
+        };
+      case $AttachmentListWidgetIdentifier:
+        final List<dynamic> decodedItems = (() {
+          try {
+            final parsed = jsonDecode(_attachmentItemsJson);
+            if (parsed is List) return parsed;
+          } catch (_) {}
+          return const [];
+        })();
+        return {'title': _attachmentTitle, 'items': decodedItems};
       default:
         return {};
     }
@@ -270,6 +309,30 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
                           userActive: _userActive,
                           onUserActiveChanged: (val) =>
                               setState(() => _userActive = val),
+                          metricTitle: _metricTitle,
+                          onMetricTitleChanged: (val) =>
+                              setState(() => _metricTitle = val),
+                          metricValue: _metricValue,
+                          onMetricValueChanged: (val) =>
+                              setState(() => _metricValue = val),
+                          metricLegend: _metricLegend,
+                          onMetricLegendChanged: (val) =>
+                              setState(() => _metricLegend = val),
+                          metricColor: _metricColor,
+                          onMetricColorChanged: (val) =>
+                              setState(() => _metricColor = val),
+                          pillPriority: _pillPriority,
+                          onPillPriorityChanged: (val) =>
+                              setState(() => _pillPriority = val),
+                          pillLabel: _pillLabel,
+                          onPillLabelChanged: (val) =>
+                              setState(() => _pillLabel = val),
+                          attachmentTitle: _attachmentTitle,
+                          onAttachmentTitleChanged: (val) =>
+                              setState(() => _attachmentTitle = val),
+                          attachmentItemsJson: _attachmentItemsJson,
+                          onAttachmentItemsJsonChanged: (val) =>
+                              setState(() => _attachmentItemsJson = val),
                         ),
                       ),
                       const SizedBox(width: 24),
@@ -326,6 +389,30 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
                     userActive: _userActive,
                     onUserActiveChanged: (val) =>
                         setState(() => _userActive = val),
+                    metricTitle: _metricTitle,
+                    onMetricTitleChanged: (val) =>
+                        setState(() => _metricTitle = val),
+                    metricValue: _metricValue,
+                    onMetricValueChanged: (val) =>
+                        setState(() => _metricValue = val),
+                    metricLegend: _metricLegend,
+                    onMetricLegendChanged: (val) =>
+                        setState(() => _metricLegend = val),
+                    metricColor: _metricColor,
+                    onMetricColorChanged: (val) =>
+                        setState(() => _metricColor = val),
+                    pillPriority: _pillPriority,
+                    onPillPriorityChanged: (val) =>
+                        setState(() => _pillPriority = val),
+                    pillLabel: _pillLabel,
+                    onPillLabelChanged: (val) =>
+                        setState(() => _pillLabel = val),
+                    attachmentTitle: _attachmentTitle,
+                    onAttachmentTitleChanged: (val) =>
+                        setState(() => _attachmentTitle = val),
+                    attachmentItemsJson: _attachmentItemsJson,
+                    onAttachmentItemsJsonChanged: (val) =>
+                        setState(() => _attachmentItemsJson = val),
                   ),
                   const SizedBox(height: 24),
                   ComponentJsonInspectorPanel(
@@ -366,6 +453,9 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
       $TaskItemWidgetIdentifier => 'TaskItemWidget',
       $StatsWidgetIdentifier => 'StatsWidget',
       $UserCardWidgetIdentifier => 'UserCardWidget',
+      $MetricChartWidgetIdentifier => 'MetricChartWidget',
+      $PriorityPillWidgetIdentifier => 'PriorityPillWidget',
+      $AttachmentListWidgetIdentifier => 'AttachmentListWidget',
       _ => component,
     };
   }

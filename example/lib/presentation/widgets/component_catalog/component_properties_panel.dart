@@ -27,6 +27,22 @@ class ComponentPropertiesPanel extends StatelessWidget {
     required this.onUserRoleChanged,
     required this.userActive,
     required this.onUserActiveChanged,
+    required this.metricTitle,
+    required this.onMetricTitleChanged,
+    required this.metricValue,
+    required this.onMetricValueChanged,
+    required this.metricLegend,
+    required this.onMetricLegendChanged,
+    required this.metricColor,
+    required this.onMetricColorChanged,
+    required this.pillPriority,
+    required this.onPillPriorityChanged,
+    required this.pillLabel,
+    required this.onPillLabelChanged,
+    required this.attachmentTitle,
+    required this.onAttachmentTitleChanged,
+    required this.attachmentItemsJson,
+    required this.onAttachmentItemsJsonChanged,
   });
 
   final String selectedComponent;
@@ -50,6 +66,22 @@ class ComponentPropertiesPanel extends StatelessWidget {
   final ValueChanged<String> onUserRoleChanged;
   final bool userActive;
   final ValueChanged<bool> onUserActiveChanged;
+  final String metricTitle;
+  final ValueChanged<String> onMetricTitleChanged;
+  final double metricValue;
+  final ValueChanged<double> onMetricValueChanged;
+  final String metricLegend;
+  final ValueChanged<String> onMetricLegendChanged;
+  final String metricColor;
+  final ValueChanged<String> onMetricColorChanged;
+  final String pillPriority;
+  final ValueChanged<String> onPillPriorityChanged;
+  final String pillLabel;
+  final ValueChanged<String> onPillLabelChanged;
+  final String attachmentTitle;
+  final ValueChanged<String> onAttachmentTitleChanged;
+  final String attachmentItemsJson;
+  final ValueChanged<String> onAttachmentItemsJsonChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -173,6 +205,73 @@ class ComponentPropertiesPanel extends StatelessWidget {
           ),
         ];
 
+      case 'MetricChartWidget':
+        return [
+          _buildTextField(
+            label: 'Title',
+            value: metricTitle,
+            onChanged: onMetricTitleChanged,
+          ),
+          const SizedBox(height: 16),
+          _buildSliderField(
+            label: 'Value',
+            value: metricValue,
+            min: 0.0,
+            max: 1.0,
+            divisions: 100,
+            onChanged: onMetricValueChanged,
+          ),
+          const SizedBox(height: 16),
+          _buildTextField(
+            label: 'Legend Label',
+            value: metricLegend,
+            onChanged: onMetricLegendChanged,
+          ),
+          const SizedBox(height: 16),
+          _buildColorField(
+            context: context,
+            label: 'Chart Color',
+            value: metricColor,
+            onChanged: onMetricColorChanged,
+          ),
+        ];
+
+      case 'PriorityPillWidget':
+        return [
+          _buildDropdownField(
+            label: 'Priority',
+            value: pillPriority,
+            items: const ['high', 'medium', 'low'],
+            onChanged: (value) {
+              if (value != null) {
+                onPillPriorityChanged(value);
+              }
+            },
+          ),
+          const SizedBox(height: 16),
+          _buildTextField(
+            label: 'Label (Optional)',
+            value: pillLabel,
+            onChanged: onPillLabelChanged,
+          ),
+        ];
+
+      case 'AttachmentListWidget':
+        return [
+          _buildTextField(
+            label: 'Title',
+            value: attachmentTitle,
+            onChanged: onAttachmentTitleChanged,
+          ),
+          const SizedBox(height: 16),
+          _buildTextField(
+            label: 'Items JSON',
+            value: attachmentItemsJson,
+            onChanged: onAttachmentItemsJsonChanged,
+            maxLines: 5,
+          ),
+        ];
+
       default:
         return [
           const Text(
@@ -187,47 +286,13 @@ class ComponentPropertiesPanel extends StatelessWidget {
     required String label,
     required String value,
     required ValueChanged<String> onChanged,
+    int maxLines = 1,
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Colors.white70,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 6),
-        TextField(
-          controller: TextEditingController.fromValue(
-            TextEditingValue(
-              text: value,
-              selection: TextSelection.collapsed(offset: value.length),
-            ),
-          ),
-          onChanged: onChanged,
-          style: const TextStyle(color: Colors.white, fontSize: 14),
-          decoration: InputDecoration(
-            isDense: true,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 10,
-            ),
-            filled: true,
-            fillColor: const Color(0x33000000),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Colors.white12),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Color(0xFF6366F1)),
-            ),
-          ),
-        ),
-      ],
+    return _CatalogTextField(
+      label: label,
+      value: value,
+      onChanged: onChanged,
+      maxLines: maxLines,
     );
   }
 
@@ -440,7 +505,9 @@ class ComponentPropertiesPanel extends StatelessWidget {
               ),
             ),
             Text(
-              value.toInt().toString(),
+              max <= 1.0
+                  ? '${(value * 100).toInt()}%'
+                  : value.toInt().toString(),
               style: const TextStyle(
                 fontSize: 12,
                 color: Color(0xFF818CF8),
@@ -457,6 +524,99 @@ class ComponentPropertiesPanel extends StatelessWidget {
           activeColor: const Color(0xFF6366F1),
           inactiveColor: Colors.white12,
           onChanged: onChanged,
+        ),
+      ],
+    );
+  }
+}
+
+class _CatalogTextField extends StatefulWidget {
+  final String label;
+  final String value;
+  final ValueChanged<String> onChanged;
+  final int maxLines;
+
+  const _CatalogTextField({
+    required this.label,
+    required this.value,
+    required this.onChanged,
+    this.maxLines = 1,
+  });
+
+  @override
+  State<_CatalogTextField> createState() => _CatalogTextFieldState();
+}
+
+class _CatalogTextFieldState extends State<_CatalogTextField> {
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.value);
+  }
+
+  @override
+  void didUpdateWidget(_CatalogTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.value != oldWidget.value && widget.value != _controller.text) {
+      final oldSelection = _controller.selection;
+      _controller.text = widget.value;
+      try {
+        _controller.selection = oldSelection.copyWith(
+          baseOffset: oldSelection.baseOffset.clamp(0, widget.value.length),
+          extentOffset: oldSelection.extentOffset.clamp(0, widget.value.length),
+        );
+      } catch (_) {
+        _controller.selection = TextSelection.collapsed(
+          offset: widget.value.length,
+        );
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          widget.label,
+          style: const TextStyle(
+            fontSize: 12,
+            color: Colors.white70,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 6),
+        TextField(
+          maxLines: widget.maxLines,
+          controller: _controller,
+          onChanged: widget.onChanged,
+          style: const TextStyle(color: Colors.white, fontSize: 14),
+          decoration: InputDecoration(
+            isDense: true,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 10,
+            ),
+            filled: true,
+            fillColor: const Color(0x33000000),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Colors.white12),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xFF6366F1)),
+            ),
+          ),
         ),
       ],
     );

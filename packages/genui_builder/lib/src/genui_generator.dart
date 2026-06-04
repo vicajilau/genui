@@ -125,7 +125,11 @@ class GenerativeUIGenerator extends GeneratorForAnnotation<GenerativeUI> {
               'S.string(description: "The $name property in hex format (e.g., #FF6366F1).")';
           break;
         default:
-          schemaMethod = 'S.string(description: "The $name property.")';
+          if (type.startsWith('List')) {
+            schemaMethod = 'S.list(description: "The $name property.")';
+          } else {
+            schemaMethod = 'S.string(description: "The $name property.")';
+          }
       }
       buffer.writeln('      "$name": $schemaMethod,');
     });

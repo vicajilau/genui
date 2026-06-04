@@ -4,6 +4,9 @@ import 'package:genui/genui.dart';
 import 'package:example/main.dart';
 import 'package:example/genui_registry.g.dart';
 import 'package:example/presentation/widgets/catalog/user_card_widget.dart';
+import 'package:example/presentation/widgets/catalog/metric_chart_widget.dart';
+import 'package:example/presentation/widgets/catalog/priority_pill_widget.dart';
+import 'package:example/presentation/widgets/catalog/attachment_list_widget.dart';
 
 void main() {
   testWidgets('App renders UserCardWidget from JSON', (
@@ -132,5 +135,124 @@ void main() {
     expect(find.byType(UserCardWidget), findsOneWidget);
     expect(find.byType(ClipOval), findsOneWidget);
     expect(find.byType(Image), findsOneWidget);
+  });
+
+  testWidgets('Catalog builds MetricChartWidget from CatalogItemContext', (
+    WidgetTester tester,
+  ) async {
+    final catalog = globalGenUICatalog;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Builder(
+            builder: (BuildContext context) {
+              final catalogContext = CatalogItemContext(
+                id: 'test_node_chart',
+                type: $MetricChartWidgetIdentifier,
+                data: const {
+                  'title': 'Project Completion',
+                  'value': 0.85,
+                  'legendLabel': 'Done',
+                  'colorHex': '#6366F1',
+                },
+                dispatchEvent: (_) {},
+                buildChild: (_, [_]) => const SizedBox.shrink(),
+                buildContext: context,
+                dataContext: DataContext(InMemoryDataModel(), DataPath.root),
+                getComponent: (_) => null,
+                getCatalogItem: (_) => null,
+                surfaceId: 'test_surface',
+                reportError: (_, [_]) {},
+              );
+
+              return catalog.buildWidget(catalogContext);
+            },
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(MetricChartWidget), findsOneWidget);
+    expect(find.text('Project Completion'), findsOneWidget);
+    expect(find.text('85%'), findsOneWidget);
+    expect(find.text('Done'), findsOneWidget);
+  });
+
+  testWidgets('Catalog builds PriorityPillWidget from CatalogItemContext', (
+    WidgetTester tester,
+  ) async {
+    final catalog = globalGenUICatalog;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Builder(
+            builder: (BuildContext context) {
+              final catalogContext = CatalogItemContext(
+                id: 'test_node_pill',
+                type: $PriorityPillWidgetIdentifier,
+                data: const {'priority': 'high', 'label': 'CRITICAL'},
+                dispatchEvent: (_) {},
+                buildChild: (_, [_]) => const SizedBox.shrink(),
+                buildContext: context,
+                dataContext: DataContext(InMemoryDataModel(), DataPath.root),
+                getComponent: (_) => null,
+                getCatalogItem: (_) => null,
+                surfaceId: 'test_surface',
+                reportError: (_, [_]) {},
+              );
+
+              return catalog.buildWidget(catalogContext);
+            },
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(PriorityPillWidget), findsOneWidget);
+    expect(find.text('CRITICAL'), findsOneWidget);
+  });
+
+  testWidgets('Catalog builds AttachmentListWidget from CatalogItemContext', (
+    WidgetTester tester,
+  ) async {
+    final catalog = globalGenUICatalog;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Builder(
+            builder: (BuildContext context) {
+              final catalogContext = CatalogItemContext(
+                id: 'test_node_attachments',
+                type: $AttachmentListWidgetIdentifier,
+                data: const {
+                  'title': 'Project Files',
+                  'items': [
+                    {'name': 'document.pdf', 'type': 'pdf', 'size': '1.5 MB'},
+                  ],
+                },
+                dispatchEvent: (_) {},
+                buildChild: (_, [_]) => const SizedBox.shrink(),
+                buildContext: context,
+                dataContext: DataContext(InMemoryDataModel(), DataPath.root),
+                getComponent: (_) => null,
+                getCatalogItem: (_) => null,
+                surfaceId: 'test_surface',
+                reportError: (_, [_]) {},
+              );
+
+              return catalog.buildWidget(catalogContext);
+            },
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(AttachmentListWidget), findsOneWidget);
+    expect(find.text('Project Files'), findsOneWidget);
+    expect(find.text('document.pdf'), findsOneWidget);
+    expect(find.text('1.5 MB'), findsOneWidget);
   });
 }

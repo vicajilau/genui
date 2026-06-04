@@ -4,14 +4,20 @@
 import 'package:genui/genui.dart';
 import 'package:json_schema_builder/json_schema_builder.dart';
 
+import 'package:example/presentation/widgets/catalog/attachment_list_widget.dart';
 import 'package:example/presentation/widgets/catalog/custom_button.dart';
+import 'package:example/presentation/widgets/catalog/metric_chart_widget.dart';
+import 'package:example/presentation/widgets/catalog/priority_pill_widget.dart';
 import 'package:example/presentation/widgets/catalog/stats_widget.dart';
 import 'package:example/presentation/widgets/catalog/task_item_widget.dart';
 import 'package:example/presentation/widgets/catalog/user_card_widget.dart';
 
 /// Global list of all auto-generated Generative UI CatalogItems.
 final List<CatalogItem> generatedCatalogItems = [
+  $AttachmentListWidgetCatalogItem,
   $CustomButtonCatalogItem,
+  $MetricChartWidgetCatalogItem,
+  $PriorityPillWidgetCatalogItem,
   $StatsWidgetCatalogItem,
   $TaskItemWidgetCatalogItem,
   $UserCardWidgetCatalogItem,

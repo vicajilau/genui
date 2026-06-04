@@ -122,9 +122,7 @@ class ComponentCatalogPanel extends StatelessWidget {
             Expanded(
               child: ListView(
                 shrinkWrap: true,
-                physics: isWide
-                    ? const ClampingScrollPhysics()
-                    : const NeverScrollableScrollPhysics(),
+                physics: const ClampingScrollPhysics(),
                 padding: EdgeInsets.symmetric(
                   vertical: 4,
                   horizontal: showText ? 12 : 6,
@@ -164,6 +162,33 @@ class ComponentCatalogPanel extends StatelessWidget {
                     'User Card',
                     Icons.person_outline_rounded,
                     'UserCardWidget',
+                    showText,
+                  ),
+                  _buildSidebarItem(
+                    context,
+                    selectedComponent,
+                    onComponentSelected,
+                    'Metric Chart',
+                    Icons.donut_large_rounded,
+                    'MetricChartWidget',
+                    showText,
+                  ),
+                  _buildSidebarItem(
+                    context,
+                    selectedComponent,
+                    onComponentSelected,
+                    'Priority Pill',
+                    Icons.label_important_outline_rounded,
+                    'PriorityPillWidget',
+                    showText,
+                  ),
+                  _buildSidebarItem(
+                    context,
+                    selectedComponent,
+                    onComponentSelected,
+                    'Attachment List',
+                    Icons.attachment_rounded,
+                    'AttachmentListWidget',
                     showText,
                   ),
                 ],
