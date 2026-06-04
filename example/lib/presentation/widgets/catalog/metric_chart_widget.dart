@@ -33,7 +33,8 @@ class MetricChartWidget extends StatelessWidget {
       return val != null ? Color(val) : const Color(0xFF6366F1);
     })();
 
-    final clampValue = value.clamp(0.0, 1.0);
+    final normalizedValue = value > 1.0 ? value / 100.0 : value;
+    final clampValue = normalizedValue.clamp(0.0, 1.0);
     final percentText = '${(clampValue * 100).toInt()}%';
 
     return Container(

@@ -29,7 +29,7 @@ final CatalogItem $MetricChartWidgetCatalogItem = CatalogItem(
     final data = itemContext.data as Map<String, dynamic>;
     return MetricChartWidget(
       title: (data["title"] as String?) ?? "",
-      value: (data["value"] as double?) ?? 0.0,
+      value: ((data["value"] as num?)?.toDouble()) ?? 0.0,
       legendLabel: (data["legendLabel"] as String?) ?? 'Completed',
       colorHex: data["colorHex"] as String?,
     );

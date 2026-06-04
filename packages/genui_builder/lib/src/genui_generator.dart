@@ -229,13 +229,28 @@ class GenerativeUIGenerator extends GeneratorForAnnotation<GenerativeUI> {
             if (typeStr.startsWith('Map')) fallback = 'const {}';
           }
 
+          final baseType = isNullable
+              ? typeStr.substring(0, typeStr.length - 1)
+              : typeStr;
+          final isDouble = baseType == 'double';
+          final isInt = baseType == 'int';
+
+          final String nullableCastExpr;
+          if (isDouble) {
+            nullableCastExpr = '(data["$name"] as num?)?.toDouble()';
+          } else if (isInt) {
+            nullableCastExpr = '(data["$name"] as num?)?.toInt()';
+          } else {
+            nullableCastExpr = 'data["$name"] as $baseType?';
+          }
+
           if (parameter.isRequired) {
             if (isNullable) {
-              buffer.writeln('      $name: data["$name"] as $typeStr,');
+              buffer.writeln('      $name: $nullableCastExpr,');
             } else {
               if (fallback != 'null') {
                 buffer.writeln(
-                  '      $name: (data["$name"] as $typeStr?) ?? $fallback,',
+                  '      $name: ($nullableCastExpr) ?? $fallback,',
                 );
               } else {
                 buffer.writeln('      $name: data["$name"] as $typeStr,');
@@ -245,18 +260,14 @@ class GenerativeUIGenerator extends GeneratorForAnnotation<GenerativeUI> {
             if (isNullable) {
               final defVal = defaultValues[name];
               if (defVal != null) {
-                buffer.writeln(
-                  '      $name: (data["$name"] as $typeStr) ?? $defVal,',
-                );
+                buffer.writeln('      $name: ($nullableCastExpr) ?? $defVal,');
               } else {
-                buffer.writeln('      $name: data["$name"] as $typeStr,');
+                buffer.writeln('      $name: $nullableCastExpr,');
               }
             } else {
               final defVal = defaultValues[name] ?? fallback;
               if (defVal != 'null') {
-                buffer.writeln(
-                  '      $name: (data["$name"] as $typeStr?) ?? $defVal,',
-                );
+                buffer.writeln('      $name: ($nullableCastExpr) ?? $defVal,');
               } else {
                 buffer.writeln('      $name: data["$name"] as $typeStr,');
               }

@@ -179,6 +179,92 @@ void main() {
     expect(find.text('Done'), findsOneWidget);
   });
 
+  testWidgets(
+    'Catalog builds MetricChartWidget from CatalogItemContext when value is double/int (safe parsing)',
+    (WidgetTester tester) async {
+      final catalog = globalGenUICatalog;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Builder(
+              builder: (BuildContext context) {
+                final catalogContext = CatalogItemContext(
+                  id: 'test_node_chart_int',
+                  type: $MetricChartWidgetIdentifier,
+                  data: const {
+                    'title': 'Completion Int',
+                    'value': 1,
+                    'legendLabel': 'Finished',
+                    'colorHex': '#6366F1',
+                  },
+                  dispatchEvent: (_) {},
+                  buildChild: (_, [_]) => const SizedBox.shrink(),
+                  buildContext: context,
+                  dataContext: DataContext(InMemoryDataModel(), DataPath.root),
+                  getComponent: (_) => null,
+                  getCatalogItem: (_) => null,
+                  surfaceId: 'test_surface',
+                  reportError: (_, [_]) {},
+                );
+
+                return catalog.buildWidget(catalogContext);
+              },
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(MetricChartWidget), findsOneWidget);
+      expect(find.text('Completion Int'), findsOneWidget);
+      expect(find.text('100%'), findsOneWidget);
+      expect(find.text('Finished'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'Catalog builds MetricChartWidget from CatalogItemContext when value is > 1.0 (e.g. 88)',
+    (WidgetTester tester) async {
+      final catalog = globalGenUICatalog;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Builder(
+              builder: (BuildContext context) {
+                final catalogContext = CatalogItemContext(
+                  id: 'test_node_chart_large',
+                  type: $MetricChartWidgetIdentifier,
+                  data: const {
+                    'title': 'Storage Use',
+                    'value': 88,
+                    'legendLabel': 'Lleno',
+                    'colorHex': '#EF4444',
+                  },
+                  dispatchEvent: (_) {},
+                  buildChild: (_, [_]) => const SizedBox.shrink(),
+                  buildContext: context,
+                  dataContext: DataContext(InMemoryDataModel(), DataPath.root),
+                  getComponent: (_) => null,
+                  getCatalogItem: (_) => null,
+                  surfaceId: 'test_surface',
+                  reportError: (_, [_]) {},
+                );
+
+                return catalog.buildWidget(catalogContext);
+              },
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(MetricChartWidget), findsOneWidget);
+      expect(find.text('Storage Use'), findsOneWidget);
+      expect(find.text('88%'), findsOneWidget);
+      expect(find.text('Lleno'), findsOneWidget);
+    },
+  );
+
   testWidgets('Catalog builds PriorityPillWidget from CatalogItemContext', (
     WidgetTester tester,
   ) async {
