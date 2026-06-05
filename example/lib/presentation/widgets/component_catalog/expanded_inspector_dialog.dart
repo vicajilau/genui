@@ -1,34 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'expanded_inspector_dialog.dart';
 
-/// A widget panel that displays compiled JSON outputs (A2UI payloads, component schemas,
-/// and global registries) and provides a copy action and an expanded overlay dialog.
-class ComponentJsonInspectorPanel extends StatefulWidget {
-  const ComponentJsonInspectorPanel({
+/// An overlay modal dialog presenting the expanded view of the JSON inspector.
+class ExpandedInspectorDialog extends StatefulWidget {
+  const ExpandedInspectorDialog({
     super.key,
+    required this.initialTab,
     required this.payloadJson,
     required this.schemaJson,
     required this.globalSchemasJson,
+    required this.onTabChanged,
   });
 
+  final int initialTab;
   final String payloadJson;
   final String schemaJson;
   final String globalSchemasJson;
+  final ValueChanged<int> onTabChanged;
 
   @override
-  State<ComponentJsonInspectorPanel> createState() =>
-      _ComponentJsonInspectorPanelState();
+  State<ExpandedInspectorDialog> createState() =>
+      _ExpandedInspectorDialogState();
 }
 
-class _ComponentJsonInspectorPanelState
-    extends State<ComponentJsonInspectorPanel> {
-  int _activeTab = 0; // 0: Payload, 1: Schema, 2: Global
-  final ScrollController _scrollController = ScrollController();
+class _ExpandedInspectorDialogState extends State<ExpandedInspectorDialog> {
+  late int _activeTab;
+  final ScrollController _dialogScrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _activeTab = widget.initialTab;
+  }
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    _dialogScrollController.dispose();
     super.dispose();
   }
 
@@ -72,53 +79,44 @@ class _ComponentJsonInspectorPanelState
     );
   }
 
-  void _handleExpand() {
-    showDialog(
-      context: context,
-      builder: (context) => ExpandedInspectorDialog(
-        initialTab: _activeTab,
-        payloadJson: widget.payloadJson,
-        schemaJson: widget.schemaJson,
-        globalSchemasJson: widget.globalSchemasJson,
-        onTabChanged: (newTab) {
-          setState(() {
-            _activeTab = newTab;
-          });
-        },
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: const Color(0x1F1E293B),
+    final mediaQuery = MediaQuery.of(context);
+    final isMobile = mediaQuery.size.width < 600;
+
+    return Dialog(
+      backgroundColor: const Color(0xFF0F172A),
+      insetPadding: isMobile
+          ? const EdgeInsets.all(12)
+          : const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         side: const BorderSide(color: Colors.white10),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
+      child: Container(
+        width: isMobile ? double.infinity : mediaQuery.size.width * 0.8,
+        height: isMobile ? double.infinity : mediaQuery.size.height * 0.85,
+        padding: const EdgeInsets.all(24.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Dialog Header
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Row(
+                Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.code_rounded,
                       color: Color(0xFF06B6D4),
-                      size: 18,
+                      size: 22,
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Text(
-                      'INSPECTOR',
+                      'EXPANDED INSPECTOR',
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize: isMobile ? 12 : 14,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white38,
+                        color: Colors.white,
                         letterSpacing: 1.5,
                       ),
                     ),
@@ -128,27 +126,27 @@ class _ComponentJsonInspectorPanelState
                   children: [
                     IconButton(
                       icon: const Icon(
-                        Icons.fullscreen_rounded,
-                        color: Colors.white70,
-                        size: 20,
-                      ),
-                      tooltip: 'Expand viewer',
-                      onPressed: _handleExpand,
-                    ),
-                    IconButton(
-                      icon: const Icon(
                         Icons.copy_rounded,
                         color: Colors.white70,
-                        size: 16,
+                        size: 18,
                       ),
                       tooltip: 'Copy active JSON',
                       onPressed: _handleCopy,
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.close_rounded,
+                        color: Colors.white70,
+                        size: 20,
+                      ),
+                      tooltip: 'Close',
+                      onPressed: () => Navigator.of(context).pop(),
                     ),
                   ],
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             // Custom Segmented Tabs
             Container(
               padding: const EdgeInsets.all(4),
@@ -166,28 +164,29 @@ class _ComponentJsonInspectorPanelState
               ),
             ),
             const SizedBox(height: 16),
-            // Code Viewer
-            Container(
-              width: double.infinity,
-              height: 320,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFF090D16),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.white10),
-              ),
-              child: Scrollbar(
-                controller: _scrollController,
-                thumbVisibility: true,
-                child: SingleChildScrollView(
-                  controller: _scrollController,
-                  child: SelectableText(
-                    _getActiveJson(),
-                    style: const TextStyle(
-                      fontFamily: 'monospace',
-                      fontSize: 12,
-                      color: Color(0xFFA5F3FC),
-                      height: 1.4,
+            // Expanded Code Viewer
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF090D16),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.white10),
+                ),
+                child: Scrollbar(
+                  controller: _dialogScrollController,
+                  thumbVisibility: true,
+                  child: SingleChildScrollView(
+                    controller: _dialogScrollController,
+                    child: SelectableText(
+                      _getActiveJson(),
+                      style: const TextStyle(
+                        fontFamily: 'monospace',
+                        fontSize: 13,
+                        color: Color(0xFFA5F3FC),
+                        height: 1.5,
+                      ),
                     ),
                   ),
                 ),
@@ -203,9 +202,14 @@ class _ComponentJsonInspectorPanelState
     final isActive = _activeTab == index;
     return Expanded(
       child: GestureDetector(
-        onTap: () => setState(() => _activeTab = index),
+        onTap: () {
+          setState(() {
+            _activeTab = index;
+          });
+          widget.onTabChanged(index);
+        },
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
             color: isActive ? const Color(0xFF1E293B) : Colors.transparent,
             borderRadius: BorderRadius.circular(8),
@@ -217,7 +221,7 @@ class _ComponentJsonInspectorPanelState
             label,
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 11,
+              fontSize: 12,
               fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
               color: isActive ? const Color(0xFF818CF8) : Colors.white60,
             ),

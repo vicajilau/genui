@@ -229,12 +229,7 @@ class GeminiChatController extends ChangeNotifier {
     ]);
     final capabilitiesJson = jsonEncode(capabilities.toJson());
 
-    final schemasDesc = StringBuffer();
-    for (final item in globalGenUICatalog.items) {
-      final schema = item.dataSchema.toJson();
-      schemasDesc.writeln('- Component: "${item.name}"');
-      schemasDesc.writeln('  Schema: ${jsonEncode(schema)}');
-    }
+    final schemasDesc = globalGenUISchemasPromptDescription;
 
     return '''
 You are a GenUI assistant that helps users manage their task board and team.

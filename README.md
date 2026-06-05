@@ -173,6 +173,35 @@ void handleWidgetEvent(String eventJson) {
 
 *Note: For callbacks that take arguments (e.g. `ValueChanged<bool> onChanged`), parameter names and values are automatically appended to the event's `context` map (e.g. `event.context['value']`).*
 
+### 4. Decoupled AI Schema Sharing (e.g. Google Genkit)
+
+GenUI supports exporting your UI component schemas in a framework-agnostic way. This is ideal if you are orchestrating your AI models in a separate Node.js, Go, or Python backend (like Google Genkit).
+
+#### In-Memory Usage (Client-Side LLM)
+If your AI runs locally on the device or if you have a Dart backend, you can fetch pre-formatted schemas directly from `genui_registry.g.dart`:
+
+```dart
+// 1. Raw Dart Map of JSON Schemas:
+Map<String, Map<String, dynamic>> schemas = globalGenUISchemas;
+
+// 2. Pre-formatted Markdown list ready for LLM System Instructions:
+String systemInstruction = '''
+You are a GenUI assistant. You must respond using components defined here:
+$globalGenUISchemasPromptDescription
+''';
+```
+
+#### Static File Export (Backend Genkit/TypeScript)
+During compilation (`melos run build_runner`), GenUI automatically exports a standard JSON Schema file containing all registered widgets to `example/build/genui_schemas.json`.
+
+To export this file directly to a custom directory (e.g. your backend workspace), set the `GENUI_EXPORT_PATH` environment variable:
+
+```bash
+GENUI_EXPORT_PATH=../my-genkit-backend/src/genui_schemas.json melos run build_runner
+```
+
+This acts as the API contract between Flutter and the Genkit server. Your Genkit backend can import the JSON schema directly at startup and register it as tools or structured output schemas.
+
 ---
 
 ## 📄 License

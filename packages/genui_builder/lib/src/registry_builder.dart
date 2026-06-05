@@ -60,6 +60,7 @@ class GenUIRegistryBuilder implements Builder {
     buffer.writeln('// GENERATED CODE - DO NOT MODIFY BY HAND');
     buffer.writeln('// ignore_for_file: type=lint, unused_import');
     buffer.writeln('');
+    buffer.writeln("import 'dart:convert';");
     buffer.writeln("import 'package:genui/genui.dart';");
     buffer.writeln(
       "import 'package:json_schema_builder/json_schema_builder.dart';",
@@ -92,6 +93,35 @@ class GenUIRegistryBuilder implements Builder {
     buffer.writeln('  ],');
     buffer.writeln("  catalogId: 'inline_catalog',");
     buffer.writeln(');');
+    buffer.writeln('');
+    buffer.writeln('/// Exported JSON Schema map of all custom components.');
+    buffer.writeln(
+      'Map<String, Map<String, dynamic>> get globalGenUISchemas => {',
+    );
+    buffer.writeln('  for (final item in generatedCatalogItems)');
+    buffer.writeln(
+      '    item.name: jsonDecode(item.dataSchema.toJson()) as Map<String, dynamic>,',
+    );
+    buffer.writeln('};');
+    buffer.writeln('');
+    buffer.writeln(
+      '/// JSON-encoded string of the schemas for local/in-memory use.',
+    );
+    buffer.writeln(
+      'String get globalGenUISchemasJson => jsonEncode(globalGenUISchemas);',
+    );
+    buffer.writeln('');
+    buffer.writeln(
+      '/// A pre-formatted prompt description listing all component schemas for LLM system instructions.',
+    );
+    buffer.writeln('String get globalGenUISchemasPromptDescription {');
+    buffer.writeln('  final buffer = StringBuffer();');
+    buffer.writeln('  globalGenUISchemas.forEach((name, schema) {');
+    buffer.writeln('    buffer.writeln(\'- Component: "\$name"\');');
+    buffer.writeln('    buffer.writeln(\'  Schema: \${jsonEncode(schema)}\');');
+    buffer.writeln('  });');
+    buffer.writeln('  return buffer.toString();');
+    buffer.writeln('}');
 
     final outputAsset = AssetId(
       buildStep.inputId.package,

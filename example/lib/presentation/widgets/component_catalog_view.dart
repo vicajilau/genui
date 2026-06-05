@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:genui/genui.dart';
 import 'package:genui_annotations/genui_annotations.dart';
 
@@ -416,20 +415,15 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
                       const SizedBox(width: 24),
                       Expanded(
                         child: ComponentJsonInspectorPanel(
-                          jsonStr: _getSelectedComponentJson(),
-                          onCopy: () {
-                            Clipboard.setData(
-                              ClipboardData(text: _getSelectedComponentJson()),
-                            );
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'A2UI JSON payload copied to clipboard!',
-                                ),
-                                duration: Duration(seconds: 1),
+                          payloadJson: _getSelectedComponentJson(),
+                          schemaJson: const JsonEncoder.withIndent('  ')
+                              .convert(
+                                globalGenUISchemas[_selectedComponent] ??
+                                    {'error': 'No schema available'},
                               ),
-                            );
-                          },
+                          globalSchemasJson: const JsonEncoder.withIndent(
+                            '  ',
+                          ).convert(globalGenUISchemas),
                         ),
                       ),
                     ],
@@ -509,20 +503,14 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
                   ),
                   const SizedBox(height: 24),
                   ComponentJsonInspectorPanel(
-                    jsonStr: _getSelectedComponentJson(),
-                    onCopy: () {
-                      Clipboard.setData(
-                        ClipboardData(text: _getSelectedComponentJson()),
-                      );
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'A2UI JSON payload copied to clipboard!',
-                          ),
-                          duration: Duration(seconds: 1),
-                        ),
-                      );
-                    },
+                    payloadJson: _getSelectedComponentJson(),
+                    schemaJson: const JsonEncoder.withIndent('  ').convert(
+                      globalGenUISchemas[_selectedComponent] ??
+                          {'error': 'No schema available'},
+                    ),
+                    globalSchemasJson: const JsonEncoder.withIndent(
+                      '  ',
+                    ).convert(globalGenUISchemas),
                   ),
                 ],
               ],
