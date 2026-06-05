@@ -1,17 +1,26 @@
+// ignore_for_file: prefer_initializing_formals
+
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:genui/genui.dart';
 import '../../data/models/chat_timeline_item.dart';
+import '../../data/services/chat_service.dart';
+import '../../data/services/connection_settings_service.dart';
+import '../../data/services/gemini_serverless_chat_service.dart';
 import '../../data/services/gemini_service.dart';
+import '../../data/services/local_gemma_chat_service.dart';
+import '../../data/services/serverpod_chat_service.dart';
 import '../../genui_registry.g.dart';
 
 /// A controller managing the state and events of the Gemini AI chat,
 /// including prompt sending, response streaming, A2UI action interception,
 /// and surface controller linking.
 class GeminiChatController extends ChangeNotifier {
+  final ConnectionSettingsService _settingsService;
   final GeminiService _geminiService;
-  final String Function() _getApiKey;
+  late ChatService _chatService;
+  String? _lastPrompt;
 
   final List<ChatTimelineItem> _chatHistory = [];
   final List<Map<String, dynamic>> _geminiHistory = [];
@@ -38,9 +47,11 @@ class GeminiChatController extends ChangeNotifier {
   Stream<String> get errors => _errorController.stream;
 
   GeminiChatController({
-    required this._geminiService,
-    required this._getApiKey,
-  }) {
+    required ConnectionSettingsService settingsService,
+    required GeminiService geminiService,
+  }) : _settingsService = settingsService,
+       _geminiService = geminiService {
+    _initChatService();
     _aiController = SurfaceController(catalogs: [globalGenUICatalog]);
     _aiTransport = A2uiTransportAdapter(onSend: _onSendToGemini);
     final uniqueTransport = UniqueSurfaceTransport(
@@ -54,6 +65,38 @@ class GeminiChatController extends ChangeNotifier {
 
     _setupConversationSub();
     _setupIncomingMessagesSub(uniqueTransport);
+  }
+
+  void _initChatService() {
+    final mode = _settingsService.activeChatMode;
+    switch (mode) {
+      case ChatMode.serverless:
+        _chatService = GeminiServerlessChatService(
+          geminiService: _geminiService,
+          getApiKey: () => _settingsService.apiKey,
+          systemInstruction: _buildSystemInstruction(),
+        );
+        break;
+      case ChatMode.local:
+        _chatService = LocalGemmaChatService(
+          modelPath: _settingsService.localModelPath,
+          temperature: _settingsService.localTemperature,
+        );
+        break;
+      case ChatMode.serverpod:
+        _chatService = ServerpodChatService(
+          serverUrl: _settingsService.serverpodUrl,
+        );
+        break;
+    }
+    // Asynchronous initialization
+    _chatService.initialize();
+  }
+
+  void reloadSettings() {
+    _chatService.dispose();
+    _initChatService();
+    notifyListeners();
   }
 
   void _setupConversationSub() {
@@ -101,11 +144,6 @@ class GeminiChatController extends ChangeNotifier {
     if (_hasError) {
       _hasError = false;
       _lastErrorMessage = null;
-      // If the last item in gemini history was a user prompt that failed to get a response,
-      // and the user is writing a new prompt instead of retrying, remove the failed one from history.
-      if (_geminiHistory.isNotEmpty && _geminiHistory.last['role'] == 'user') {
-        _geminiHistory.removeLast();
-      }
     }
 
     _chatHistory.add(ChatTimelineItem(isUser: true, text: trimmed));
@@ -127,13 +165,6 @@ class GeminiChatController extends ChangeNotifier {
       }
     }
 
-    final apiKey = _getApiKey();
-    if (apiKey.isEmpty) {
-      throw StateError('Gemini API Key is not configured.');
-    }
-
-    final systemInstruction = _buildSystemInstruction();
-
     final promptParts = <Map<String, dynamic>>[];
     for (final part in message.parts) {
       if (part is TextPart) {
@@ -144,8 +175,8 @@ class GeminiChatController extends ChangeNotifier {
         promptParts.add({'text': part.toString()});
       }
     }
-
-    _geminiHistory.add({'role': 'user', 'parts': promptParts});
+    final promptText = promptParts.map((p) => p['text'] as String).join('\n');
+    _lastPrompt = promptText;
 
     _isFirstChunkOfResponse = true;
     _isWaiting = true;
@@ -153,17 +184,13 @@ class GeminiChatController extends ChangeNotifier {
     _lastErrorMessage = null;
     notifyListeners();
 
-    await _streamResponseFromGemini(apiKey, systemInstruction);
+    await _streamResponse(promptText);
   }
 
-  Future<void> _streamResponseFromGemini(
-    String apiKey,
-    String systemInstruction,
-  ) async {
+  Future<void> _streamResponse(String promptText) async {
     try {
-      final responseStream = _geminiService.streamGenerateContent(
-        apiKey: apiKey,
-        systemInstruction: systemInstruction,
+      final responseStream = _chatService.sendMessage(
+        prompt: promptText,
         history: _geminiHistory,
       );
 
@@ -173,6 +200,12 @@ class GeminiChatController extends ChangeNotifier {
         _aiTransport.addChunk(chunk);
       }
 
+      _geminiHistory.add({
+        'role': 'user',
+        'parts': [
+          {'text': promptText},
+        ],
+      });
       _geminiHistory.add({
         'role': 'model',
         'parts': [
@@ -194,12 +227,7 @@ class GeminiChatController extends ChangeNotifier {
   }
 
   Future<void> retry() async {
-    if (!_hasError) return;
-
-    final apiKey = _getApiKey();
-    if (apiKey.isEmpty) {
-      throw StateError('Gemini API Key is not configured.');
-    }
+    if (!_hasError || _lastPrompt == null) return;
 
     // Clean up last partial model message if any from chat history
     if (_chatHistory.isNotEmpty &&
@@ -214,12 +242,10 @@ class GeminiChatController extends ChangeNotifier {
     _lastErrorMessage = null;
     notifyListeners();
 
-    final systemInstruction = _buildSystemInstruction();
-
     try {
-      await _streamResponseFromGemini(apiKey, systemInstruction);
+      await _streamResponse(_lastPrompt!);
     } catch (e) {
-      // Errors are already handled inside _streamResponseFromGemini
+      // Errors are already handled inside _streamResponse
     }
   }
 
@@ -318,12 +344,16 @@ Always follow these rules strictly.
     _hasError = false;
     _lastErrorMessage = null;
     _surfaceCounter = 0;
+    _lastPrompt = null;
 
     _conversationEventSub?.cancel();
     _incomingMessagesSub?.cancel();
     _aiConversation.dispose();
     _aiTransport.dispose();
     _aiController.dispose();
+
+    _chatService.dispose();
+    _initChatService();
 
     _aiController = SurfaceController(catalogs: [globalGenUICatalog]);
     _aiTransport = A2uiTransportAdapter(onSend: _onSendToGemini);
@@ -349,6 +379,7 @@ Always follow these rules strictly.
     _aiTransport.dispose();
     _aiController.dispose();
     _errorController.close();
+    _chatService.dispose();
     super.dispose();
   }
 }

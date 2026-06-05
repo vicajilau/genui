@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
-/// A widget displaying a warning screen and API key entry input field when
-/// the Gemini API Key is missing or unconfigured.
-class ApiKeyWarningCard extends StatelessWidget {
-  final bool Function(String) onValidate;
-  final Future<void> Function(String) onSave;
+/// A widget displaying a warning screen and settings configuration button when
+/// the active AI connection settings (Gemini, Local Gemma, or Serverpod) are missing or invalid.
+class ConnectionWarningCard extends StatelessWidget {
+  final String title;
+  final String description;
   final Future<void> Function() onOpenSettings;
 
-  const ApiKeyWarningCard({
+  const ConnectionWarningCard({
     super.key,
-    required this.onValidate,
-    required this.onSave,
+    required this.title,
+    required this.description,
     required this.onOpenSettings,
   });
 
@@ -53,9 +53,9 @@ class ApiKeyWarningCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              const Text(
-                'Gemini API Key Required',
-                style: TextStyle(
+              Text(
+                title,
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -63,9 +63,9 @@ class ApiKeyWarningCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              const Text(
-                'To begin chatting with the model and rendering dynamic Generative UI surfaces in real-time, please configure a Gemini API key. Your key is stored securely using device-local encryption.',
-                style: TextStyle(
+              Text(
+                description,
+                style: const TextStyle(
                   fontSize: 13,
                   color: Colors.white60,
                   height: 1.5,

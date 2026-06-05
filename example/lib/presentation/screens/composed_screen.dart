@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../../data/services/api_key_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../data/services/connection_settings_service.dart';
 import '../../data/services/gemini_service.dart';
 import '../controllers/gemini_chat_controller.dart';
-import '../widgets/api_key_warning_card.dart';
+import '../widgets/connection_warning_card.dart';
 import '../widgets/chat_input_bar.dart';
 import '../widgets/chat_message_bubble.dart';
 import '../widgets/settings_dialog.dart';
@@ -26,12 +27,12 @@ class _ComposedScreenState extends State<ComposedScreen>
   final ScrollController _scrollController = ScrollController();
 
   // Services & Controllers
-  final ApiKeyService _apiKeyService = ApiKeyService();
   final GeminiService _geminiService = GeminiService();
-  late final GeminiChatController _chatController;
+  ConnectionSettingsService? _settingsService;
+  GeminiChatController? _chatController;
 
   // App States
-  String _geminiApiKey = '';
+  bool _isLoadingSettings = true;
   bool _isSettingsDialogOpen = false;
 
   @override
@@ -39,14 +40,22 @@ class _ComposedScreenState extends State<ComposedScreen>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(_handleTabChange);
+    _initSettingsAndController();
+  }
 
-    // Initialize the Chat Controller with dynamic API Key getter
-    _chatController = GeminiChatController(
-      geminiService: _geminiService,
-      getApiKey: () => _geminiApiKey,
-    );
-
-    _loadStoredApiKey();
+  Future<void> _initSettingsAndController() async {
+    final prefs = await SharedPreferences.getInstance();
+    final settingsService = ConnectionSettingsService(prefs);
+    if (mounted) {
+      setState(() {
+        _settingsService = settingsService;
+        _chatController = GeminiChatController(
+          settingsService: settingsService,
+          geminiService: _geminiService,
+        );
+        _isLoadingSettings = false;
+      });
+    }
   }
 
   @override
@@ -54,7 +63,7 @@ class _ComposedScreenState extends State<ComposedScreen>
     _tabController.removeListener(_handleTabChange);
     _tabController.dispose();
     _scrollController.dispose();
-    _chatController.dispose();
+    _chatController?.dispose();
     super.dispose();
   }
 
@@ -65,76 +74,37 @@ class _ComposedScreenState extends State<ComposedScreen>
     if (_tabController.indexIsChanging) {
       FocusManager.instance.primaryFocus?.unfocus();
     }
-    if (_tabController.index == 1 && !_tabController.indexIsChanging) {
-      _promptForApiKeyIfNeeded();
-    }
-  }
-
-  Future<void> _loadStoredApiKey() async {
-    final key = await _apiKeyService.getApiKey();
-    if (key != null && key.isNotEmpty && mounted) {
-      setState(() {
-        _geminiApiKey = key;
-      });
-    } else {
-      _promptForApiKeyIfNeeded();
-    }
-  }
-
-  Future<void> _saveApiKey(String key) async {
-    await _apiKeyService.saveApiKey(key);
-    if (mounted) {
-      setState(() {
-        _geminiApiKey = key;
-      });
-    }
-  }
-
-  Future<void> _deleteApiKey() async {
-    await _apiKeyService.deleteApiKey();
-    if (mounted) {
-      setState(() {
-        _geminiApiKey = '';
-      });
-      _promptForApiKeyIfNeeded();
-    }
   }
 
   Future<void> _showSettingsDialog() async {
-    if (_isSettingsDialogOpen || !mounted) {
+    if (_isSettingsDialogOpen || !mounted || _settingsService == null) {
       return;
     }
 
     _isSettingsDialogOpen = true;
     try {
+      final settings = _settingsService!;
+      final isChatVisible =
+          _tabController.index == 1 &&
+          (settings.chatMode != ChatMode.serverless ||
+              settings.apiKey.isNotEmpty);
+
       await showDialog(
         context: context,
         builder: (context) => SettingsDialog(
-          initialApiKey: _geminiApiKey,
-          onValidate: _apiKeyService.isValidApiKey,
-          onSave: _saveApiKey,
-          onDelete: _deleteApiKey,
-          isChatVisible: _tabController.index == 1 && _geminiApiKey.isNotEmpty,
+          settingsService: settings,
+          onSave: () async {
+            _chatController?.reloadSettings();
+            if (mounted) {
+              setState(() {});
+            }
+          },
+          isChatVisible: isChatVisible,
         ),
       );
     } finally {
       _isSettingsDialogOpen = false;
     }
-  }
-
-  void _promptForApiKeyIfNeeded() {
-    if (!mounted ||
-        _tabController.index != 1 ||
-        _geminiApiKey.isNotEmpty ||
-        _isSettingsDialogOpen) {
-      return;
-    }
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && _geminiApiKey.isEmpty && !_isSettingsDialogOpen) {
-        _showSettingsDialog();
-      }
-    });
   }
 
   void _scrollToBottom() {
@@ -149,8 +119,49 @@ class _ComposedScreenState extends State<ComposedScreen>
     });
   }
 
+  String _getChatTabLabel() {
+    if (_settingsService == null) return 'AI Chat';
+    final mode = _settingsService!.hasAnyValidConfig
+        ? _settingsService!.activeChatMode
+        : _settingsService!.chatMode;
+    switch (mode) {
+      case ChatMode.serverless:
+        return 'Gemini AI Chat';
+      case ChatMode.local:
+        return 'Local Gemma Chat';
+      case ChatMode.serverpod:
+        return 'Serverpod Chat';
+    }
+  }
+
+  String _getChatHintText() {
+    if (_settingsService == null) return 'Ask the model to create widgets...';
+    final mode = _settingsService!.hasAnyValidConfig
+        ? _settingsService!.activeChatMode
+        : _settingsService!.chatMode;
+    switch (mode) {
+      case ChatMode.serverless:
+        return 'Ask Gemini to create widgets...';
+      case ChatMode.local:
+        return 'Ask Gemma to create widgets...';
+      case ChatMode.serverpod:
+        return 'Ask Serverpod to create widgets...';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_isLoadingSettings) {
+      return const Scaffold(
+        backgroundColor: Color(0xFF0F172A),
+        body: Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6366F1)),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('GenUI Playground'),
@@ -171,12 +182,15 @@ class _ComposedScreenState extends State<ComposedScreen>
             fontWeight: FontWeight.bold,
             letterSpacing: 0.5,
           ),
-          tabs: const [
-            Tab(
+          tabs: [
+            const Tab(
               icon: Icon(Icons.dashboard_customize),
               text: 'Component Catalog',
             ),
-            Tab(icon: Icon(Icons.forum_outlined), text: 'Gemini AI Chat'),
+            Tab(
+              icon: const Icon(Icons.forum_outlined),
+              text: _getChatTabLabel(),
+            ),
           ],
         ),
       ),
@@ -206,33 +220,42 @@ class _ComposedScreenState extends State<ComposedScreen>
   }
 
   Widget _buildGeminiChatTab() {
-    if (_geminiApiKey.isEmpty) {
-      return ApiKeyWarningCard(
-        onValidate: _apiKeyService.isValidApiKey,
-        onSave: _saveApiKey,
+    final settings = _settingsService!;
+
+    if (!settings.hasAnyValidConfig) {
+      return ConnectionWarningCard(
+        title: 'No Chat Connection Configured',
+        description:
+            'To start using the chat interface and rendering Generative UI in real-time, please open settings and configure at least one of the execution modes:\n\n'
+            '• Serverless: Enter a Gemini API Key to connect directly from the client.\n'
+            '• Local Model: Provide a model path (e.g. gemma-2b-it.bin) for on-device inference.\n'
+            '• Serverpod: Configure a remote Serverpod server URL.',
         onOpenSettings: _showSettingsDialog,
       );
     }
 
+    final controller = _chatController!;
+
     return ListenableBuilder(
-      listenable: _chatController,
+      listenable: controller,
       builder: (context, _) {
         return Column(
           children: [
+            _buildChatModeStatusBar(settings),
             Expanded(
               child: ListView.builder(
                 controller: _scrollController,
                 padding: const EdgeInsets.all(16.0),
-                itemCount: _chatController.chatHistory.length,
+                itemCount: controller.chatHistory.length,
                 itemBuilder: (context, index) {
                   return ChatMessageBubble(
-                    item: _chatController.chatHistory[index],
-                    controller: _chatController.aiController,
+                    item: controller.chatHistory[index],
+                    controller: controller.aiController,
                   );
                 },
               ),
             ),
-            if (_chatController.isWaiting)
+            if (controller.isWaiting)
               const Padding(
                 padding: EdgeInsets.all(12.0),
                 child: Center(
@@ -248,7 +271,7 @@ class _ComposedScreenState extends State<ComposedScreen>
                   ),
                 ),
               ),
-            if (_chatController.hasError)
+            if (controller.hasError)
               Padding(
                 padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 8.0),
                 child: Container(
@@ -280,7 +303,7 @@ class _ComposedScreenState extends State<ComposedScreen>
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              _chatController.lastErrorMessage ??
+                              controller.lastErrorMessage ??
                                   'Network request failed.',
                               style: const TextStyle(
                                 color: Colors.white70,
@@ -295,7 +318,7 @@ class _ComposedScreenState extends State<ComposedScreen>
                       const SizedBox(width: 12),
                       ElevatedButton.icon(
                         onPressed: () {
-                          _chatController.retry();
+                          controller.retry();
                           _scrollToBottom();
                         },
                         icon: const Icon(Icons.replay_rounded, size: 16),
@@ -323,15 +346,177 @@ class _ComposedScreenState extends State<ComposedScreen>
               ),
             ChatInputBar(
               onSend: (prompt) {
-                _chatController.sendUserPrompt(prompt);
+                controller.sendUserPrompt(prompt);
                 _scrollToBottom();
               },
-              onClear: _chatController.clearChat,
+              onClear: controller.clearChat,
               autofocus: _tabController.index == 1,
+              hintText: _getChatHintText(),
             ),
           ],
         );
       },
+    );
+  }
+
+  Widget _buildChatModeStatusBar(ConnectionSettingsService settings) {
+    final activeMode = settings.activeChatMode;
+    final configured = settings.configuredModes;
+
+    IconData modeIcon;
+    String modeLabel;
+    Color modeColor;
+
+    switch (activeMode) {
+      case ChatMode.serverless:
+        modeIcon = Icons.cloud_queue;
+        modeLabel = 'Serverless Gemini';
+        modeColor = const Color(0xFF6366F1);
+        break;
+      case ChatMode.local:
+        modeIcon = Icons.phonelink_setup;
+        modeLabel = 'Local Gemma';
+        modeColor = const Color(0xFF10B981);
+        break;
+      case ChatMode.serverpod:
+        modeIcon = Icons.dns;
+        modeLabel = 'Serverpod Remote';
+        modeColor = const Color(0xFF3B82F6);
+        break;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      decoration: const BoxDecoration(
+        color: Color(0xFF1E293B),
+        border: Border(
+          bottom: BorderSide(color: Color(0xFF0F172A), width: 2.0),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: modeColor.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: modeColor.withValues(alpha: 0.3)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: modeColor,
+                    boxShadow: [
+                      BoxShadow(
+                        color: modeColor,
+                        blurRadius: 6,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Icon(modeIcon, size: 14, color: modeColor),
+                const SizedBox(width: 6),
+                Text(
+                  modeLabel,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: modeColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Spacer(),
+          if (configured.length > 1)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+              decoration: BoxDecoration(
+                color: const Color(0xFF0F172A),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.white10),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<ChatMode>(
+                  value: activeMode,
+                  dropdownColor: const Color(0xFF1E293B),
+                  icon: const Icon(
+                    Icons.arrow_drop_down,
+                    color: Colors.white60,
+                    size: 20,
+                  ),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  onChanged: (newMode) async {
+                    if (newMode != null && newMode != activeMode) {
+                      await settings.setChatMode(newMode);
+                      _chatController?.reloadSettings();
+                      if (mounted) {
+                        setState(() {});
+                      }
+                    }
+                  },
+                  items: configured.map((mode) {
+                    String label;
+                    switch (mode) {
+                      case ChatMode.serverless:
+                        label = 'Serverless';
+                        break;
+                      case ChatMode.local:
+                        label = 'Local';
+                        break;
+                      case ChatMode.serverpod:
+                        label = 'Serverpod';
+                        break;
+                    }
+                    return DropdownMenuItem<ChatMode>(
+                      value: mode,
+                      child: Text(label),
+                    );
+                  }).toList(),
+                ),
+              ),
+            )
+          else
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: const Color(0xFF0F172A),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.white10),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.lock_outline_rounded,
+                    color: Colors.white30,
+                    size: 12,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Active Mode',
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Colors.white.withValues(alpha: 0.5),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

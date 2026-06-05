@@ -9,11 +9,14 @@ import 'package:example/presentation/widgets/catalog/priority_pill_widget.dart';
 import 'package:example/presentation/widgets/catalog/attachment_list_widget.dart';
 import 'package:example/presentation/widgets/catalog/timeline_widget.dart';
 import 'package:example/presentation/widgets/catalog/alert_banner_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   testWidgets('App renders UserCardWidget from JSON', (
     WidgetTester tester,
   ) async {
+    SharedPreferences.setMockInitialValues({});
+
     // Set desktop window size to ensure the catalog panel is fully visible in wide layout
     tester.view.physicalSize = const Size(1200, 800);
     tester.view.devicePixelRatio = 1.0;
@@ -22,6 +25,11 @@ void main() {
 
     // Build our app and trigger a frame.
     await tester.pumpWidget(const MainApp());
+    await tester.pump(); // Trigger initial frame
+    await tester.pump(
+      const Duration(milliseconds: 100),
+    ); // Await the SharedPreferences async initialization
+    await tester.pump(); // Rebuild with settings loaded
 
     // Verify that we are on the Component Catalog tab showing CustomButton preview initially
     expect(find.text('CustomButton'), findsOneWidget);

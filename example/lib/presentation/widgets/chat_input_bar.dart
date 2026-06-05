@@ -8,12 +8,14 @@ class ChatInputBar extends StatefulWidget {
   final ValueChanged<String> onSend;
   final VoidCallback onClear;
   final bool autofocus;
+  final String hintText;
 
   const ChatInputBar({
     super.key,
     required this.onSend,
     required this.onClear,
     this.autofocus = false,
+    this.hintText = 'Ask Gemini to create widgets...',
   });
 
   @override
@@ -146,9 +148,9 @@ class _ChatInputBarState extends State<ChatInputBar> {
                       color: Color(0xFFE2E8F0),
                       fontSize: 14,
                     ),
-                    decoration: const InputDecoration(
-                      hintText: 'Ask Gemini to create widgets...',
-                      hintStyle: TextStyle(color: Colors.white38),
+                    decoration: InputDecoration(
+                      hintText: widget.hintText,
+                      hintStyle: const TextStyle(color: Colors.white38),
                       border: InputBorder.none,
                       isDense: true,
                     ),
