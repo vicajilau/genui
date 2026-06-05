@@ -8,24 +8,24 @@ This document describes the architecture for implementing multi-mode support in 
 
 ```mermaid
 graph TD
-    subgraph Flutter Client UI
+    subgraph ClientUI ["Flutter Client UI"]
         Settings[Settings Dialog]
         Chat[Chat View]
     end
 
-    subgraph Execution Modes
+    subgraph ExecModes ["Execution Modes"]
         direction TB
-        subgraph Local Mode (On-Device)
+        subgraph LocalMode ["Local Mode (On-Device)"]
             Gemma[flutter_gemma / llamadart]
             LocalSchemas[globalGenUISchemasPromptDescription]
         end
 
-        subgraph Serverless Mode (Direct API)
+        subgraph ServerlessMode ["Serverless Mode (Direct API)"]
             DirectAPI[Gemini Direct API / SSE]
             ClientSchemas[globalGenUISchemasPromptDescription]
         end
 
-        subgraph Server Mode (Serverpod Backend)
+        subgraph ServerMode ["Server Mode (Serverpod Backend)"]
             ServerpodClient[Serverpod Client / WebSockets]
             ServerpodServer[Serverpod Server]
             ServerSchemas[genui_schemas.json]
@@ -35,7 +35,7 @@ graph TD
     Settings -->|Configure Mode| Chat
     Chat -->|1. Local Inference| LocalMode
     Chat -->|2. Direct HTTP| ServerlessMode
-    Chat -->|3. Sockets| ServerpodMode
+    Chat -->|3. Sockets| ServerMode
 ```
 
 ---
