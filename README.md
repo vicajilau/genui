@@ -192,15 +192,52 @@ $globalGenUISchemasPromptDescription
 ```
 
 #### Static File Export (Backend Genkit/TypeScript)
-During compilation (`melos run build_runner`), GenUI automatically exports a standard JSON Schema file containing all registered widgets to `example/build/genui_schemas.json`.
+To use your schemas in a separate backend repository (e.g., Node.js with Genkit), you can export the schemas to a static JSON file. 
 
-To export this file directly to a custom directory (e.g. your backend workspace), set the `GENUI_EXPORT_PATH` environment variable:
+Because the generated registry transitively imports `package:flutter` (which has native graphic/engine bindings), running a standalone Dart script via `dart run` in the console will fail. Instead, we run a headless script using the `flutter test` runner, which resolves all Flutter engine bindings correctly.
 
-```bash
-GENUI_EXPORT_PATH=../my-genkit-backend/src/genui_schemas.json melos run build_runner
+To set this up in your own Flutter project:
+
+1. **Create the export script** as a test file (e.g., `test/genui_schemas_export_test.dart`):
+
+```dart
+import 'dart:convert';
+import 'dart:io';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:your_app_name/genui_registry.g.dart'; // Import your generated registry
+
+void main() {
+  test('Export GenUI schemas to JSON', () {
+    final schemas = globalGenUISchemas;
+    final jsonString = const JsonEncoder.withIndent('  ').convert(schemas);
+    
+    // Auto-detect the project root and write to build/genui_schemas.json
+    final envPath = Platform.environment['GENUI_EXPORT_PATH'];
+    final file = envPath != null && envPath.isNotEmpty
+        ? File(envPath)
+        : File('build/genui_schemas.json');
+        
+    file.parent.createSync(recursive: true);
+    file.writeAsStringSync(jsonString);
+    print('✓ Schemas exported to: ${file.absolute.path}');
+  });
+}
 ```
 
-This acts as the API contract between Flutter and the Genkit server. Your Genkit backend can import the JSON schema directly at startup and register it as tools or structured output schemas.
+2. **Trigger the export automatically** by appending it to your build command in your `pubspec.yaml` scripts or Melos tasks:
+
+```bash
+# Run build_runner, then run the test script to write the JSON schema contract
+dart run build_runner build && flutter test test/genui_schemas_export_test.dart
+```
+
+By default, this will write the schema to `build/genui_schemas.json` relative to your project's root.
+
+If you want to copy the file directly to a custom directory (e.g., to a sibling folder containing your Node.js Genkit backend), you can use the `GENUI_EXPORT_PATH` environment variable:
+
+```bash
+GENUI_EXPORT_PATH=../my-genkit-backend/src/genui_schemas.json flutter test test/genui_schemas_export_test.dart
+```
 
 ---
 
