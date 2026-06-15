@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import 'package:genui/genui.dart';
 
 /// A custom action delegate that intercepts A2UI interface events
@@ -19,8 +20,11 @@ class ChatUiActionDelegate implements ActionDelegate {
   ) {
     if (event is! UserActionEvent) return false;
 
+    final l10n = AppLocalizations.of(context)!;
+
     if (event.name == 'AttachmentListWidget_onTapItemEvent') {
-      final fileName = event.context['fileName'] as String? ?? 'archivo';
+      final fileName =
+          event.context['fileName'] as String? ?? l10n.defaultFileName;
       final messenger = ScaffoldMessenger.of(context);
 
       messenger.clearSnackBars();
@@ -39,7 +43,7 @@ class ChatUiActionDelegate implements ActionDelegate {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Downloading "$fileName"...',
+                  l10n.downloadingFile(fileName),
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w500,
@@ -58,7 +62,7 @@ class ChatUiActionDelegate implements ActionDelegate {
         messenger.showSnackBar(
           SnackBar(
             content: Text(
-              '¡"$fileName" downloaded successfully!',
+              l10n.downloadSuccess(fileName),
               style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w500,
@@ -110,12 +114,15 @@ class ChatUiActionDelegate implements ActionDelegate {
       final messenger = ScaffoldMessenger.of(context);
       messenger.clearSnackBars();
       messenger.showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'Alerta descartada localmente.',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+            l10n.alertDismissedLocally,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w500,
+            ),
           ),
-          duration: Duration(milliseconds: 700),
+          duration: const Duration(milliseconds: 700),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -124,14 +131,15 @@ class ChatUiActionDelegate implements ActionDelegate {
     }
 
     if (event.name == 'AlertBannerWidget_onActionEvent') {
-      final actionLabel = event.context['actionLabel'] as String? ?? 'Acción';
+      final actionLabel =
+          event.context['actionLabel'] as String? ?? l10n.defaultActionLabel;
       final messenger = ScaffoldMessenger.of(context);
 
       messenger.clearSnackBars();
       messenger.showSnackBar(
         SnackBar(
           content: Text(
-            'Acción ejecutada: "$actionLabel"',
+            l10n.actionExecuted(actionLabel),
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w500,
@@ -196,7 +204,7 @@ class ChatUiActionDelegate implements ActionDelegate {
       messenger.showSnackBar(
         SnackBar(
           content: Text(
-            'Status of "$eventTitle" updated.',
+            l10n.timelineStatusUpdated(eventTitle),
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w500,
@@ -220,10 +228,8 @@ class ChatUiActionDelegate implements ActionDelegate {
       final component = definition.components[componentId];
       if (component == null) return false;
 
-      // 1. Prepare updated components list
       final List<Component> updatedComponents = [];
 
-      // Toggle the target task completion status
       final currentIsCompleted =
           component.properties['isCompleted'] as bool? ?? false;
       final newIsCompleted = !currentIsCompleted;
@@ -235,7 +241,6 @@ class ChatUiActionDelegate implements ActionDelegate {
       );
       updatedComponents.add(updatedTask);
 
-      // 2. Count total/completed tasks across all components on this surface
       int totalTasks = 0;
       int completedTasks = 0;
 
@@ -251,7 +256,6 @@ class ChatUiActionDelegate implements ActionDelegate {
         }
       }
 
-      // 3. Scan and update any StatsWidget on the surface
       for (final comp in definition.components.values) {
         if (comp.type == 'StatsWidget') {
           updatedComponents.add(
@@ -268,25 +272,26 @@ class ChatUiActionDelegate implements ActionDelegate {
         }
       }
 
-      // 4. Dispatch UpdateComponents locally
       controller.handleMessage(
         UpdateComponents(surfaceId: surfaceId, components: updatedComponents),
       );
 
-      return true; // Return true to stop network request propagation
+      return true;
     }
 
     if (event.name == 'CustomButton_onPressedEvent') {
-      final label = event.context['label'] as String? ?? 'Botón';
+      final label =
+          event.context['label'] as String? ?? l10n.defaultButtonLabel;
       final messenger = ScaffoldMessenger.of(context);
 
-      if (label.toLowerCase().contains('pagar')) {
+      final labelLower = label.toLowerCase();
+      if (labelLower.contains('pagar') || labelLower.contains('pay')) {
         messenger.clearSnackBars();
         messenger.showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Row(
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 14,
                   height: 14,
                   child: CircularProgressIndicator(
@@ -294,11 +299,11 @@ class ChatUiActionDelegate implements ActionDelegate {
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                   ),
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Procesando pago seguro...',
-                    style: TextStyle(
+                    l10n.processingSecurePayment,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w500,
                     ),
@@ -306,23 +311,23 @@ class ChatUiActionDelegate implements ActionDelegate {
                 ),
               ],
             ),
-            duration: Duration(seconds: 1),
-            backgroundColor: Color(0xFF6366F1),
+            duration: const Duration(seconds: 1),
+            backgroundColor: const Color(0xFF6366F1),
           ),
         );
 
         Future.delayed(const Duration(seconds: 1), () {
           messenger.clearSnackBars();
           messenger.showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Text(
-                '¡Pago realizado con éxito! Tu factura ha sido liquidada.',
-                style: TextStyle(
+                l10n.paymentSuccessful,
+                style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              backgroundColor: Color(0xFF10B981),
+              backgroundColor: const Color(0xFF10B981),
               behavior: SnackBarBehavior.floating,
             ),
           );
@@ -334,7 +339,7 @@ class ChatUiActionDelegate implements ActionDelegate {
       messenger.showSnackBar(
         SnackBar(
           content: Text(
-            'Botón presionado: "$label"',
+            l10n.buttonPressed(label),
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w500,

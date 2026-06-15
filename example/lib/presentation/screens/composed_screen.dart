@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/services/connection_settings_service.dart';
+import '../../l10n/app_localizations.dart';
 import '../../data/services/gemini_service.dart';
 import '../controllers/gemini_chat_controller.dart';
 import '../widgets/connection_warning_card.dart';
@@ -34,6 +35,8 @@ class _ComposedScreenState extends State<ComposedScreen>
   // App States
   bool _isLoadingSettings = true;
   bool _isSettingsDialogOpen = false;
+
+  AppLocalizations get l10n => AppLocalizations.of(context)!;
 
   @override
   void initState() {
@@ -120,32 +123,32 @@ class _ComposedScreenState extends State<ComposedScreen>
   }
 
   String _getChatTabLabel() {
-    if (_settingsService == null) return 'AI Chat';
+    if (_settingsService == null) return l10n.aiChatTab;
     final mode = _settingsService!.hasAnyValidConfig
         ? _settingsService!.activeChatMode
         : _settingsService!.chatMode;
     switch (mode) {
       case ChatMode.serverless:
-        return 'Gemini AI Chat';
+        return l10n.geminiChatTab;
       case ChatMode.local:
-        return 'Local Gemma Chat';
+        return l10n.localGemmaChatTab;
       case ChatMode.serverpod:
-        return 'Serverpod Chat';
+        return l10n.serverpodChatTab;
     }
   }
 
   String _getChatHintText() {
-    if (_settingsService == null) return 'Ask the model to create widgets...';
+    if (_settingsService == null) return l10n.defaultChatHint;
     final mode = _settingsService!.hasAnyValidConfig
         ? _settingsService!.activeChatMode
         : _settingsService!.chatMode;
     switch (mode) {
       case ChatMode.serverless:
-        return 'Ask Gemini to create widgets...';
+        return l10n.geminiChatHint;
       case ChatMode.local:
-        return 'Ask Gemma to create widgets...';
+        return l10n.localGemmaChatHint;
       case ChatMode.serverpod:
-        return 'Ask Serverpod to create widgets...';
+        return l10n.serverpodChatHint;
     }
   }
 
@@ -164,12 +167,12 @@ class _ComposedScreenState extends State<ComposedScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('GenUI Playground'),
+        title: Text(l10n.appTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings, color: Colors.white70),
             onPressed: _showSettingsDialog,
-            tooltip: 'Settings',
+            tooltip: l10n.settingsTooltip,
           ),
         ],
         bottom: TabBar(
@@ -183,9 +186,9 @@ class _ComposedScreenState extends State<ComposedScreen>
             letterSpacing: 0.5,
           ),
           tabs: [
-            const Tab(
-              icon: Icon(Icons.dashboard_customize),
-              text: 'Component Catalog',
+            Tab(
+              icon: const Icon(Icons.dashboard_customize),
+              text: l10n.componentCatalogTab,
             ),
             Tab(
               icon: const Icon(Icons.forum_outlined),
@@ -224,12 +227,8 @@ class _ComposedScreenState extends State<ComposedScreen>
 
     if (!settings.hasAnyValidConfig) {
       return ConnectionWarningCard(
-        title: 'No Chat Connection Configured',
-        description:
-            'To start using the chat interface and rendering Generative UI in real-time, please open settings and configure at least one of the execution modes:\n\n'
-            '• Serverless: Enter a Gemini API Key to connect directly from the client.\n'
-            '• Local Model: Provide a model path (e.g. gemma-2b-it.bin) for on-device inference.\n'
-            '• Serverpod: Configure a remote Serverpod server URL.',
+        title: l10n.noChatConnectionTitle,
+        description: l10n.noChatConnectionDescription,
         onOpenSettings: _showSettingsDialog,
       );
     }
@@ -293,9 +292,9 @@ class _ComposedScreenState extends State<ComposedScreen>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'Connection Error',
-                              style: TextStyle(
+                            Text(
+                              l10n.connectionError,
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 13,
@@ -304,7 +303,7 @@ class _ComposedScreenState extends State<ComposedScreen>
                             const SizedBox(height: 2),
                             Text(
                               controller.lastErrorMessage ??
-                                  'Network request failed.',
+                                  l10n.networkRequestFailed,
                               style: const TextStyle(
                                 color: Colors.white70,
                                 fontSize: 11,
@@ -322,7 +321,7 @@ class _ComposedScreenState extends State<ComposedScreen>
                           _scrollToBottom();
                         },
                         icon: const Icon(Icons.replay_rounded, size: 16),
-                        label: const Text('Retry'),
+                        label: Text(l10n.retry),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFEF4444),
                           foregroundColor: Colors.white,
@@ -370,17 +369,17 @@ class _ComposedScreenState extends State<ComposedScreen>
     switch (activeMode) {
       case ChatMode.serverless:
         modeIcon = Icons.cloud_queue;
-        modeLabel = 'Serverless Gemini';
+        modeLabel = l10n.serverlessGeminiLabel;
         modeColor = const Color(0xFF6366F1);
         break;
       case ChatMode.local:
         modeIcon = Icons.phonelink_setup;
-        modeLabel = 'Local Gemma';
+        modeLabel = l10n.localGemmaLabel;
         modeColor = const Color(0xFF10B981);
         break;
       case ChatMode.serverpod:
         modeIcon = Icons.dns;
-        modeLabel = 'Serverpod Remote';
+        modeLabel = l10n.serverpodRemoteLabel;
         modeColor = const Color(0xFF3B82F6);
         break;
     }
@@ -470,13 +469,13 @@ class _ComposedScreenState extends State<ComposedScreen>
                     String label;
                     switch (mode) {
                       case ChatMode.serverless:
-                        label = 'Serverless';
+                        label = l10n.modeServerless;
                         break;
                       case ChatMode.local:
-                        label = 'Local';
+                        label = l10n.modeLocal;
                         break;
                       case ChatMode.serverpod:
-                        label = 'Serverpod';
+                        label = l10n.modeServerpod;
                         break;
                     }
                     return DropdownMenuItem<ChatMode>(
@@ -505,7 +504,7 @@ class _ComposedScreenState extends State<ComposedScreen>
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    'Active Mode',
+                    l10n.activeModeStatusLabel,
                     style: TextStyle(
                       fontSize: 10,
                       color: Colors.white.withValues(alpha: 0.5),

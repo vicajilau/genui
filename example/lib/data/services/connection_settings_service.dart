@@ -16,6 +16,7 @@ class ConnectionSettingsService {
   static const String _keyLocalModelPath = 'genui_local_model_path';
   static const String _keyLocalTemperature = 'genui_local_temp';
   static const String _keyAppPersona = 'genui_app_persona';
+  static const String _keyLocaleCode = 'genui_locale_code';
 
   final SharedPreferences _prefs;
 
@@ -47,6 +48,20 @@ class ConnectionSettingsService {
   /// Sets the active app persona.
   Future<void> setAppPersona(AppPersona persona) async {
     await _prefs.setString(_keyAppPersona, persona.name);
+  }
+
+  /// Retrieves the selected locale. Default is null (meaning system locale).
+  String? get localeCode {
+    return _prefs.getString(_keyLocaleCode);
+  }
+
+  /// Sets the selected locale. Use null for system default.
+  Future<void> setLocaleCode(String? locale) async {
+    if (locale == null) {
+      await _prefs.remove(_keyLocaleCode);
+    } else {
+      await _prefs.setString(_keyLocaleCode, locale);
+    }
   }
 
   /// Decrypts and retrieves the stored Gemini API key, or returns an empty string.

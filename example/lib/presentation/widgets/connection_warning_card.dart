@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 
 /// A widget displaying a warning screen and settings configuration button when
 /// the active AI connection settings (Gemini, Local Gemma, or Serverpod) are missing or invalid.
@@ -16,6 +17,7 @@ class ConnectionWarningCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
@@ -75,9 +77,12 @@ class ConnectionWarningCard extends StatelessWidget {
               TextButton.icon(
                 onPressed: onOpenSettings,
                 icon: const Icon(Icons.settings, size: 18),
-                label: const Text(
-                  'OPEN SETTINGS',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                label: Text(
+                  l10n.openSettingsButton,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
                 ),
                 style: TextButton.styleFrom(
                   foregroundColor: Colors.white,

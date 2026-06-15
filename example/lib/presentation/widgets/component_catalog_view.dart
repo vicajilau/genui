@@ -4,6 +4,7 @@ import 'package:genui/genui.dart';
 import 'package:genui_annotations/genui_annotations.dart';
 
 import '../../genui_registry.g.dart';
+import '../../l10n/app_localizations.dart';
 import 'component_catalog/component_catalog_panel.dart';
 import 'component_catalog/component_json_inspector_panel.dart';
 import 'component_catalog/component_properties_panel.dart';
@@ -38,12 +39,16 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
   // Component Catalog States
   String _selectedComponent = $CustomButtonIdentifier;
 
+  // Class-level localization getter
+  AppLocalizations get l10n => AppLocalizations.of(context)!;
+  Locale? _currentLocale;
+
   // CustomButton properties
-  String _btnLabel = 'Hello world';
+  String _btnLabel = '';
   String _btnColor = '#6366F1';
 
   // TaskItemWidget properties
-  String _taskTitle = 'Design Generative UI Architecture';
+  String _taskTitle = '';
   bool _taskCompleted = false;
   String _taskPriority = 'high';
 
@@ -52,55 +57,115 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
   int _statsCompleted = 2;
 
   // UserCardWidget properties
-  String _userName = 'Ada Lovelace';
-  String _userRole = 'Lead Architect';
+  String _userName = '';
+  String _userRole = '';
   bool _userActive = true;
 
   // MetricChartWidget properties
-  String _metricTitle = 'Project Completion';
+  String _metricTitle = '';
   double _metricValue = 0.85;
-  String _metricLegend = 'Completed';
+  String _metricLegend = '';
   String _metricColor = '#6366F1';
 
   // PriorityPillWidget properties
   String _pillPriority = 'high';
-  String _pillLabel = 'High Priority';
+  String _pillLabel = '';
 
   // AttachmentListWidget properties
-  String _attachmentTitle = 'Attachments';
-  String _attachmentItemsJson =
-      '[\n  {"name": "Project Proposal.pdf", "type": "pdf", "size": "2.4 MB"},\n  {"name": "Design Mockup.png", "type": "image", "size": "1.8 MB"}\n]';
+  String _attachmentTitle = '';
+  String _attachmentItemsJson = '';
 
   // TimelineWidget properties
-  String _timelineTitle = 'Activity Timeline';
-  String _timelineEventsJson =
-      '[\n  {"title": "Project Initiated", "description": "Kickoff meeting scheduled with client.", "timestamp": "Monday", "status": "completed"},\n  {"title": "Design Mockups", "description": "Review visual layouts and typography guidelines.", "timestamp": "Tuesday", "status": "active"},\n  {"title": "API Integration", "description": "Connect UI surfaces to local and remote data handlers.", "timestamp": "Thursday", "status": "pending"}\n]';
+  String _timelineTitle = '';
+  String _timelineEventsJson = '';
 
   // AlertBannerWidget properties
   String _alertType = 'warning';
-  String _alertMessage =
-      'System memory is currently running high (85% utilization).';
-  String _alertActionLabel = 'Resolve';
+  String _alertMessage = '';
+  String _alertActionLabel = '';
 
   // SingleAttachmentWidget properties
-  String _singleAttachmentName = 'Quarterly_Report_2026.pdf';
+  String _singleAttachmentName = '';
   String _singleAttachmentType = 'pdf';
-  String _singleAttachmentSize = '4.2 MB';
+  String _singleAttachmentSize = '';
   String _singleAttachmentStatus = 'ready';
 
   // QuickRepliesWidget properties
-  String _quickRepliesTitle = 'Select a follow-up action:';
-  String _quickRepliesJson =
-      '[\n  "View pricing summary",\n  "Contact human agent",\n  "Request custom proposal"\n]';
+  String _quickRepliesTitle = '';
+  String _quickRepliesJson = '';
 
   // ProductCardWidget properties
-  String _productTitle = 'Premium Wireless Headphones';
+  String _productTitle = '';
   String _productPrice = '\$299.99';
   String _productImageUrl =
       'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500';
-  String _productDescription =
-      'High-fidelity audio with active noise cancellation and 40-hour battery life.';
+  String _productDescription = '';
   double _productRating = 4.8;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final newLocale = Localizations.localeOf(context);
+    if (_currentLocale != newLocale) {
+      _currentLocale = newLocale;
+      _initializeLocalizedDefaults();
+    }
+  }
+
+  void _initializeLocalizedDefaults() {
+    _btnLabel = l10n.btnLabelDefault;
+    _taskTitle = l10n.taskTitleDefault;
+    _userName = l10n.userNameDefault;
+    _userRole = l10n.userRoleDefault;
+    _metricTitle = l10n.metricTitleDefault;
+    _metricLegend = l10n.metricLegendDefault;
+    _pillLabel = l10n.pillLabelDefault;
+    _attachmentTitle = l10n.attachmentTitleDefault;
+
+    const encoder = JsonEncoder.withIndent('  ');
+
+    _attachmentItemsJson = encoder.convert([
+      {'name': l10n.projectProposalPdfName, 'type': 'pdf', 'size': '2.4 MB'},
+      {'name': l10n.designMockupPngName, 'type': 'image', 'size': '1.8 MB'},
+    ]);
+
+    _timelineTitle = l10n.timelineTitleDefault;
+    _timelineEventsJson = encoder.convert([
+      {
+        'title': l10n.projectInitiatedTitle,
+        'description': l10n.projectInitiatedDesc,
+        'timestamp': l10n.monday,
+        'status': 'completed',
+      },
+      {
+        'title': l10n.designMockupsTitle,
+        'description': l10n.designMockupsDesc,
+        'timestamp': l10n.tuesday,
+        'status': 'active',
+      },
+      {
+        'title': l10n.apiIntegrationTitle,
+        'description': l10n.apiIntegrationDesc,
+        'timestamp': l10n.thursday,
+        'status': 'pending',
+      },
+    ]);
+
+    _alertMessage = l10n.alertMessageDefault;
+    _alertActionLabel = l10n.alertActionLabelDefault;
+    _singleAttachmentName = l10n.singleAttachmentNameDefault;
+    _singleAttachmentSize = l10n.singleAttachmentSizeDefault;
+
+    _quickRepliesTitle = l10n.quickRepliesTitleDefault;
+    _quickRepliesJson = encoder.convert([
+      l10n.quickReplyViewPricing,
+      l10n.quickReplyContactHuman,
+      l10n.quickReplyRequestCustom,
+    ]);
+
+    _productTitle = l10n.productTitleDefault;
+    _productDescription = l10n.productDescriptionDefault;
+  }
 
   // Catalog Event Handler
   void _handleCatalogWidgetEvent(String eventJson) {
@@ -111,7 +176,9 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'CustomButton clicked! Label: "${event.context['label']}"',
+            l10n.catalogCustomButtonClicked(
+              event.context['label']?.toString() ?? '',
+            ),
           ),
           duration: const Duration(seconds: 1),
         ),
@@ -123,24 +190,26 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'TaskItemWidget checkbox toggled! Title: "${event.context['title']}"',
+            l10n.catalogTaskItemToggled(
+              event.context['title']?.toString() ?? '',
+            ),
           ),
           duration: const Duration(seconds: 1),
         ),
       );
     } else if (event.name == TimelineWidgetEvents.onTapEvent) {
-      final eventTitle = event.context['eventTitle'] as String? ?? 'Event';
+      final eventTitle = event.context['eventTitle']?.toString() ?? 'Event';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Timeline Event tapped: "$eventTitle"'),
+          content: Text(l10n.catalogTimelineEventTapped(eventTitle)),
           duration: const Duration(seconds: 1),
         ),
       );
     } else if (event.name == AttachmentListWidgetEvents.onTapItem) {
-      final fileName = event.context['fileName'] as String? ?? 'File';
+      final fileName = event.context['fileName']?.toString() ?? 'File';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Attachment item clicked: "$fileName"'),
+          content: Text(l10n.catalogAttachmentItemClicked(fileName)),
           duration: const Duration(seconds: 1),
         ),
       );
@@ -148,7 +217,9 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Alert Action clicked! Label: "${event.context['actionLabel']}"',
+            l10n.catalogAlertActionClicked(
+              event.context['actionLabel']?.toString() ?? '',
+            ),
           ),
           duration: const Duration(seconds: 1),
           backgroundColor: const Color(0xFF6366F1),
@@ -156,15 +227,19 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
       );
     } else if (event.name == AlertBannerWidgetEvents.onDismiss) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Alert Banner dismissed!'),
-          duration: Duration(seconds: 1),
+        SnackBar(
+          content: Text(l10n.catalogAlertBannerDismissed),
+          duration: const Duration(seconds: 1),
         ),
       );
     } else if (event.name == SingleAttachmentWidgetEvents.onTap) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Single Attachment tapped: "${event.context['name']}"'),
+          content: Text(
+            l10n.catalogSingleAttachmentTapped(
+              event.context['name']?.toString() ?? '',
+            ),
+          ),
           duration: const Duration(seconds: 1),
         ),
       );
@@ -172,30 +247,36 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Single Attachment action clicked! Status: ${event.context['status']}',
+            l10n.catalogSingleAttachmentActionClicked(
+              event.context['status']?.toString() ?? '',
+            ),
           ),
           duration: const Duration(seconds: 1),
         ),
       );
     } else if (event.name == QuickRepliesWidgetEvents.onTapReply) {
-      final reply = event.context['reply'] as String? ?? '';
+      final reply = event.context['reply']?.toString() ?? '';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Quick Reply selected: "$reply"'),
+          content: Text(l10n.catalogQuickReplySelected(reply)),
           duration: const Duration(seconds: 1),
         ),
       );
     } else if (event.name == ProductCardWidgetEvents.onTapProduct) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Product tapped: "${event.context['title']}"'),
+          content: Text(
+            l10n.catalogProductTapped(event.context['title']?.toString() ?? ''),
+          ),
           duration: const Duration(seconds: 1),
         ),
       );
     } else if (event.name == ProductCardWidgetEvents.onBuy) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Product bought! Price: ${event.context['price']}'),
+          content: Text(
+            l10n.catalogProductBought(event.context['price']?.toString() ?? ''),
+          ),
           duration: const Duration(seconds: 1),
           backgroundColor: const Color(0xFF10B981),
         ),
@@ -371,9 +452,9 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(color: const Color(0x666366F1)),
                       ),
-                      child: const Text(
-                        'A2UI Component',
-                        style: TextStyle(
+                      child: Text(
+                        l10n.catalogA2uiComponentBadge,
+                        style: const TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF818CF8),
@@ -383,9 +464,9 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                const Text(
-                  'PREVIEW',
-                  style: TextStyle(
+                Text(
+                  l10n.catalogPreviewHeader,
+                  style: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
                     color: Colors.white38,
@@ -693,18 +774,18 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
 
   String _getComponentDisplayName(String component) {
     return switch (component) {
-      $CustomButtonIdentifier => 'CustomButton',
-      $TaskItemWidgetIdentifier => 'TaskItemWidget',
-      $StatsWidgetIdentifier => 'StatsWidget',
-      $UserCardWidgetIdentifier => 'UserCardWidget',
-      $MetricChartWidgetIdentifier => 'MetricChartWidget',
-      $PriorityPillWidgetIdentifier => 'PriorityPillWidget',
-      $AttachmentListWidgetIdentifier => 'AttachmentListWidget',
-      $TimelineWidgetIdentifier => 'TimelineWidget',
-      $AlertBannerWidgetIdentifier => 'AlertBannerWidget',
-      $SingleAttachmentWidgetIdentifier => 'SingleAttachmentWidget',
-      $QuickRepliesWidgetIdentifier => 'QuickRepliesWidget',
-      $ProductCardWidgetIdentifier => 'ProductCardWidget',
+      $CustomButtonIdentifier => l10n.componentCustomButton,
+      $TaskItemWidgetIdentifier => l10n.componentTaskItem,
+      $StatsWidgetIdentifier => l10n.componentStatsSummary,
+      $UserCardWidgetIdentifier => l10n.componentUserCard,
+      $MetricChartWidgetIdentifier => l10n.componentMetricChart,
+      $PriorityPillWidgetIdentifier => l10n.componentPriorityPill,
+      $AttachmentListWidgetIdentifier => l10n.componentAttachmentList,
+      $TimelineWidgetIdentifier => l10n.componentTimelineLog,
+      $AlertBannerWidgetIdentifier => l10n.componentAlertBanner,
+      $SingleAttachmentWidgetIdentifier => l10n.componentSingleAttachment,
+      $QuickRepliesWidgetIdentifier => l10n.componentQuickReplies,
+      $ProductCardWidgetIdentifier => l10n.componentProductCard,
       _ => component,
     };
   }

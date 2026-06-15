@@ -1,0 +1,605 @@
+{
+  "@@locale": "en",
+  "downloadingFile": "Downloading \"{fileName}\"...",
+  "@downloadingFile": {
+    "description": "Progress message showing file download has started",
+    "placeholders": {
+      "fileName": {
+        "type": "String",
+        "example": "Invoice.pdf"
+      }
+    }
+  },
+  "downloadSuccess": "\"{fileName}\" downloaded successfully!",
+  "@downloadSuccess": {
+    "description": "Success message when file download completes",
+    "placeholders": {
+      "fileName": {
+        "type": "String",
+        "example": "Invoice.pdf"
+      }
+    }
+  },
+  "defaultFileName": "file",
+  "@defaultFileName": {
+    "description": "Fallback name when filename is missing"
+  },
+  "alertDismissedLocally": "Alert dismissed locally.",
+  "@alertDismissedLocally": {
+    "description": "Toast message when an alert banner is closed"
+  },
+  "actionExecuted": "Action executed: \"{actionLabel}\"",
+  "@actionExecuted": {
+    "description": "Toast message when an alert action is triggered",
+    "placeholders": {
+      "actionLabel": {
+        "type": "String",
+        "example": "View"
+      }
+    }
+  },
+  "defaultActionLabel": "Action",
+  "@defaultActionLabel": {
+    "description": "Fallback label when action label is missing"
+  },
+  "timelineStatusUpdated": "Status of \"{eventTitle}\" updated.",
+  "@timelineStatusUpdated": {
+    "description": "Toast message when a timeline event is tapped",
+    "placeholders": {
+      "eventTitle": {
+        "type": "String",
+        "example": "Payment"
+      }
+    }
+  },
+  "processingSecurePayment": "Processing secure payment...",
+  "@processingSecurePayment": {
+    "description": "Loading message when payment is processing"
+  },
+  "paymentSuccessful": "Payment successful! Your invoice has been settled.",
+  "@paymentSuccessful": {
+    "description": "Success message when payment completes"
+  },
+  "buttonPressed": "Button pressed: \"{label}\"",
+  "@buttonPressed": {
+    "description": "Toast message for general button press",
+    "placeholders": {
+      "label": {
+        "type": "String",
+        "example": "Submit"
+      }
+    }
+  },
+  "defaultButtonLabel": "Button",
+  "@defaultButtonLabel": {
+    "description": "Fallback label when button label is missing"
+  },
+  "appTitle": "GenUI Playground",
+  "@appTitle": {
+    "description": "Main application title"
+  },
+  "settingsTooltip": "Settings",
+  "@settingsTooltip": {
+    "description": "Tooltip for the settings button"
+  },
+  "componentCatalogTab": "Component Catalog",
+  "@componentCatalogTab": {
+    "description": "Label for the component catalog tab"
+  },
+  "aiChatTab": "AI Chat",
+  "@aiChatTab": {
+    "description": "Label for the default AI Chat tab"
+  },
+  "geminiChatTab": "Gemini AI Chat",
+  "@geminiChatTab": {
+    "description": "Label for the Gemini AI Chat tab"
+  },
+  "localGemmaChatTab": "Local Gemma Chat",
+  "@localGemmaChatTab": {
+    "description": "Label for the Local Gemma Chat tab"
+  },
+  "serverpodChatTab": "Serverpod Chat",
+  "@serverpodChatTab": {
+    "description": "Label for the Serverpod Chat tab"
+  },
+  "defaultChatHint": "Ask the model to create widgets...",
+  "@defaultChatHint": {
+    "description": "Fallback hint text in the chat input bar"
+  },
+  "geminiChatHint": "Ask Gemini to create widgets...",
+  "@geminiChatHint": {
+    "description": "Hint text when Gemini is the active provider"
+  },
+  "localGemmaChatHint": "Ask Gemma to create widgets...",
+  "@localGemmaChatHint": {
+    "description": "Hint text when local Gemma is the active provider"
+  },
+  "serverpodChatHint": "Ask Serverpod to create widgets...",
+  "@serverpodChatHint": {
+    "description": "Hint text when Serverpod is the active provider"
+  },
+  "connectionError": "Connection Error",
+  "@connectionError": {
+    "description": "Error banner title"
+  },
+  "networkRequestFailed": "Network request failed.",
+  "@networkRequestFailed": {
+    "description": "Default connection error description"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Label for the retry button"
+  },
+  "settingsTitle": "Connection Settings",
+  "@settingsTitle": {
+    "description": "Title of the connection settings dialog"
+  },
+  "activeChatModeLabel": "Active Chat Execution Mode",
+  "@activeChatModeLabel": {
+    "description": "Section title for selecting active execution mode"
+  },
+  "appPersonaLabel": "Application Persona / Context",
+  "@appPersonaLabel": {
+    "description": "Section title for app persona context selection"
+  },
+  "taskBoardPersona": "Task Board",
+  "@taskBoardPersona": {
+    "description": "Label for the Task Board app persona"
+  },
+  "customerAppPersona": "Customer App",
+  "@customerAppPersona": {
+    "description": "Label for the Customer Portal app persona"
+  },
+  "selectAppLanguage": "Application Language",
+  "@selectAppLanguage": {
+    "description": "Label for app language selection dropdown"
+  },
+  "systemLanguage": "System Default",
+  "@systemLanguage": {
+    "description": "Dropdown option for system default language"
+  },
+  "englishLanguage": "English",
+  "@englishLanguage": {
+    "description": "Dropdown option for English language"
+  },
+  "spanishLanguage": "Spanish",
+  "@spanishLanguage": {
+    "description": "Dropdown option for Spanish language"
+  },
+  "backendsSection": "Configure Backends & Endpoints",
+  "@backendsSection": {
+    "description": "Section title for details of backends"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Button label to cancel changes"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Button label to save settings"
+  },
+  "settingsSavedSuccess": "Settings saved successfully!",
+  "@settingsSavedSuccess": {
+    "description": "Toast message shown when settings are successfully saved"
+  },
+  "noChatConnectionTitle": "No Chat Connection Configured",
+  "@noChatConnectionTitle": {
+    "description": "Warning card title when no chat backend is set"
+  },
+  "noChatConnectionDescription": "To start using the chat interface and rendering Generative UI in real-time, please open settings and configure at least one of the execution modes:\n\n• Serverless: Enter a Gemini API Key to connect directly from the client.\n• Local Model: Provide a model path (e.g. gemma-2b-it.bin) for on-device inference.\n• Serverpod: Configure a remote Serverpod server URL.",
+  "@noChatConnectionDescription": {
+    "description": "Warning card description when no chat backend is set"
+  },
+  "serverlessGeminiLabel": "Serverless Gemini",
+  "@serverlessGeminiLabel": {
+    "description": "Label for Serverless Gemini mode"
+  },
+  "localGemmaLabel": "Local Gemma",
+  "@localGemmaLabel": {
+    "description": "Label for Local Gemma mode"
+  },
+  "serverpodRemoteLabel": "Serverpod Remote",
+  "@serverpodRemoteLabel": {
+    "description": "Label for Serverpod Remote mode"
+  },
+  "modeServerless": "Serverless",
+  "@modeServerless": {
+    "description": "Short name for serverless mode"
+  },
+  "modeLocal": "Local",
+  "@modeLocal": {
+    "description": "Short name for local mode"
+  },
+  "modeServerpod": "Serverpod",
+  "@modeServerpod": {
+    "description": "Short name for serverpod mode"
+  },
+  "activeModeStatusLabel": "Active Mode",
+  "@activeModeStatusLabel": {
+    "description": "Status bar label indicating the active execution mode"
+  },
+  "openSettingsButton": "OPEN SETTINGS",
+  "@openSettingsButton": {
+    "description": "Button label to open connection settings dialog"
+  },
+  "clearConversationTooltip": "Clear Conversation",
+  "@clearConversationTooltip": {
+    "description": "Tooltip for the clear conversation button"
+  },
+  "geminiApiKeyLabel": "Gemini API Key",
+  "@geminiApiKeyLabel": {
+    "description": "Label for Gemini API key input field"
+  },
+  "invalidApiKeyFormat": "Invalid Gemini API Key format",
+  "@invalidApiKeyFormat": {
+    "description": "Error message when API key format is invalid"
+  },
+  "pasteKeyButton": "PASTE KEY",
+  "@pasteKeyButton": {
+    "description": "Button label to paste key from clipboard"
+  },
+  "getApiKeyButton": "GET API KEY",
+  "@getApiKeyButton": {
+    "description": "Button label to open external URL to obtain an API key"
+  },
+  "modelFilePathLabel": "Model File Path (Assets/Storage)",
+  "@modelFilePathLabel": {
+    "description": "Label for local model file path input"
+  },
+  "serverHostUrlLabel": "Server Host endpoint URL",
+  "@serverHostUrlLabel": {
+    "description": "Label for serverpod server host endpoint URL input"
+  },
+  "temperatureLabel": "Temperature:",
+  "@temperatureLabel": {
+    "description": "Label for temperature slider setting"
+  },
+  "testConnectionButton": "Test Connection",
+  "@testConnectionButton": {
+    "description": "Button label to test active configuration connection"
+  },
+  "testingConnectionProgress": "Testing connection...",
+  "@testingConnectionProgress": {
+    "description": "Progress message showing connection test is active"
+  },
+  "apiKeyCannotBeEmpty": "API key cannot be empty.",
+  "@apiKeyCannotBeEmpty": {
+    "description": "Test result message when API key input is empty"
+  },
+  "invalidApiKeyFormatMessage": "Invalid Gemini API key format.",
+  "@invalidApiKeyFormatMessage": {
+    "description": "Test result message when API key has invalid format"
+  },
+  "apiKeyFormatIsValid": "API key format is valid! (Mock SSE ping passed)",
+  "@apiKeyFormatIsValid": {
+    "description": "Test result message when API key has valid format"
+  },
+  "modelPathCannotBeEmpty": "Model path cannot be empty.",
+  "@modelPathCannotBeEmpty": {
+    "description": "Test result message when model path input is empty"
+  },
+  "modelPathIsValid": "Model file path format is valid! (Mock weight check passed)",
+  "@modelPathIsValid": {
+    "description": "Test result message when model path has valid format"
+  },
+  "serverUrlCannotBeEmpty": "Server URL cannot be empty.",
+  "@serverUrlCannotBeEmpty": {
+    "description": "Test result message when server URL input is empty"
+  },
+  "serverpodHostReachable": "Serverpod host is reachable! (Mock WebSocket handshake passed)",
+  "@serverpodHostReachable": {
+    "description": "Test result message when serverpod connection succeeds"
+  },
+  "noTextInClipboard": "No text found in clipboard",
+  "@noTextInClipboard": {
+    "description": "Snackbar warning message when clipboard has no text"
+  },
+  "serverlessGeminiSubtitle": "Direct SSE connection to Gemini API",
+  "@serverlessGeminiSubtitle": {
+    "description": "Subtitle for Serverless Gemini option"
+  },
+  "localGemmaSubtitle": "Native on-device LLM execution",
+  "@localGemmaSubtitle": {
+    "description": "Subtitle for Local Gemma option"
+  },
+  "serverpodRemoteSubtitle": "WebSockets streaming via remote backend",
+  "@serverpodRemoteSubtitle": {
+    "description": "Subtitle for Serverpod Remote option"
+  },
+  "activeBadgeLabel": "ACTIVE",
+  "@activeBadgeLabel": {
+    "description": "Label for active mode indicator badge"
+  },
+  "componentsHeader": "COMPONENTS",
+  "@componentsHeader": {
+    "description": "Header title of the component catalog sidebar panel"
+  },
+  "hideLabel": "Hide",
+  "@hideLabel": {
+    "description": "Label for hide/collapse action"
+  },
+  "showLabel": "Show",
+  "@showLabel": {
+    "description": "Label for show/expand action"
+  },
+  "componentCustomButton": "Custom Button",
+  "@componentCustomButton": {
+    "description": "Display name of Custom Button component"
+  },
+  "componentTaskItem": "Task Item",
+  "@componentTaskItem": {
+    "description": "Display name of Task Item component"
+  },
+  "componentStatsSummary": "Stats Summary",
+  "@componentStatsSummary": {
+    "description": "Display name of Stats Summary component"
+  },
+  "componentUserCard": "User Card",
+  "@componentUserCard": {
+    "description": "Display name of User Card component"
+  },
+  "componentMetricChart": "Metric Chart",
+  "@componentMetricChart": {
+    "description": "Display name of Metric Chart component"
+  },
+  "componentPriorityPill": "Priority Pill",
+  "@componentPriorityPill": {
+    "description": "Display name of Priority Pill component"
+  },
+  "componentAttachmentList": "Attachment List",
+  "@componentAttachmentList": {
+    "description": "Display name of Attachment List component"
+  },
+  "componentSingleAttachment": "Single Attachment",
+  "@componentSingleAttachment": {
+    "description": "Display name of Single Attachment component"
+  },
+  "componentQuickReplies": "Quick Replies",
+  "@componentQuickReplies": {
+    "description": "Display name of Quick Replies component"
+  },
+  "componentProductCard": "Product Card",
+  "@componentProductCard": {
+    "description": "Display name of Product Card component"
+  },
+  "componentTimelineLog": "Timeline Log",
+  "@componentTimelineLog": {
+    "description": "Display name of Timeline Log component"
+  },
+  "componentAlertBanner": "Alert Banner",
+  "@componentAlertBanner": {
+    "description": "Display name of Alert Banner component"
+  },
+  "catalogCustomButtonClicked": "CustomButton clicked! Label: \"{label}\"",
+  "@catalogCustomButtonClicked": {
+    "description": "Snackbar message when custom button is clicked in the catalog",
+    "placeholders": {
+      "label": {
+        "type": "String",
+        "example": "Hello"
+      }
+    }
+  },
+  "catalogTaskItemToggled": "TaskItemWidget checkbox toggled! Title: \"{title}\"",
+  "@catalogTaskItemToggled": {
+    "description": "Snackbar message when task checkbox is toggled in the catalog",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "Design GenUI"
+      }
+    }
+  },
+  "catalogTimelineEventTapped": "Timeline Event tapped: \"{eventTitle}\"",
+  "@catalogTimelineEventTapped": {
+    "description": "Snackbar message when timeline event is tapped in the catalog",
+    "placeholders": {
+      "eventTitle": {
+        "type": "String",
+        "example": "Launch"
+      }
+    }
+  },
+  "catalogAttachmentItemClicked": "Attachment item clicked: \"{fileName}\"",
+  "@catalogAttachmentItemClicked": {
+    "description": "Snackbar message when attachment list item is clicked in the catalog",
+    "placeholders": {
+      "fileName": {
+        "type": "String",
+        "example": "Proposal.pdf"
+      }
+    }
+  },
+  "catalogAlertActionClicked": "Alert Action clicked! Label: \"{actionLabel}\"",
+  "@catalogAlertActionClicked": {
+    "description": "Snackbar message when alert banner action is clicked in the catalog",
+    "placeholders": {
+      "actionLabel": {
+        "type": "String",
+        "example": "Fix"
+      }
+    }
+  },
+  "catalogAlertBannerDismissed": "Alert Banner dismissed!",
+  "@catalogAlertBannerDismissed": {
+    "description": "Snackbar message when alert banner is dismissed in the catalog"
+  },
+  "catalogSingleAttachmentTapped": "Single Attachment tapped: \"{name}\"",
+  "@catalogSingleAttachmentTapped": {
+    "description": "Snackbar message when single attachment is clicked in the catalog",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Invoice.pdf"
+      }
+    }
+  },
+  "catalogSingleAttachmentActionClicked": "Single Attachment action clicked! Status: {status}",
+  "@catalogSingleAttachmentActionClicked": {
+    "description": "Snackbar message when single attachment action is clicked in the catalog",
+    "placeholders": {
+      "status": {
+        "type": "String",
+        "example": "ready"
+      }
+    }
+  },
+  "catalogQuickReplySelected": "Quick Reply selected: \"{reply}\"",
+  "@catalogQuickReplySelected": {
+    "description": "Snackbar message when quick reply option is clicked in the catalog",
+    "placeholders": {
+      "reply": {
+        "type": "String",
+        "example": "Yes"
+      }
+    }
+  },
+  "catalogProductTapped": "Product tapped: \"{title}\"",
+  "@catalogProductTapped": {
+    "description": "Snackbar message when product card is clicked in the catalog",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "Headphones"
+      }
+    }
+  },
+  "catalogProductBought": "Product bought! Price: {price}",
+  "@catalogProductBought": {
+    "description": "Snackbar message when product buy action is clicked in the catalog",
+    "placeholders": {
+      "price": {
+        "type": "String",
+        "example": "$299"
+      }
+    }
+  },
+  "catalogA2uiComponentBadge": "A2UI Component",
+  "@catalogA2uiComponentBadge": {
+    "description": "Badge label indicating component type in the catalog"
+  },
+  "catalogPreviewHeader": "PREVIEW",
+  "@catalogPreviewHeader": {
+    "description": "Header title above live render preview"
+  },
+  "btnLabelDefault": "Hello world",
+  "@btnLabelDefault": {
+    "description": "Default label for Custom Button properties"
+  },
+  "taskTitleDefault": "Design Generative UI Architecture",
+  "@taskTitleDefault": {
+    "description": "Default title for Task Item properties"
+  },
+  "pillLabelDefault": "High Priority",
+  "@pillLabelDefault": {
+    "description": "Default label for Priority Pill properties"
+  },
+  "attachmentTitleDefault": "Attachments",
+  "@attachmentTitleDefault": {
+    "description": "Default title for Attachment List properties"
+  },
+  "alertMessageDefault": "System memory is currently running high (85% utilization).",
+  "@alertMessageDefault": {
+    "description": "Default message text for Alert Banner properties"
+  },
+  "alertActionLabelDefault": "Resolve",
+  "@alertActionLabelDefault": {
+    "description": "Default button label for Alert Banner properties"
+  },
+  "quickRepliesTitleDefault": "Select a follow-up action:",
+  "@quickRepliesTitleDefault": {
+    "description": "Default title for Quick Replies properties"
+  },
+  "productTitleDefault": "Premium Wireless Headphones",
+  "@productTitleDefault": {
+    "description": "Default title for Product Card properties"
+  },
+  "productDescriptionDefault": "High-fidelity audio with active noise cancellation and 40-hour battery life.",
+  "@productDescriptionDefault": {
+    "description": "Default description for Product Card properties"
+  },
+  "projectProposalPdfName": "Project Proposal.pdf",
+  "@projectProposalPdfName": {
+    "description": "Display name of project proposal pdf"
+  },
+  "designMockupPngName": "Design Mockup.png",
+  "@designMockupPngName": {
+    "description": "Display name of design mockup png"
+  },
+  "projectInitiatedTitle": "Project Initiated",
+  "@projectInitiatedTitle": {
+    "description": "Title of project initiated timeline event"
+  },
+  "projectInitiatedDesc": "Kickoff meeting scheduled with client.",
+  "@projectInitiatedDesc": {
+    "description": "Description of project initiated timeline event"
+  },
+  "designMockupsTitle": "Design Mockups",
+  "@designMockupsTitle": {
+    "description": "Title of design mockups timeline event"
+  },
+  "designMockupsDesc": "Review visual layouts and typography guidelines.",
+  "@designMockupsDesc": {
+    "description": "Description of design mockups timeline event"
+  },
+  "apiIntegrationTitle": "API Integration",
+  "@apiIntegrationTitle": {
+    "description": "Title of API integration timeline event"
+  },
+  "apiIntegrationDesc": "Connect UI surfaces to local and remote data handlers.",
+  "@apiIntegrationDesc": {
+    "description": "Description of API integration timeline event"
+  },
+  "monday": "Monday",
+  "@monday": {
+    "description": "Monday"
+  },
+  "tuesday": "Tuesday",
+  "@tuesday": {
+    "description": "Tuesday"
+  },
+  "thursday": "Thursday",
+  "@thursday": {
+    "description": "Thursday"
+  },
+  "quickReplyViewPricing": "View pricing summary",
+  "@quickReplyViewPricing": {
+    "description": "Quick reply option to view pricing"
+  },
+  "quickReplyContactHuman": "Contact human agent",
+  "@quickReplyContactHuman": {
+    "description": "Quick reply option to contact human"
+  },
+  "quickReplyRequestCustom": "Request custom proposal",
+  "@quickReplyRequestCustom": {
+    "description": "Quick reply option to request custom proposal"
+  },
+  "userNameDefault": "Ada Lovelace",
+  "@userNameDefault": {
+    "description": "Default user name for User Card properties"
+  },
+  "userRoleDefault": "Lead Architect",
+  "@userRoleDefault": {
+    "description": "Default user role for User Card properties"
+  },
+  "metricTitleDefault": "Project Completion",
+  "@metricTitleDefault": {
+    "description": "Default metric title for Metric Chart properties"
+  },
+  "metricLegendDefault": "Completed",
+  "@metricLegendDefault": {
+    "description": "Default metric legend label for Metric Chart properties"
+  },
+  "timelineTitleDefault": "Activity Timeline",
+  "@timelineTitleDefault": {
+    "description": "Default title for Timeline properties"
+  },
+  "singleAttachmentNameDefault": "Quarterly_Report_2026.pdf",
+  "@singleAttachmentNameDefault": {
+    "description": "Default single attachment file name"
+  },
+  "singleAttachmentSizeDefault": "4.2 MB",
+  "@singleAttachmentSizeDefault": {
+    "description": "Default single attachment file size"
+  }
+}

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../data/services/connection_settings_service.dart';
+import '../../l10n/app_localizations.dart';
+import '../../main.dart';
 import 'centered_toast.dart';
 
 /// A dialog widget that allows users to configure and persist chat connection
@@ -26,6 +28,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
   late ChatMode _activeChatMode;
   ChatMode? _expandedConfigMode;
   late AppPersona _appPersona;
+  String? _selectedLocaleCode;
   late final TextEditingController _apiKeyController;
   late final TextEditingController _serverpodUrlController;
   late final TextEditingController _localModelController;
@@ -48,12 +51,15 @@ class _SettingsDialogState extends State<SettingsDialog> {
   bool? _serverpodTestResult;
   String? _serverpodTestMessage;
 
+  AppLocalizations get l10n => AppLocalizations.of(context)!;
+
   @override
   void initState() {
     super.initState();
     _activeChatMode = widget.settingsService.chatMode;
     _expandedConfigMode = _activeChatMode;
     _appPersona = widget.settingsService.appPersona;
+    _selectedLocaleCode = widget.settingsService.localeCode;
     _apiKeyController = TextEditingController(
       text: widget.settingsService.apiKey,
     );
@@ -90,7 +96,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
       });
     } else {
       if (mounted) {
-        _showWarning(context, 'No text found in clipboard');
+        _showWarning(context, l10n.noTextInClipboard);
       }
     }
   }
@@ -201,35 +207,33 @@ class _SettingsDialogState extends State<SettingsDialog> {
         final key = _apiKeyController.text.trim();
         if (key.isEmpty) {
           success = false;
-          message = 'API key cannot be empty.';
+          message = l10n.apiKeyCannotBeEmpty;
         } else if (!widget.settingsService.isValidApiKey(key)) {
           success = false;
-          message = 'Invalid Gemini API key format.';
+          message = l10n.invalidApiKeyFormatMessage;
         } else {
           success = true;
-          message = 'API key format is valid! (Mock SSE ping passed)';
+          message = l10n.apiKeyFormatIsValid;
         }
         break;
       case ChatMode.local:
         final path = _localModelController.text.trim();
         if (path.isEmpty) {
           success = false;
-          message = 'Model path cannot be empty.';
+          message = l10n.modelPathCannotBeEmpty;
         } else {
           success = true;
-          message =
-              'Model file path format is valid! (Mock weight check passed)';
+          message = l10n.modelPathIsValid;
         }
         break;
       case ChatMode.serverpod:
         final url = _serverpodUrlController.text.trim();
         if (url.isEmpty) {
           success = false;
-          message = 'Server URL cannot be empty.';
+          message = l10n.serverUrlCannotBeEmpty;
         } else {
           success = true;
-          message =
-              'Serverpod host is reachable! (Mock WebSocket handshake passed)';
+          message = l10n.serverpodHostReachable;
         }
         break;
     }
@@ -276,15 +280,15 @@ class _SettingsDialogState extends State<SettingsDialog> {
         key.isEmpty || widget.settingsService.isValidApiKey(key);
 
     return AlertDialog(
-      title: const Text('Connection Settings'),
+      title: Text(l10n.settingsTitle),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              'Active Chat Execution Mode',
-              style: TextStyle(
+            Text(
+              l10n.activeChatModeLabel,
+              style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -322,9 +326,9 @@ class _SettingsDialogState extends State<SettingsDialog> {
             const SizedBox(height: 20),
             const Divider(color: Colors.white10),
             const SizedBox(height: 12),
-            const Text(
-              'Application Persona / Context',
-              style: TextStyle(
+            Text(
+              l10n.appPersonaLabel,
+              style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -343,12 +347,12 @@ class _SettingsDialogState extends State<SettingsDialog> {
                 children: [
                   _buildPersonaTab(
                     AppPersona.taskBoard,
-                    'Task Board',
+                    l10n.taskBoardPersona,
                     Icons.assignment_turned_in_rounded,
                   ),
                   _buildPersonaTab(
                     AppPersona.customerPortal,
-                    'Customer App',
+                    l10n.customerAppPersona,
                     Icons.account_balance_wallet_rounded,
                   ),
                 ],
@@ -357,9 +361,9 @@ class _SettingsDialogState extends State<SettingsDialog> {
             const SizedBox(height: 20),
             const Divider(color: Colors.white10),
             const SizedBox(height: 12),
-            const Text(
-              'Configure Backends & Endpoints',
-              style: TextStyle(
+            Text(
+              l10n.backendsSection,
+              style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -370,19 +374,88 @@ class _SettingsDialogState extends State<SettingsDialog> {
             _buildAccordionCard(ChatMode.serverless, isApiKeyValid),
             _buildAccordionCard(ChatMode.local, isApiKeyValid),
             _buildAccordionCard(ChatMode.serverpod, isApiKeyValid),
+            const SizedBox(height: 20),
+            const Divider(color: Colors.white10),
+            const SizedBox(height: 12),
+            Text(
+              l10n.selectAppLanguage,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 8),
+            // Language selector dropdown
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                color: const Color(0xFF090D16),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.white10),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String?>(
+                  value: _selectedLocaleCode,
+                  dropdownColor: const Color(0xFF0F172A),
+                  isExpanded: true,
+                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                  items: [
+                    DropdownMenuItem<String?>(
+                      value: null,
+                      child: Text(l10n.systemLanguage),
+                    ),
+                    DropdownMenuItem<String?>(
+                      value: 'en',
+                      child: Text(l10n.englishLanguage),
+                    ),
+                    DropdownMenuItem<String?>(
+                      value: 'es',
+                      child: Text(l10n.spanishLanguage),
+                    ),
+                  ],
+                  onChanged: (val) {
+                    setState(() {
+                      _selectedLocaleCode = val;
+                    });
+                  },
+                ),
+              ),
+            ),
           ],
         ),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(l10n.cancel),
         ),
         ElevatedButton(
           onPressed: _isFormValid()
               ? () async {
+                  // Retrieve target locale synchronously before async operations
+                  final currentLocale = Localizations.localeOf(context);
+                  final targetLocale = _selectedLocaleCode == null
+                      ? currentLocale
+                      : Locale(_selectedLocaleCode!);
+                  AppLocalizations targetL10n;
+                  try {
+                    targetL10n = lookupAppLocalizations(targetLocale);
+                  } catch (_) {
+                    targetL10n = l10n;
+                  }
+
                   await widget.settingsService.setChatMode(_activeChatMode);
                   await widget.settingsService.setAppPersona(_appPersona);
+                  await widget.settingsService.setLocaleCode(
+                    _selectedLocaleCode,
+                  );
+
+                  // Update the global locale notifier reactively
+                  appLocaleNotifier.value = _selectedLocaleCode == null
+                      ? null
+                      : Locale(_selectedLocaleCode!);
+
                   if (_activeChatMode == ChatMode.serverless ||
                       _apiKeyController.text.trim().isNotEmpty) {
                     if (_apiKeyController.text.trim().isEmpty) {
@@ -408,13 +481,13 @@ class _SettingsDialogState extends State<SettingsDialog> {
                     Navigator.pop(context);
                     _showFeedback(
                       context,
-                      'Settings saved successfully!',
+                      targetL10n.settingsSavedSuccess,
                       true,
                     );
                   }
                 }
               : null,
-          child: const Text('Save'),
+          child: Text(l10n.save),
         ),
       ],
     );
@@ -508,20 +581,20 @@ class _SettingsDialogState extends State<SettingsDialog> {
     switch (mode) {
       case ChatMode.serverless:
         modeIcon = Icons.cloud_queue;
-        modeTitle = 'Serverless Gemini';
-        modeSubtitle = 'Direct SSE connection to Gemini API';
+        modeTitle = l10n.serverlessGeminiLabel;
+        modeSubtitle = l10n.serverlessGeminiSubtitle;
         themeColor = const Color(0xFF6366F1);
         break;
       case ChatMode.local:
         modeIcon = Icons.phonelink_setup;
-        modeTitle = 'Local Gemma';
-        modeSubtitle = 'Native on-device LLM execution';
+        modeTitle = l10n.localGemmaLabel;
+        modeSubtitle = l10n.localGemmaSubtitle;
         themeColor = const Color(0xFF10B981);
         break;
       case ChatMode.serverpod:
         modeIcon = Icons.dns;
-        modeTitle = 'Serverpod Remote';
-        modeSubtitle = 'WebSockets streaming via remote backend';
+        modeTitle = l10n.serverpodRemoteLabel;
+        modeSubtitle = l10n.serverpodRemoteSubtitle;
         themeColor = const Color(0xFF3B82F6);
         break;
     }
@@ -614,7 +687,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                                   ),
                                 ),
                                 child: Text(
-                                  'ACTIVE',
+                                  l10n.activeBadgeLabel,
                                   style: TextStyle(
                                     fontSize: 8,
                                     fontWeight: FontWeight.bold,
@@ -691,11 +764,9 @@ class _SettingsDialogState extends State<SettingsDialog> {
               controller: _apiKeyController,
               obscureText: !_isApiVisible,
               decoration: InputDecoration(
-                labelText: 'Gemini API Key',
+                labelText: l10n.geminiApiKeyLabel,
                 hintText: 'AIzaSy...',
-                errorText: !isApiKeyValid
-                    ? 'Invalid Gemini API Key format'
-                    : null,
+                errorText: !isApiKeyValid ? l10n.invalidApiKeyFormat : null,
                 border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
                   icon: Icon(
@@ -717,7 +788,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                 TextButton.icon(
                   onPressed: _handlePaste,
                   icon: const Icon(Icons.paste_rounded, size: 16),
-                  label: const Text('PASTE KEY'),
+                  label: Text(l10n.pasteKeyButton),
                   style: TextButton.styleFrom(
                     visualDensity: VisualDensity.compact,
                     foregroundColor: const Color(0xFF6366F1),
@@ -726,7 +797,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                 TextButton.icon(
                   onPressed: _openGeminiApiKeyUrl,
                   icon: const Icon(Icons.open_in_new, size: 16),
-                  label: const Text('GET API KEY'),
+                  label: Text(l10n.getApiKeyButton),
                   style: TextButton.styleFrom(
                     visualDensity: VisualDensity.compact,
                     foregroundColor: Colors.teal,
@@ -742,10 +813,10 @@ class _SettingsDialogState extends State<SettingsDialog> {
           children: [
             TextField(
               controller: _localModelController,
-              decoration: const InputDecoration(
-                labelText: 'Model File Path (Assets/Storage)',
+              decoration: InputDecoration(
+                labelText: l10n.modelFilePathLabel,
                 hintText: 'gemma-2b-it.bin',
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
               ),
               onChanged: (_) => setState(() {}),
             ),
@@ -753,9 +824,9 @@ class _SettingsDialogState extends State<SettingsDialog> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Temperature:',
-                  style: TextStyle(fontSize: 13, color: Colors.white70),
+                Text(
+                  l10n.temperatureLabel,
+                  style: const TextStyle(fontSize: 13, color: Colors.white70),
                 ),
                 Text(
                   _localTemperature.toStringAsFixed(1),
@@ -784,10 +855,10 @@ class _SettingsDialogState extends State<SettingsDialog> {
           children: [
             TextField(
               controller: _serverpodUrlController,
-              decoration: const InputDecoration(
-                labelText: 'Server Host endpoint URL',
+              decoration: InputDecoration(
+                labelText: l10n.serverHostUrlLabel,
                 hintText: 'http://localhost:8080',
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
               ),
               onChanged: (_) => setState(() {}),
             ),
@@ -828,7 +899,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
               child: OutlinedButton.icon(
                 onPressed: isTesting ? null : () => _testConnection(mode),
                 icon: const Icon(Icons.bolt_rounded, size: 16),
-                label: const Text('Test Connection'),
+                label: Text(l10n.testConnectionButton),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: const Color(0xFF818CF8),
                   side: const BorderSide(color: Color(0x336366F1)),
@@ -843,10 +914,10 @@ class _SettingsDialogState extends State<SettingsDialog> {
         ),
         if (isTesting) ...[
           const SizedBox(height: 12),
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(
+              const SizedBox(
                 width: 14,
                 height: 14,
                 child: CircularProgressIndicator(
@@ -854,10 +925,10 @@ class _SettingsDialogState extends State<SettingsDialog> {
                   valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6366F1)),
                 ),
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
-                'Testing connection...',
-                style: TextStyle(fontSize: 12, color: Colors.white70),
+                l10n.testingConnectionProgress,
+                style: const TextStyle(fontSize: 12, color: Colors.white70),
               ),
             ],
           ),

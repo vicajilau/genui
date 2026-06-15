@@ -22,7 +22,8 @@ class QuickRepliesWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (replies.isEmpty) return const SizedBox.shrink();
+    final items = replies.map((r) => QuickReplyItem.fromJson(r)).toList();
+    if (items.isEmpty) return const SizedBox.shrink();
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -49,23 +50,15 @@ class QuickRepliesWidget extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
             child: Row(
-              children: replies.map((replyItem) {
-                final (label, value) = (() {
-                  if (replyItem is Map) {
-                    final lbl = (replyItem['label'] as String?) ?? '';
-                    final val = (replyItem['value'] as String?) ?? lbl;
-                    return (lbl, val);
-                  }
-                  final str = replyItem.toString();
-                  return (str, str);
-                })();
-
-                if (label.isEmpty) return const SizedBox.shrink();
+              children: items.map((replyItem) {
+                if (replyItem.label.isEmpty) return const SizedBox.shrink();
 
                 return Padding(
                   padding: const EdgeInsets.only(right: 8.0),
                   child: InkWell(
-                    onTap: onTapReply != null ? () => onTapReply!(value) : null,
+                    onTap: onTapReply != null
+                        ? () => onTapReply!(replyItem.value)
+                        : null,
                     borderRadius: BorderRadius.circular(20),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
@@ -98,7 +91,7 @@ class QuickRepliesWidget extends StatelessWidget {
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            label,
+                            replyItem.label,
                             style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
@@ -116,5 +109,27 @@ class QuickRepliesWidget extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+/// A parsed representation of a single quick reply item.
+class QuickReplyItem {
+  final String label;
+  final String value;
+
+  const QuickReplyItem({required this.label, required this.value});
+
+  factory QuickReplyItem.fromJson(dynamic json) {
+    if (json is Map) {
+      final label =
+          (json['label'] as String?) ??
+          (json['text'] as String?) ??
+          (json['title'] as String?) ??
+          '';
+      final value = (json['value'] as String?) ?? label;
+      return QuickReplyItem(label: label, value: value);
+    }
+    final str = json.toString();
+    return QuickReplyItem(label: str, value: str);
   }
 }

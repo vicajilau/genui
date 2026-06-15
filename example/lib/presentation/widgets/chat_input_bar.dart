@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../l10n/app_localizations.dart';
 
 /// A custom input bar widget at the bottom of the chat interface containing
 /// the text input, a clear chat action button, and a gradient submit button.
@@ -44,6 +45,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isDesktop =
         kIsWeb ||
         defaultTargetPlatform == TargetPlatform.macOS ||
@@ -67,7 +69,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
             IconButton(
               icon: const Icon(Icons.refresh_rounded, color: Colors.white60),
               onPressed: widget.onClear,
-              tooltip: 'Clear Conversation',
+              tooltip: l10n.clearConversationTooltip,
             ),
             const SizedBox(width: 4),
             Expanded(

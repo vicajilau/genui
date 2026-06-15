@@ -98,6 +98,14 @@ class GeminiChatController extends ChangeNotifier {
   void reloadSettings() {
     _chatService.dispose();
     _initChatService();
+    // If the chat history is empty, or if it only contains the initial greeting message,
+    // re-seed it to dynamically update to the new locale or persona context.
+    if (_chatHistory.isEmpty ||
+        (_chatHistory.length == 1 &&
+            !_chatHistory.first.isUser &&
+            _chatHistory.first.surfaceId == null)) {
+      _seedInitialMessage();
+    }
     notifyListeners();
   }
 
@@ -259,12 +267,14 @@ class GeminiChatController extends ChangeNotifier {
 
     final schemasDesc = globalGenUISchemasPromptDescription;
 
+    final systemLanguageCode =
+        _settingsService.localeCode ??
+        PlatformDispatcher.instance.locale.languageCode;
+    final localizer = ChatLocalization(systemLanguageCode.toLowerCase());
+
     final String roleDescription;
     if (_settingsService.appPersona == AppPersona.customerPortal) {
       final now = DateTime.now();
-      final localizer = ChatLocalization.fromLocale(
-        PlatformDispatcher.instance.locale,
-      );
       final systemLanguage = localizer.languageName;
       final currentMonthName = localizer.getMonthName(now);
       final currentYear = now.year;
@@ -272,30 +282,30 @@ class GeminiChatController extends ChangeNotifier {
 
       roleDescription =
           '''
-You are a customer service assistant for a client portal (app de clientes). The user is a customer of the company.
+You are a customer service assistant for a client portal. The user is a customer of the company.
 You must help the user manage their customer account, requests, and bills.
 
 ### CURRENT TEMPORAL CONTEXT
 The current date is: $formattedCurrentDate (today is in the year $currentYear).
-Any user requests for "la última factura" (last invoice), "factura de este mes" (this month's invoice), etc. MUST refer contextually to the current date ($currentMonthName $currentYear or recent previous months). Do NOT generate dates from years far in the past (like 2024 or 2023) unless specifically asked for archived records..
+Any user requests for "the last invoice", "this month's bill", etc. MUST refer contextually to the current date ($currentMonthName $currentYear or recent previous months). Do NOT generate dates from years far in the past (like 2024 or 2023) unless specifically asked for archived records.
 
 You can help them with:
-1. Request or view invoices (facturas).
-2. Request or view certificates (certificados).
-3. Pay pending bills/invoices (pagar facturas).
+1. Request or view invoices.
+2. Request or view withholding certificates.
+3. Pay pending bills/invoices.
 4. View customer details, profile, or account status.
-5. Offer quick-replies (e.g. "Ver mis facturas", "Pedir un certificado", "Pagar factura", "Ver mi perfil").
+5. Offer quick-replies (e.g. "View invoices", "Request certificate", "Pay pending invoice", "View profile").
 
 To fulfill these customer requests, you must map their concepts to the available UI components below:
-- To show one or more downloadable files (invoices, certificates, receipts, documents), use `single_attachment_widget` (SingleAttachmentWidget) or `attachment_list_widget` (AttachmentListWidget). Use professional names like "Factura_Junio_2026.pdf" or "Certificado_Retenciones_2025.pdf", correct file sizes, and set downloable attachments.
-- To allow the user to pay a pending invoice, display the pending invoice details and use `custom_button` (CustomButton) with a label like "Pagar factura" and specify a callback event (like "onPressed").
+- To show one or more downloadable files (invoices, certificates, receipts, documents), use `single_attachment_widget` (SingleAttachmentWidget) or `attachment_list_widget` (AttachmentListWidget). Use professional names, correct file sizes, and set downloadable attachments.
+- To allow the user to pay a pending invoice, display the pending invoice details and use `custom_button` (CustomButton) with a label (e.g., "Pay invoice" or the equivalent in the user's language) and specify a callback event (like "onPressed").
 - To show billing history, consumption charts, or monthly costs, use `metric_chart_widget` (MetricChartWidget) or `stats_widget` (StatsWidget).
 - To show a welcome message, notice, alert or alert banner, use `alert_banner_widget` (AlertBannerWidget).
 - To show payment history or logs over time, use `timeline_widget` (TimelineWidget).
 - To show the user's profile details, use `user_card_widget` (UserCardWidget).
-- To offer quick navigation/queries, use `quick_replies_widget` (QuickRepliesWidget) with actions like "Ver facturas", "Pedir certificado", "Pagar factura pendiente", "Ver perfil".
+- To offer quick navigation/queries, use `quick_replies_widget` (QuickRepliesWidget) with actions (e.g. "View invoices", "Request certificate", "Pay pending invoice", "View profile", or the equivalent in the user's language). The "replies" array property MUST contain objects with a "label" key (the visible chip text) and an optional "value" key (the tap payload, defaulting to label). Example: "replies": [{"label": "View invoices", "value": "view_invoices"}, {"label": "Request certificate"}].
 
-You must respond in the system's language ($systemLanguage) or match the language the user speaks. If the user writes in Spanish, respond in Spanish. If they write in English, respond in English. Speak politely, like a professional customer service assistant.
+You must respond in the system's language ($systemLanguage) or match the language the user speaks. For example, if the user writes in Spanish, respond in Spanish and use Spanish labels for buttons, chips, and files. If they write in English, respond in English. Speak politely, like a professional customer service assistant.
 ''';
     } else {
       roleDescription = '''
@@ -360,7 +370,7 @@ $schemasDesc
    For example:
    {"action": {"name": "TaskItemWidget_onToggleEvent", "context": {"task_id": "task_1_id", "title": "Design GenUI", "isCompleted": true, "priority": "high"}}}
    Or:
-   {"action": {"name": "CustomButton_onPressedEvent", "context": {"label": "Pagar factura"}}}
+   {"action": {"name": "CustomButton_onPressedEvent", "context": {"label": "Pay invoice"}}}
    
    When you receive such an event, you MUST respond by updating the UI layout. If it was a checkbox toggle, you should update the target task's "isCompleted" property. If it was a payment button click, acknowledge the payment process and update the stats or UI to show the new state.
 
@@ -371,9 +381,10 @@ Always follow these rules strictly.
   void _seedInitialMessage() {
     _chatHistory.clear();
     if (_settingsService.appPersona == AppPersona.customerPortal) {
-      final localizer = ChatLocalization.fromLocale(
-        PlatformDispatcher.instance.locale,
-      );
+      final systemLanguageCode =
+          _settingsService.localeCode ??
+          PlatformDispatcher.instance.locale.languageCode;
+      final localizer = ChatLocalization(systemLanguageCode.toLowerCase());
       _chatHistory.add(
         ChatTimelineItem(isUser: false, text: localizer.getGreeting()),
       );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// A widget panel that acts as the navigation sidebar/collapsible list containing
 /// the selectable list of A2UI components in the Component Catalog.
@@ -20,6 +21,7 @@ class ComponentCatalogPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final panelHeight = isWide ? double.infinity : (isExpanded ? 260.0 : 56.0);
     final panelWidth = isWide ? (isExpanded ? 280.0 : 56.0) : double.infinity;
     final showText = isExpanded || !isWide;
@@ -65,10 +67,10 @@ class ComponentCatalogPanel extends StatelessWidget {
                     ),
                     if (showText) ...[
                       const SizedBox(width: 8),
-                      const Expanded(
+                      Expanded(
                         child: Text(
-                          'COMPONENTS',
-                          style: TextStyle(
+                          l10n.componentsHeader,
+                          style: const TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
                             color: Colors.white38,
@@ -77,7 +79,7 @@ class ComponentCatalogPanel extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        isExpanded ? 'Hide' : 'Show',
+                        isExpanded ? l10n.hideLabel : l10n.showLabel,
                         style: const TextStyle(
                           fontSize: 11,
                           color: Colors.white54,
@@ -132,7 +134,7 @@ class ComponentCatalogPanel extends StatelessWidget {
                     context,
                     selectedComponent,
                     onComponentSelected,
-                    'Custom Button',
+                    l10n.componentCustomButton,
                     Icons.smart_button_rounded,
                     'CustomButton',
                     showText,
@@ -141,7 +143,7 @@ class ComponentCatalogPanel extends StatelessWidget {
                     context,
                     selectedComponent,
                     onComponentSelected,
-                    'Task Item',
+                    l10n.componentTaskItem,
                     Icons.task_alt_rounded,
                     'TaskItemWidget',
                     showText,
@@ -150,7 +152,7 @@ class ComponentCatalogPanel extends StatelessWidget {
                     context,
                     selectedComponent,
                     onComponentSelected,
-                    'Stats Summary',
+                    l10n.componentStatsSummary,
                     Icons.bar_chart_rounded,
                     'StatsWidget',
                     showText,
@@ -159,7 +161,7 @@ class ComponentCatalogPanel extends StatelessWidget {
                     context,
                     selectedComponent,
                     onComponentSelected,
-                    'User Card',
+                    l10n.componentUserCard,
                     Icons.person_outline_rounded,
                     'UserCardWidget',
                     showText,
@@ -168,7 +170,7 @@ class ComponentCatalogPanel extends StatelessWidget {
                     context,
                     selectedComponent,
                     onComponentSelected,
-                    'Metric Chart',
+                    l10n.componentMetricChart,
                     Icons.donut_large_rounded,
                     'MetricChartWidget',
                     showText,
@@ -177,7 +179,7 @@ class ComponentCatalogPanel extends StatelessWidget {
                     context,
                     selectedComponent,
                     onComponentSelected,
-                    'Priority Pill',
+                    l10n.componentPriorityPill,
                     Icons.label_important_outline_rounded,
                     'PriorityPillWidget',
                     showText,
@@ -186,7 +188,7 @@ class ComponentCatalogPanel extends StatelessWidget {
                     context,
                     selectedComponent,
                     onComponentSelected,
-                    'Attachment List',
+                    l10n.componentAttachmentList,
                     Icons.attachment_rounded,
                     'AttachmentListWidget',
                     showText,
@@ -195,7 +197,7 @@ class ComponentCatalogPanel extends StatelessWidget {
                     context,
                     selectedComponent,
                     onComponentSelected,
-                    'Single Attachment',
+                    l10n.componentSingleAttachment,
                     Icons.insert_drive_file_outlined,
                     'SingleAttachmentWidget',
                     showText,
@@ -204,7 +206,7 @@ class ComponentCatalogPanel extends StatelessWidget {
                     context,
                     selectedComponent,
                     onComponentSelected,
-                    'Quick Replies',
+                    l10n.componentQuickReplies,
                     Icons.quickreply_outlined,
                     'QuickRepliesWidget',
                     showText,
@@ -213,7 +215,7 @@ class ComponentCatalogPanel extends StatelessWidget {
                     context,
                     selectedComponent,
                     onComponentSelected,
-                    'Product Card',
+                    l10n.componentProductCard,
                     Icons.shopping_bag_outlined,
                     'ProductCardWidget',
                     showText,
@@ -222,7 +224,7 @@ class ComponentCatalogPanel extends StatelessWidget {
                     context,
                     selectedComponent,
                     onComponentSelected,
-                    'Timeline Log',
+                    l10n.componentTimelineLog,
                     Icons.timeline_rounded,
                     'TimelineWidget',
                     showText,
@@ -231,7 +233,7 @@ class ComponentCatalogPanel extends StatelessWidget {
                     context,
                     selectedComponent,
                     onComponentSelected,
-                    'Alert Banner',
+                    l10n.componentAlertBanner,
                     Icons.warning_amber_rounded,
                     'AlertBannerWidget',
                     showText,
