@@ -601,5 +601,59 @@
   "singleAttachmentSizeDefault": "4.2 MB",
   "@singleAttachmentSizeDefault": {
     "description": "Default single attachment file size"
+  },
+  "inspectorTitle": "INSPECTOR",
+  "@inspectorTitle": {
+    "description": "Header title of the JSON inspector panel"
+  },
+  "expandedInspectorTitle": "EXPANDED INSPECTOR",
+  "@expandedInspectorTitle": {
+    "description": "Header title of the expanded JSON inspector dialog"
+  },
+  "expandViewerTooltip": "Expand viewer",
+  "@expandViewerTooltip": {
+    "description": "Tooltip for expand button in the inspector"
+  },
+  "copyActiveJsonTooltip": "Copy active JSON",
+  "@copyActiveJsonTooltip": {
+    "description": "Tooltip for copy button in the inspector"
+  },
+  "closeTooltip": "Close",
+  "@closeTooltip": {
+    "description": "Tooltip for close button in dialogs"
+  },
+  "tabA2uiPayload": "A2UI Payload",
+  "@tabA2uiPayload": {
+    "description": "Segmented tab title for A2UI Payload"
+  },
+  "tabWidgetSchema": "Schema",
+  "@tabWidgetSchema": {
+    "description": "Segmented tab title for widget schema"
+  },
+  "tabGlobalJson": "Global JSON",
+  "@tabGlobalJson": {
+    "description": "Segmented tab title for global JSON schema"
+  },
+  "titleA2uiPayload": "A2UI PAYLOAD",
+  "@titleA2uiPayload": {
+    "description": "Display title for A2UI Payload"
+  },
+  "titleWidgetSchema": "WIDGET SCHEMA",
+  "@titleWidgetSchema": {
+    "description": "Display title for Widget Schema"
+  },
+  "titleGlobalContract": "GLOBAL CONTRACT",
+  "@titleGlobalContract": {
+    "description": "Display title for Global Contract"
+  },
+  "copiedToClipboardMessage": "Copied {target} to clipboard!",
+  "@copiedToClipboardMessage": {
+    "description": "Feedback message when copying to clipboard",
+    "placeholders": {
+      "target": {
+        "type": "String",
+        "example": "A2UI payload"
+      }
+    }
   }
 }

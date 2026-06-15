@@ -431,4 +431,42 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get singleAttachmentSizeDefault => '4.2 MB';
+
+  @override
+  String get inspectorTitle => 'INSPECTOR';
+
+  @override
+  String get expandedInspectorTitle => 'EXPANDED INSPECTOR';
+
+  @override
+  String get expandViewerTooltip => 'Expand viewer';
+
+  @override
+  String get copyActiveJsonTooltip => 'Copy active JSON';
+
+  @override
+  String get closeTooltip => 'Close';
+
+  @override
+  String get tabA2uiPayload => 'A2UI Payload';
+
+  @override
+  String get tabWidgetSchema => 'Schema';
+
+  @override
+  String get tabGlobalJson => 'Global JSON';
+
+  @override
+  String get titleA2uiPayload => 'A2UI PAYLOAD';
+
+  @override
+  String get titleWidgetSchema => 'WIDGET SCHEMA';
+
+  @override
+  String get titleGlobalContract => 'GLOBAL CONTRACT';
+
+  @override
+  String copiedToClipboardMessage(String target) {
+    return 'Copied $target to clipboard!';
+  }
 }

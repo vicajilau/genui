@@ -127,5 +127,17 @@
   "metricTitleDefault": "Progreso del Proyecto",
   "metricLegendDefault": "Completado",
   "singleAttachmentNameDefault": "Informe_Trimestral_2026.pdf",
-  "singleAttachmentSizeDefault": "4.2 MB"
+  "singleAttachmentSizeDefault": "4.2 MB",
+  "inspectorTitle": "INSPECTOR",
+  "expandedInspectorTitle": "INSPECTOR EXPANDIDO",
+  "expandViewerTooltip": "Expandir visor",
+  "copyActiveJsonTooltip": "Copiar JSON activo",
+  "closeTooltip": "Cerrar",
+  "tabA2uiPayload": "Payload A2UI",
+  "tabWidgetSchema": "Esquema",
+  "tabGlobalJson": "JSON Global",
+  "titleA2uiPayload": "PAYLOAD A2UI",
+  "titleWidgetSchema": "ESQUEMA DE WIDGET",
+  "titleGlobalContract": "CONTRATO GLOBAL",
+  "copiedToClipboardMessage": "¡{target} copiado al portapapeles!"
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// An overlay modal dialog presenting the expanded view of the JSON inspector.
 class ExpandedInspectorDialog extends StatefulWidget {
@@ -27,6 +28,8 @@ class _ExpandedInspectorDialogState extends State<ExpandedInspectorDialog> {
   late int _activeTab;
   final ScrollController _dialogScrollController = ScrollController();
 
+  AppLocalizations get l10n => AppLocalizations.of(context)!;
+
   @override
   void initState() {
     super.initState();
@@ -52,14 +55,14 @@ class _ExpandedInspectorDialogState extends State<ExpandedInspectorDialog> {
     }
   }
 
-  String _getActiveTitle() {
+  String _getActiveTitle(AppLocalizations l10n) {
     switch (_activeTab) {
       case 0:
-        return 'A2UI PAYLOAD';
+        return l10n.titleA2uiPayload;
       case 1:
-        return 'WIDGET SCHEMA';
+        return l10n.titleWidgetSchema;
       case 2:
-        return 'GLOBAL CONTRACT';
+        return l10n.titleGlobalContract;
       default:
         return '';
     }
@@ -71,7 +74,7 @@ class _ExpandedInspectorDialogState extends State<ExpandedInspectorDialog> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'Copied ${_getActiveTitle().toLowerCase()} to clipboard!',
+          l10n.copiedToClipboardMessage(_getActiveTitle(l10n).toLowerCase()),
         ),
         duration: const Duration(seconds: 1),
         backgroundColor: const Color(0xFF6366F1),
@@ -112,7 +115,7 @@ class _ExpandedInspectorDialogState extends State<ExpandedInspectorDialog> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'EXPANDED INSPECTOR',
+                      l10n.expandedInspectorTitle,
                       style: TextStyle(
                         fontSize: isMobile ? 12 : 14,
                         fontWeight: FontWeight.bold,
@@ -130,7 +133,7 @@ class _ExpandedInspectorDialogState extends State<ExpandedInspectorDialog> {
                         color: Colors.white70,
                         size: 18,
                       ),
-                      tooltip: 'Copy active JSON',
+                      tooltip: l10n.copyActiveJsonTooltip,
                       onPressed: _handleCopy,
                     ),
                     IconButton(
@@ -139,7 +142,7 @@ class _ExpandedInspectorDialogState extends State<ExpandedInspectorDialog> {
                         color: Colors.white70,
                         size: 20,
                       ),
-                      tooltip: 'Close',
+                      tooltip: l10n.closeTooltip,
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                   ],
@@ -157,9 +160,9 @@ class _ExpandedInspectorDialogState extends State<ExpandedInspectorDialog> {
               ),
               child: Row(
                 children: [
-                  _buildTab(0, 'A2UI Payload'),
-                  _buildTab(1, 'Schema'),
-                  _buildTab(2, 'Global JSON'),
+                  _buildTab(0, l10n.tabA2uiPayload),
+                  _buildTab(1, l10n.tabWidgetSchema),
+                  _buildTab(2, l10n.tabGlobalJson),
                 ],
               ),
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../../l10n/app_localizations.dart';
 import 'expanded_inspector_dialog.dart';
 
 /// A widget panel that displays compiled JSON outputs (A2UI payloads, component schemas,
@@ -26,6 +27,8 @@ class _ComponentJsonInspectorPanelState
   int _activeTab = 0; // 0: Payload, 1: Schema, 2: Global
   final ScrollController _scrollController = ScrollController();
 
+  AppLocalizations get l10n => AppLocalizations.of(context)!;
+
   @override
   void dispose() {
     _scrollController.dispose();
@@ -45,14 +48,14 @@ class _ComponentJsonInspectorPanelState
     }
   }
 
-  String _getActiveTitle() {
+  String _getActiveTitle(AppLocalizations l10n) {
     switch (_activeTab) {
       case 0:
-        return 'A2UI PAYLOAD';
+        return l10n.titleA2uiPayload;
       case 1:
-        return 'WIDGET SCHEMA';
+        return l10n.titleWidgetSchema;
       case 2:
-        return 'GLOBAL CONTRACT';
+        return l10n.titleGlobalContract;
       default:
         return '';
     }
@@ -64,7 +67,7 @@ class _ComponentJsonInspectorPanelState
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'Copied ${_getActiveTitle().toLowerCase()} to clipboard!',
+          l10n.copiedToClipboardMessage(_getActiveTitle(l10n).toLowerCase()),
         ),
         duration: const Duration(seconds: 1),
         backgroundColor: const Color(0xFF6366F1),
@@ -105,17 +108,17 @@ class _ComponentJsonInspectorPanelState
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Row(
+                Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.code_rounded,
                       color: Color(0xFF06B6D4),
                       size: 18,
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Text(
-                      'INSPECTOR',
-                      style: TextStyle(
+                      l10n.inspectorTitle,
+                      style: const TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
                         color: Colors.white38,
@@ -132,7 +135,7 @@ class _ComponentJsonInspectorPanelState
                         color: Colors.white70,
                         size: 20,
                       ),
-                      tooltip: 'Expand viewer',
+                      tooltip: l10n.expandViewerTooltip,
                       onPressed: _handleExpand,
                     ),
                     IconButton(
@@ -141,7 +144,7 @@ class _ComponentJsonInspectorPanelState
                         color: Colors.white70,
                         size: 16,
                       ),
-                      tooltip: 'Copy active JSON',
+                      tooltip: l10n.copyActiveJsonTooltip,
                       onPressed: _handleCopy,
                     ),
                   ],
@@ -159,9 +162,9 @@ class _ComponentJsonInspectorPanelState
               ),
               child: Row(
                 children: [
-                  _buildTab(0, 'A2UI Payload'),
-                  _buildTab(1, 'Schema'),
-                  _buildTab(2, 'Global JSON'),
+                  _buildTab(0, l10n.tabA2uiPayload),
+                  _buildTab(1, l10n.tabWidgetSchema),
+                  _buildTab(2, l10n.tabGlobalJson),
                 ],
               ),
             ),

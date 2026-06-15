@@ -865,6 +865,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'4.2 MB'**
   String get singleAttachmentSizeDefault;
+
+  /// Header title of the JSON inspector panel
+  ///
+  /// In en, this message translates to:
+  /// **'INSPECTOR'**
+  String get inspectorTitle;
+
+  /// Header title of the expanded JSON inspector dialog
+  ///
+  /// In en, this message translates to:
+  /// **'EXPANDED INSPECTOR'**
+  String get expandedInspectorTitle;
+
+  /// Tooltip for expand button in the inspector
+  ///
+  /// In en, this message translates to:
+  /// **'Expand viewer'**
+  String get expandViewerTooltip;
+
+  /// Tooltip for copy button in the inspector
+  ///
+  /// In en, this message translates to:
+  /// **'Copy active JSON'**
+  String get copyActiveJsonTooltip;
+
+  /// Tooltip for close button in dialogs
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get closeTooltip;
+
+  /// Segmented tab title for A2UI Payload
+  ///
+  /// In en, this message translates to:
+  /// **'A2UI Payload'**
+  String get tabA2uiPayload;
+
+  /// Segmented tab title for widget schema
+  ///
+  /// In en, this message translates to:
+  /// **'Schema'**
+  String get tabWidgetSchema;
+
+  /// Segmented tab title for global JSON schema
+  ///
+  /// In en, this message translates to:
+  /// **'Global JSON'**
+  String get tabGlobalJson;
+
+  /// Display title for A2UI Payload
+  ///
+  /// In en, this message translates to:
+  /// **'A2UI PAYLOAD'**
+  String get titleA2uiPayload;
+
+  /// Display title for Widget Schema
+  ///
+  /// In en, this message translates to:
+  /// **'WIDGET SCHEMA'**
+  String get titleWidgetSchema;
+
+  /// Display title for Global Contract
+  ///
+  /// In en, this message translates to:
+  /// **'GLOBAL CONTRACT'**
+  String get titleGlobalContract;
+
+  /// Feedback message when copying to clipboard
+  ///
+  /// In en, this message translates to:
+  /// **'Copied {target} to clipboard!'**
+  String copiedToClipboardMessage(String target);
 }
 
 class _AppLocalizationsDelegate
