@@ -25,6 +25,7 @@ class SettingsDialog extends StatefulWidget {
 class _SettingsDialogState extends State<SettingsDialog> {
   late ChatMode _activeChatMode;
   ChatMode? _expandedConfigMode;
+  late AppPersona _appPersona;
   late final TextEditingController _apiKeyController;
   late final TextEditingController _serverpodUrlController;
   late final TextEditingController _localModelController;
@@ -52,6 +53,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
     super.initState();
     _activeChatMode = widget.settingsService.chatMode;
     _expandedConfigMode = _activeChatMode;
+    _appPersona = widget.settingsService.appPersona;
     _apiKeyController = TextEditingController(
       text: widget.settingsService.apiKey,
     );
@@ -321,6 +323,41 @@ class _SettingsDialogState extends State<SettingsDialog> {
             const Divider(color: Colors.white10),
             const SizedBox(height: 12),
             const Text(
+              'Application Persona / Context',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 8),
+            // Segmented active app persona selector
+            Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: const Color(0xFF090D16),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.white10),
+              ),
+              child: Row(
+                children: [
+                  _buildPersonaTab(
+                    AppPersona.taskBoard,
+                    'Task Board',
+                    Icons.assignment_turned_in_rounded,
+                  ),
+                  _buildPersonaTab(
+                    AppPersona.customerPortal,
+                    'Customer App',
+                    Icons.account_balance_wallet_rounded,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Divider(color: Colors.white10),
+            const SizedBox(height: 12),
+            const Text(
               'Configure Backends & Endpoints',
               style: TextStyle(
                 fontSize: 13,
@@ -345,6 +382,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
           onPressed: _isFormValid()
               ? () async {
                   await widget.settingsService.setChatMode(_activeChatMode);
+                  await widget.settingsService.setAppPersona(_appPersona);
                   if (_activeChatMode == ChatMode.serverless ||
                       _apiKeyController.text.trim().isNotEmpty) {
                     if (_apiKeyController.text.trim().isEmpty) {
@@ -387,6 +425,44 @@ class _SettingsDialogState extends State<SettingsDialog> {
     return Expanded(
       child: GestureDetector(
         onTap: () => setState(() => _activeChatMode = mode),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: isActive ? const Color(0xFF1E293B) : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+            border: isActive
+                ? Border.all(color: const Color(0x336366F1))
+                : Border.all(color: Colors.transparent),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 14,
+                color: isActive ? const Color(0xFF818CF8) : Colors.white60,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                  color: isActive ? const Color(0xFF818CF8) : Colors.white60,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPersonaTab(AppPersona persona, String label, IconData icon) {
+    final isActive = _appPersona == persona;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => _appPersona = persona),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(

@@ -65,6 +65,7 @@ class GeminiChatController extends ChangeNotifier {
 
     _setupConversationSub();
     _setupIncomingMessagesSub(uniqueTransport);
+    _seedInitialMessage();
   }
 
   void _initChatService() {
@@ -257,8 +258,61 @@ class GeminiChatController extends ChangeNotifier {
 
     final schemasDesc = globalGenUISchemasPromptDescription;
 
-    return '''
+    final String roleDescription;
+    if (_settingsService.appPersona == AppPersona.customerPortal) {
+      final now = DateTime.now();
+      final monthNames = [
+        'enero',
+        'febrero',
+        'marzo',
+        'abril',
+        'mayo',
+        'junio',
+        'julio',
+        'agosto',
+        'septiembre',
+        'octubre',
+        'noviembre',
+        'diciembre',
+      ];
+      final currentMonthName = monthNames[now.month - 1];
+      final currentYear = now.year;
+
+      roleDescription =
+          '''
+You are a customer service assistant for a client portal (app de clientes). The user is a customer of the company.
+You must help the user manage their customer account, requests, and bills.
+
+### CURRENT TEMPORAL CONTEXT
+The current date is: ${now.day} de $currentMonthName de $currentYear (today is in the year $currentYear).
+Any user requests for "la última factura" (last invoice), "factura de este mes" (this month's invoice), etc. MUST refer contextually to the current date ($currentMonthName $currentYear or recent previous months). Do NOT generate dates from years far in the past (like 2024 or 2023) unless specifically asked for archived records.
+
+You can help them with:
+1. Request or view invoices (facturas).
+2. Request or view certificates (certificados).
+3. Pay pending bills/invoices (pagar facturas).
+4. View customer details, profile, or account status.
+5. Offer quick-replies (e.g. "Ver mis facturas", "Pedir un certificado", "Pagar factura", "Ver mi perfil").
+
+To fulfill these customer requests, you must map their concepts to the available UI components below:
+- To show one or more downloadable files (invoices, certificates, receipts, documents), use `single_attachment_widget` (SingleAttachmentWidget) or `attachment_list_widget` (AttachmentListWidget). Use professional names like "Factura_Junio_2026.pdf" or "Certificado_Retenciones_2025.pdf", correct file sizes, and set downloable attachments.
+- To allow the user to pay a pending invoice, display the pending invoice details and use `custom_button` (CustomButton) with a label like "Pagar factura" and specify a callback event (like "onPressed").
+- To show billing history, consumption charts, or monthly costs, use `metric_chart_widget` (MetricChartWidget) or `stats_widget` (StatsWidget).
+- To show a welcome message, notice, alert or alert banner, use `alert_banner_widget` (AlertBannerWidget).
+- To show payment history or logs over time, use `timeline_widget` (TimelineWidget).
+- To show the user's profile details, use `user_card_widget` (UserCardWidget).
+- To offer quick navigation/queries, use `quick_replies_widget` (QuickRepliesWidget) with actions like "Ver facturas", "Pedir certificado", "Pagar factura pendiente", "Ver perfil".
+
+You must respond in the same language the user uses. If they speak in Spanish, respond in Spanish. Speak politely, like a professional customer service assistant.
+''';
+    } else {
+      roleDescription = '''
 You are a GenUI assistant that helps users manage their task board and team.
+''';
+    }
+
+    return '''
+$roleDescription
 You must interact with the user by generating dynamic user interfaces using the A2UI protocol.
 
 ### CRITICAL: RESPONSE FORMAT
@@ -310,14 +364,35 @@ $schemasDesc
    - The root Column has a "children" property which is an array of IDs of the children to render (e.g. ["header_text", "user_card", "stats", ...]).
 
 3. Handling Interaction Events:
-   When the user interacts with a widget (e.g. toggling a task or pressing the sync button), you will receive a `UserActionEvent` inside the chat history as a JSON string under the "action" payload.
+   When the user interacts with a widget (e.g. toggling a task, pressing a button, or checking a box), you will receive a `UserActionEvent` inside the chat history as a JSON string under the "action" payload.
    For example:
    {"action": {"name": "TaskItemWidget_onToggleEvent", "context": {"task_id": "task_1_id", "title": "Design GenUI", "isCompleted": true, "priority": "high"}}}
+   Or:
+   {"action": {"name": "CustomButton_onPressedEvent", "context": {"label": "Pagar factura"}}}
    
-   When you receive such an event, you MUST respond by updating the UI layout. If it was a checkbox toggle, you should update the target task's "isCompleted" property and adjust the completed count in the "StatsWidget". If it was the Sync Button, you can output a text message acknowledging the sync.
+   When you receive such an event, you MUST respond by updating the UI layout. If it was a checkbox toggle, you should update the target task's "isCompleted" property. If it was a payment button click, acknowledge the payment process and update the stats or UI to show the new state.
 
 Always follow these rules strictly.
 ''';
+  }
+
+  void _seedInitialMessage() {
+    _chatHistory.clear();
+    if (_settingsService.appPersona == AppPersona.customerPortal) {
+      _chatHistory.add(
+        ChatTimelineItem(
+          isUser: false,
+          text:
+              '¡Hola! Soy tu asistente virtual de atención al cliente.\n\n'
+              'Estoy aquí para ayudarte a gestionar tus servicios. Puedes pedirme cosas como:\n'
+              '• "Ver mis facturas"\n'
+              '• "Pedir mi certificado de retenciones de 2025"\n'
+              '• "Pagar factura pendiente"\n'
+              '• "Ver mi perfil de usuario"\n\n'
+              '¿En qué te puedo colaborar hoy?',
+        ),
+      );
+    }
   }
 
   void _setupIncomingMessagesSub(Transport transport) {
@@ -368,6 +443,7 @@ Always follow these rules strictly.
 
     _setupConversationSub();
     _setupIncomingMessagesSub(uniqueTransport);
+    _seedInitialMessage();
     notifyListeners();
   }
 

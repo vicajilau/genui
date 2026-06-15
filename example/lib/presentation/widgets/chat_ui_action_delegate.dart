@@ -276,6 +276,78 @@ class ChatUiActionDelegate implements ActionDelegate {
       return true; // Return true to stop network request propagation
     }
 
+    if (event.name == 'CustomButton_onPressedEvent') {
+      final label = event.context['label'] as String? ?? 'Botón';
+      final messenger = ScaffoldMessenger.of(context);
+
+      if (label.toLowerCase().contains('pagar')) {
+        messenger.clearSnackBars();
+        messenger.showSnackBar(
+          const SnackBar(
+            content: Row(
+              children: [
+                SizedBox(
+                  width: 14,
+                  height: 14,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                ),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Procesando pago seguro...',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            duration: Duration(seconds: 1),
+            backgroundColor: Color(0xFF6366F1),
+          ),
+        );
+
+        Future.delayed(const Duration(seconds: 1), () {
+          messenger.clearSnackBars();
+          messenger.showSnackBar(
+            const SnackBar(
+              content: Text(
+                '¡Pago realizado con éxito! Tu factura ha sido liquidada.',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              backgroundColor: Color(0xFF10B981),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        });
+        return true;
+      }
+
+      messenger.clearSnackBars();
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            'Botón presionado: "$label"',
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          duration: const Duration(seconds: 1),
+          backgroundColor: const Color(0xFF6366F1),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return true;
+    }
+
     return false;
   }
 }

@@ -4,6 +4,9 @@ import '../../utils/encryption_service.dart';
 /// Available connection modes for the GenUI Playground.
 enum ChatMode { serverless, local, serverpod }
 
+/// Available application personas for the GenUI Playground.
+enum AppPersona { taskBoard, customerPortal }
+
 /// A service responsible for persisting and retrieving user configurations
 /// (chat mode, server URLs, model paths, and securely encrypted API keys).
 class ConnectionSettingsService {
@@ -12,6 +15,7 @@ class ConnectionSettingsService {
   static const String _keyServerpodUrl = 'genui_serverpod_url';
   static const String _keyLocalModelPath = 'genui_local_model_path';
   static const String _keyLocalTemperature = 'genui_local_temp';
+  static const String _keyAppPersona = 'genui_app_persona';
 
   final SharedPreferences _prefs;
 
@@ -29,6 +33,20 @@ class ConnectionSettingsService {
   /// Sets the active chat execution mode.
   Future<void> setChatMode(ChatMode mode) async {
     await _prefs.setString(_keyChatMode, mode.name);
+  }
+
+  /// Retrieves the active app persona. Defaults to [AppPersona.taskBoard].
+  AppPersona get appPersona {
+    final personaStr = _prefs.getString(_keyAppPersona) ?? 'taskBoard';
+    return AppPersona.values.firstWhere(
+      (p) => p.name == personaStr,
+      orElse: () => AppPersona.taskBoard,
+    );
+  }
+
+  /// Sets the active app persona.
+  Future<void> setAppPersona(AppPersona persona) async {
+    await _prefs.setString(_keyAppPersona, persona.name);
   }
 
   /// Decrypts and retrieves the stored Gemini API key, or returns an empty string.
