@@ -12,6 +12,7 @@ import '../../data/services/gemini_service.dart';
 import '../../data/services/local_gemma_chat_service.dart';
 import '../../data/services/serverpod_chat_service.dart';
 import '../../genui_registry.g.dart';
+import 'chat_localization.dart';
 
 /// A controller managing the state and events of the Gemini AI chat,
 /// including prompt sending, response streaming, A2UI action interception,
@@ -261,22 +262,13 @@ class GeminiChatController extends ChangeNotifier {
     final String roleDescription;
     if (_settingsService.appPersona == AppPersona.customerPortal) {
       final now = DateTime.now();
-      final monthNames = [
-        'enero',
-        'febrero',
-        'marzo',
-        'abril',
-        'mayo',
-        'junio',
-        'julio',
-        'agosto',
-        'septiembre',
-        'octubre',
-        'noviembre',
-        'diciembre',
-      ];
-      final currentMonthName = monthNames[now.month - 1];
+      final localizer = ChatLocalization.fromLocale(
+        PlatformDispatcher.instance.locale,
+      );
+      final systemLanguage = localizer.languageName;
+      final currentMonthName = localizer.getMonthName(now);
       final currentYear = now.year;
+      final formattedCurrentDate = localizer.getFormattedDate(now);
 
       roleDescription =
           '''
@@ -284,8 +276,8 @@ You are a customer service assistant for a client portal (app de clientes). The 
 You must help the user manage their customer account, requests, and bills.
 
 ### CURRENT TEMPORAL CONTEXT
-The current date is: ${now.day} de $currentMonthName de $currentYear (today is in the year $currentYear).
-Any user requests for "la última factura" (last invoice), "factura de este mes" (this month's invoice), etc. MUST refer contextually to the current date ($currentMonthName $currentYear or recent previous months). Do NOT generate dates from years far in the past (like 2024 or 2023) unless specifically asked for archived records.
+The current date is: $formattedCurrentDate (today is in the year $currentYear).
+Any user requests for "la última factura" (last invoice), "factura de este mes" (this month's invoice), etc. MUST refer contextually to the current date ($currentMonthName $currentYear or recent previous months). Do NOT generate dates from years far in the past (like 2024 or 2023) unless specifically asked for archived records..
 
 You can help them with:
 1. Request or view invoices (facturas).
@@ -303,7 +295,7 @@ To fulfill these customer requests, you must map their concepts to the available
 - To show the user's profile details, use `user_card_widget` (UserCardWidget).
 - To offer quick navigation/queries, use `quick_replies_widget` (QuickRepliesWidget) with actions like "Ver facturas", "Pedir certificado", "Pagar factura pendiente", "Ver perfil".
 
-You must respond in the same language the user uses. If they speak in Spanish, respond in Spanish. Speak politely, like a professional customer service assistant.
+You must respond in the system's language ($systemLanguage) or match the language the user speaks. If the user writes in Spanish, respond in Spanish. If they write in English, respond in English. Speak politely, like a professional customer service assistant.
 ''';
     } else {
       roleDescription = '''
@@ -379,18 +371,11 @@ Always follow these rules strictly.
   void _seedInitialMessage() {
     _chatHistory.clear();
     if (_settingsService.appPersona == AppPersona.customerPortal) {
+      final localizer = ChatLocalization.fromLocale(
+        PlatformDispatcher.instance.locale,
+      );
       _chatHistory.add(
-        ChatTimelineItem(
-          isUser: false,
-          text:
-              '¡Hola! Soy tu asistente virtual de atención al cliente.\n\n'
-              'Estoy aquí para ayudarte a gestionar tus servicios. Puedes pedirme cosas como:\n'
-              '• "Ver mis facturas"\n'
-              '• "Pedir mi certificado de retenciones de 2025"\n'
-              '• "Pagar factura pendiente"\n'
-              '• "Ver mi perfil de usuario"\n\n'
-              '¿En qué te puedo colaborar hoy?',
-        ),
+        ChatTimelineItem(isUser: false, text: localizer.getGreeting()),
       );
     }
   }
