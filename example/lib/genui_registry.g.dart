@@ -10,6 +10,9 @@ import 'package:example/presentation/widgets/catalog/attachment_list_widget.dart
 import 'package:example/presentation/widgets/catalog/custom_button.dart';
 import 'package:example/presentation/widgets/catalog/metric_chart_widget.dart';
 import 'package:example/presentation/widgets/catalog/priority_pill_widget.dart';
+import 'package:example/presentation/widgets/catalog/product_card_widget.dart';
+import 'package:example/presentation/widgets/catalog/quick_replies_widget.dart';
+import 'package:example/presentation/widgets/catalog/single_attachment_widget.dart';
 import 'package:example/presentation/widgets/catalog/stats_widget.dart';
 import 'package:example/presentation/widgets/catalog/task_item_widget.dart';
 import 'package:example/presentation/widgets/catalog/timeline_widget.dart';
@@ -22,6 +25,9 @@ final List<CatalogItem> generatedCatalogItems = [
   $CustomButtonCatalogItem,
   $MetricChartWidgetCatalogItem,
   $PriorityPillWidgetCatalogItem,
+  $ProductCardWidgetCatalogItem,
+  $QuickRepliesWidgetCatalogItem,
+  $SingleAttachmentWidgetCatalogItem,
   $StatsWidgetCatalogItem,
   $TaskItemWidgetCatalogItem,
   $TimelineWidgetCatalogItem,

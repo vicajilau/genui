@@ -53,6 +53,28 @@ class ComponentPropertiesPanel extends StatelessWidget {
     required this.onAlertMessageChanged,
     required this.alertActionLabel,
     required this.onAlertActionLabelChanged,
+    required this.singleAttachmentName,
+    required this.onSingleAttachmentNameChanged,
+    required this.singleAttachmentType,
+    required this.onSingleAttachmentTypeChanged,
+    required this.singleAttachmentSize,
+    required this.onSingleAttachmentSizeChanged,
+    required this.singleAttachmentStatus,
+    required this.onSingleAttachmentStatusChanged,
+    required this.quickRepliesTitle,
+    required this.onQuickRepliesTitleChanged,
+    required this.quickRepliesJson,
+    required this.onQuickRepliesJsonChanged,
+    required this.productTitle,
+    required this.onProductTitleChanged,
+    required this.productPrice,
+    required this.onProductPriceChanged,
+    required this.productImageUrl,
+    required this.onProductImageUrlChanged,
+    required this.productDescription,
+    required this.onProductDescriptionChanged,
+    required this.productRating,
+    required this.onProductRatingChanged,
   });
 
   final String selectedComponent;
@@ -102,6 +124,28 @@ class ComponentPropertiesPanel extends StatelessWidget {
   final ValueChanged<String> onAlertMessageChanged;
   final String alertActionLabel;
   final ValueChanged<String> onAlertActionLabelChanged;
+  final String singleAttachmentName;
+  final ValueChanged<String> onSingleAttachmentNameChanged;
+  final String singleAttachmentType;
+  final ValueChanged<String> onSingleAttachmentTypeChanged;
+  final String singleAttachmentSize;
+  final ValueChanged<String> onSingleAttachmentSizeChanged;
+  final String singleAttachmentStatus;
+  final ValueChanged<String> onSingleAttachmentStatusChanged;
+  final String quickRepliesTitle;
+  final ValueChanged<String> onQuickRepliesTitleChanged;
+  final String quickRepliesJson;
+  final ValueChanged<String> onQuickRepliesJsonChanged;
+  final String productTitle;
+  final ValueChanged<String> onProductTitleChanged;
+  final String productPrice;
+  final ValueChanged<String> onProductPriceChanged;
+  final String productImageUrl;
+  final ValueChanged<String> onProductImageUrlChanged;
+  final String productDescription;
+  final ValueChanged<String> onProductDescriptionChanged;
+  final double productRating;
+  final ValueChanged<double> onProductRatingChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -332,6 +376,112 @@ class ComponentPropertiesPanel extends StatelessWidget {
             label: 'Action Label (Optional)',
             value: alertActionLabel,
             onChanged: onAlertActionLabelChanged,
+          ),
+        ];
+
+      case 'SingleAttachmentWidget':
+        return [
+          _buildTextField(
+            label: 'File Name',
+            value: singleAttachmentName,
+            onChanged: onSingleAttachmentNameChanged,
+          ),
+          const SizedBox(height: 16),
+          _buildDropdownField(
+            label: 'File Type',
+            value: singleAttachmentType,
+            items: const [
+              'file',
+              'image',
+              'pdf',
+              'audio',
+              'video',
+              'document',
+              'folder',
+              'spreadsheet',
+              'archive',
+            ],
+            onChanged: (value) {
+              if (value != null) {
+                onSingleAttachmentTypeChanged(value);
+              }
+            },
+          ),
+          const SizedBox(height: 16),
+          _buildTextField(
+            label: 'Size (Optional)',
+            value: singleAttachmentSize,
+            onChanged: onSingleAttachmentSizeChanged,
+          ),
+          const SizedBox(height: 16),
+          _buildDropdownField(
+            label: 'Status',
+            value: singleAttachmentStatus,
+            items: const [
+              'ready',
+              'downloaded',
+              'downloading',
+              'pending',
+              'failed',
+            ],
+            onChanged: (value) {
+              if (value != null) {
+                onSingleAttachmentStatusChanged(value);
+              }
+            },
+          ),
+        ];
+
+      case 'QuickRepliesWidget':
+        return [
+          _buildTextField(
+            label: 'Title (Optional)',
+            value: quickRepliesTitle,
+            onChanged: onQuickRepliesTitleChanged,
+          ),
+          const SizedBox(height: 16),
+          _buildTextField(
+            label: 'Replies JSON (Array of Strings/Objects)',
+            value: quickRepliesJson,
+            onChanged: onQuickRepliesJsonChanged,
+            maxLines: 5,
+          ),
+        ];
+
+      case 'ProductCardWidget':
+        return [
+          _buildTextField(
+            label: 'Title',
+            value: productTitle,
+            onChanged: onProductTitleChanged,
+          ),
+          const SizedBox(height: 16),
+          _buildTextField(
+            label: 'Price',
+            value: productPrice,
+            onChanged: onProductPriceChanged,
+          ),
+          const SizedBox(height: 16),
+          _buildTextField(
+            label: 'Image URL',
+            value: productImageUrl,
+            onChanged: onProductImageUrlChanged,
+          ),
+          const SizedBox(height: 16),
+          _buildTextField(
+            label: 'Description (Optional)',
+            value: productDescription,
+            onChanged: onProductDescriptionChanged,
+            maxLines: 3,
+          ),
+          const SizedBox(height: 16),
+          _buildSliderField(
+            label: 'Rating (0.0 to 5.0)',
+            value: productRating,
+            min: 0.0,
+            max: 5.0,
+            divisions: 50,
+            onChanged: onProductRatingChanged,
           ),
         ];
 

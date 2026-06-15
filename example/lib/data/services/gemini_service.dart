@@ -25,6 +25,19 @@ class GeminiService {
           {'text': systemInstruction},
         ],
       },
+      'generationConfig': {'maxOutputTokens': 2048, 'temperature': 0.7},
+      'safetySettings': [
+        {'category': 'HARM_CATEGORY_HARASSMENT', 'threshold': 'BLOCK_NONE'},
+        {'category': 'HARM_CATEGORY_HATE_SPEECH', 'threshold': 'BLOCK_NONE'},
+        {
+          'category': 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+          'threshold': 'BLOCK_NONE',
+        },
+        {
+          'category': 'HARM_CATEGORY_DANGEROUS_CONTENT',
+          'threshold': 'BLOCK_NONE',
+        },
+      ],
     };
 
     try {
@@ -56,7 +69,15 @@ class GeminiService {
           final dataJson = jsonDecode(line.substring(6));
           final candidates = dataJson['candidates'] as List?;
           if (candidates != null && candidates.isNotEmpty) {
-            final part = candidates[0]['content']?['parts']?[0];
+            final candidate = candidates[0];
+            final finishReason = candidate['finishReason'];
+            if (finishReason != null && finishReason != 'STOP') {
+              // ignore: avoid_print
+              print(
+                '⚠️ --- [GeminiService] Stream ended with finishReason: $finishReason ---',
+              );
+            }
+            final part = candidate['content']?['parts']?[0];
             if (part != null && part['text'] != null) {
               yield part['text'] as String;
             }

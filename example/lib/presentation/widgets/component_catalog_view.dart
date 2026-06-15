@@ -17,6 +17,9 @@ import 'catalog/priority_pill_widget.dart';
 import 'catalog/attachment_list_widget.dart';
 import 'catalog/timeline_widget.dart';
 import 'catalog/alert_banner_widget.dart';
+import 'catalog/single_attachment_widget.dart';
+import 'catalog/quick_replies_widget.dart';
+import 'catalog/product_card_widget.dart';
 
 /// A widget that presents the interactive Component Catalog, permitting developers
 /// to select components, edit properties, inspect payloads, and view live renders.
@@ -79,6 +82,26 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
       'System memory is currently running high (85% utilization).';
   String _alertActionLabel = 'Resolve';
 
+  // SingleAttachmentWidget properties
+  String _singleAttachmentName = 'Quarterly_Report_2026.pdf';
+  String _singleAttachmentType = 'pdf';
+  String _singleAttachmentSize = '4.2 MB';
+  String _singleAttachmentStatus = 'ready';
+
+  // QuickRepliesWidget properties
+  String _quickRepliesTitle = 'Select a follow-up action:';
+  String _quickRepliesJson =
+      '[\n  "View pricing summary",\n  "Contact human agent",\n  "Request custom proposal"\n]';
+
+  // ProductCardWidget properties
+  String _productTitle = 'Premium Wireless Headphones';
+  String _productPrice = '\$299.99';
+  String _productImageUrl =
+      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500';
+  String _productDescription =
+      'High-fidelity audio with active noise cancellation and 40-hour battery life.';
+  double _productRating = 4.8;
+
   // Catalog Event Handler
   void _handleCatalogWidgetEvent(String eventJson) {
     final event = GenUiEvent.parse(eventJson);
@@ -136,6 +159,45 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
         const SnackBar(
           content: Text('Alert Banner dismissed!'),
           duration: Duration(seconds: 1),
+        ),
+      );
+    } else if (event.name == SingleAttachmentWidgetEvents.onTap) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Single Attachment tapped: "${event.context['name']}"'),
+          duration: const Duration(seconds: 1),
+        ),
+      );
+    } else if (event.name == SingleAttachmentWidgetEvents.onAction) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Single Attachment action clicked! Status: ${event.context['status']}',
+          ),
+          duration: const Duration(seconds: 1),
+        ),
+      );
+    } else if (event.name == QuickRepliesWidgetEvents.onTapReply) {
+      final reply = event.context['reply'] as String? ?? '';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Quick Reply selected: "$reply"'),
+          duration: const Duration(seconds: 1),
+        ),
+      );
+    } else if (event.name == ProductCardWidgetEvents.onTapProduct) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Product tapped: "${event.context['title']}"'),
+          duration: const Duration(seconds: 1),
+        ),
+      );
+    } else if (event.name == ProductCardWidgetEvents.onBuy) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Product bought! Price: ${event.context['price']}'),
+          duration: const Duration(seconds: 1),
+          backgroundColor: const Color(0xFF10B981),
         ),
       );
     }
@@ -198,6 +260,41 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
           'actionLabel': _alertActionLabel.trim().isEmpty
               ? null
               : _alertActionLabel.trim(),
+        };
+      case $SingleAttachmentWidgetIdentifier:
+        return {
+          'name': _singleAttachmentName,
+          'type': _singleAttachmentType,
+          'size': _singleAttachmentSize.trim().isEmpty
+              ? null
+              : _singleAttachmentSize.trim(),
+          'status': _singleAttachmentStatus,
+        };
+      case $QuickRepliesWidgetIdentifier:
+        final List<dynamic> decodedReplies = (() {
+          try {
+            final parsed = jsonDecode(_quickRepliesJson);
+            if (parsed is List) return parsed;
+          } catch (_) {}
+          return const [];
+        })();
+        return {
+          'title': _quickRepliesTitle.trim().isEmpty
+              ? null
+              : _quickRepliesTitle.trim(),
+          'replies': decodedReplies,
+        };
+      case $ProductCardWidgetIdentifier:
+        return {
+          'title': _productTitle,
+          'price': _productPrice,
+          'imageUrl': _productImageUrl.trim().isEmpty
+              ? null
+              : _productImageUrl.trim(),
+          'description': _productDescription.trim().isEmpty
+              ? null
+              : _productDescription.trim(),
+          'rating': _productRating,
         };
       default:
         return {};
@@ -410,6 +507,39 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
                           alertActionLabel: _alertActionLabel,
                           onAlertActionLabelChanged: (val) =>
                               setState(() => _alertActionLabel = val),
+                          singleAttachmentName: _singleAttachmentName,
+                          onSingleAttachmentNameChanged: (val) =>
+                              setState(() => _singleAttachmentName = val),
+                          singleAttachmentType: _singleAttachmentType,
+                          onSingleAttachmentTypeChanged: (val) =>
+                              setState(() => _singleAttachmentType = val),
+                          singleAttachmentSize: _singleAttachmentSize,
+                          onSingleAttachmentSizeChanged: (val) =>
+                              setState(() => _singleAttachmentSize = val),
+                          singleAttachmentStatus: _singleAttachmentStatus,
+                          onSingleAttachmentStatusChanged: (val) =>
+                              setState(() => _singleAttachmentStatus = val),
+                          quickRepliesTitle: _quickRepliesTitle,
+                          onQuickRepliesTitleChanged: (val) =>
+                              setState(() => _quickRepliesTitle = val),
+                          quickRepliesJson: _quickRepliesJson,
+                          onQuickRepliesJsonChanged: (val) =>
+                              setState(() => _quickRepliesJson = val),
+                          productTitle: _productTitle,
+                          onProductTitleChanged: (val) =>
+                              setState(() => _productTitle = val),
+                          productPrice: _productPrice,
+                          onProductPriceChanged: (val) =>
+                              setState(() => _productPrice = val),
+                          productImageUrl: _productImageUrl,
+                          onProductImageUrlChanged: (val) =>
+                              setState(() => _productImageUrl = val),
+                          productDescription: _productDescription,
+                          onProductDescriptionChanged: (val) =>
+                              setState(() => _productDescription = val),
+                          productRating: _productRating,
+                          onProductRatingChanged: (val) =>
+                              setState(() => _productRating = val),
                         ),
                       ),
                       const SizedBox(width: 24),
@@ -500,6 +630,39 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
                     alertActionLabel: _alertActionLabel,
                     onAlertActionLabelChanged: (val) =>
                         setState(() => _alertActionLabel = val),
+                    singleAttachmentName: _singleAttachmentName,
+                    onSingleAttachmentNameChanged: (val) =>
+                        setState(() => _singleAttachmentName = val),
+                    singleAttachmentType: _singleAttachmentType,
+                    onSingleAttachmentTypeChanged: (val) =>
+                        setState(() => _singleAttachmentType = val),
+                    singleAttachmentSize: _singleAttachmentSize,
+                    onSingleAttachmentSizeChanged: (val) =>
+                        setState(() => _singleAttachmentSize = val),
+                    singleAttachmentStatus: _singleAttachmentStatus,
+                    onSingleAttachmentStatusChanged: (val) =>
+                        setState(() => _singleAttachmentStatus = val),
+                    quickRepliesTitle: _quickRepliesTitle,
+                    onQuickRepliesTitleChanged: (val) =>
+                        setState(() => _quickRepliesTitle = val),
+                    quickRepliesJson: _quickRepliesJson,
+                    onQuickRepliesJsonChanged: (val) =>
+                        setState(() => _quickRepliesJson = val),
+                    productTitle: _productTitle,
+                    onProductTitleChanged: (val) =>
+                        setState(() => _productTitle = val),
+                    productPrice: _productPrice,
+                    onProductPriceChanged: (val) =>
+                        setState(() => _productPrice = val),
+                    productImageUrl: _productImageUrl,
+                    onProductImageUrlChanged: (val) =>
+                        setState(() => _productImageUrl = val),
+                    productDescription: _productDescription,
+                    onProductDescriptionChanged: (val) =>
+                        setState(() => _productDescription = val),
+                    productRating: _productRating,
+                    onProductRatingChanged: (val) =>
+                        setState(() => _productRating = val),
                   ),
                   const SizedBox(height: 24),
                   ComponentJsonInspectorPanel(
@@ -539,6 +702,9 @@ class _ComponentCatalogViewState extends State<ComponentCatalogView> {
       $AttachmentListWidgetIdentifier => 'AttachmentListWidget',
       $TimelineWidgetIdentifier => 'TimelineWidget',
       $AlertBannerWidgetIdentifier => 'AlertBannerWidget',
+      $SingleAttachmentWidgetIdentifier => 'SingleAttachmentWidget',
+      $QuickRepliesWidgetIdentifier => 'QuickRepliesWidget',
+      $ProductCardWidgetIdentifier => 'ProductCardWidget',
       _ => component,
     };
   }
