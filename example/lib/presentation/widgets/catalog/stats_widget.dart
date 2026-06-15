@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:genui/genui.dart';
 import 'package:genui_annotations/genui_annotations.dart';
 import 'package:json_schema_builder/json_schema_builder.dart';
+import '../../../l10n/app_localizations.dart';
 
 part 'stats_widget.genui.g.dart';
 
@@ -20,6 +21,7 @@ class StatsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final progress = totalTasks > 0 ? completedTasks / totalTasks : 0.0;
 
     return Card(
@@ -31,11 +33,11 @@ class StatsWidget extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Progress Status',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                Text(
+                  l10n.statsProgressStatus,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-                Text('$completedTasks/$totalTasks Completed'),
+                Text(l10n.statsCompletedCount(completedTasks, totalTasks)),
               ],
             ),
             const SizedBox(height: 8),

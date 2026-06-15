@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:genui/genui.dart';
 import 'package:genui_annotations/genui_annotations.dart';
 import 'package:json_schema_builder/json_schema_builder.dart';
+import '../../../l10n/app_localizations.dart';
 
 part 'product_card_widget.genui.g.dart';
 
@@ -30,6 +31,7 @@ class ProductCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: ClipRRect(
@@ -137,9 +139,9 @@ class ProductCardWidget extends StatelessWidget {
                                 color: Colors.white.withValues(alpha: 0.08),
                                 borderRadius: BorderRadius.circular(4),
                               ),
-                              child: const Text(
-                                'PRODUCT',
-                                style: TextStyle(
+                              child: Text(
+                                l10n.productBadgeLabel,
+                                style: const TextStyle(
                                   fontSize: 8,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white70,
@@ -205,9 +207,9 @@ class ProductCardWidget extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
-                              child: const Text(
-                                'Buy',
-                                style: TextStyle(
+                              child: Text(
+                                l10n.buyLabel,
+                                style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
                                 ),

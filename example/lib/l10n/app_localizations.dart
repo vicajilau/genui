@@ -937,6 +937,366 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Copied {target} to clipboard!'**
   String copiedToClipboardMessage(String target);
+
+  /// Active status label
+  ///
+  /// In en, this message translates to:
+  /// **'ACTIVE'**
+  String get statusActive;
+
+  /// Offline status label
+  ///
+  /// In en, this message translates to:
+  /// **'OFFLINE'**
+  String get statusOffline;
+
+  /// Header title of the component properties panel
+  ///
+  /// In en, this message translates to:
+  /// **'PROPERTIES'**
+  String get propertiesTitle;
+
+  /// Label field title
+  ///
+  /// In en, this message translates to:
+  /// **'Label'**
+  String get labelField;
+
+  /// Color field title
+  ///
+  /// In en, this message translates to:
+  /// **'Color'**
+  String get colorField;
+
+  /// Title field title
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get titleField;
+
+  /// Completed checkbox field title
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get completedField;
+
+  /// Priority selection field title
+  ///
+  /// In en, this message translates to:
+  /// **'Priority'**
+  String get priorityField;
+
+  /// Total tasks field title
+  ///
+  /// In en, this message translates to:
+  /// **'Total Tasks'**
+  String get totalTasksField;
+
+  /// Completed tasks field title
+  ///
+  /// In en, this message translates to:
+  /// **'Completed Tasks'**
+  String get completedTasksField;
+
+  /// Name field title
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get nameField;
+
+  /// Role field title
+  ///
+  /// In en, this message translates to:
+  /// **'Role'**
+  String get roleField;
+
+  /// Active switch field title
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get activeField;
+
+  /// Value slider field title
+  ///
+  /// In en, this message translates to:
+  /// **'Value'**
+  String get valueField;
+
+  /// Legend label field title
+  ///
+  /// In en, this message translates to:
+  /// **'Legend Label'**
+  String get legendLabelField;
+
+  /// Chart color field title
+  ///
+  /// In en, this message translates to:
+  /// **'Chart Color'**
+  String get chartColorField;
+
+  /// Optional label field title
+  ///
+  /// In en, this message translates to:
+  /// **'Label (Optional)'**
+  String get labelOptionalField;
+
+  /// Items JSON textarea field title
+  ///
+  /// In en, this message translates to:
+  /// **'Items JSON'**
+  String get itemsJsonField;
+
+  /// Events JSON textarea field title
+  ///
+  /// In en, this message translates to:
+  /// **'Events JSON'**
+  String get eventsJsonField;
+
+  /// Type selection field title
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get typeField;
+
+  /// Message textarea field title
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get messageField;
+
+  /// Optional action label field title
+  ///
+  /// In en, this message translates to:
+  /// **'Action Label (Optional)'**
+  String get actionLabelOptionalField;
+
+  /// File name field title
+  ///
+  /// In en, this message translates to:
+  /// **'File Name'**
+  String get fileNameField;
+
+  /// File type selection field title
+  ///
+  /// In en, this message translates to:
+  /// **'File Type'**
+  String get fileTypeField;
+
+  /// Optional size field title
+  ///
+  /// In en, this message translates to:
+  /// **'Size (Optional)'**
+  String get sizeOptionalField;
+
+  /// Status selection field title
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get statusField;
+
+  /// Optional title field title
+  ///
+  /// In en, this message translates to:
+  /// **'Title (Optional)'**
+  String get titleOptionalField;
+
+  /// Replies JSON textarea field title
+  ///
+  /// In en, this message translates to:
+  /// **'Replies JSON (Array of Strings/Objects)'**
+  String get repliesJsonField;
+
+  /// Price field title
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get priceField;
+
+  /// Image URL field title
+  ///
+  /// In en, this message translates to:
+  /// **'Image URL'**
+  String get imageUrlField;
+
+  /// Optional description textarea field title
+  ///
+  /// In en, this message translates to:
+  /// **'Description (Optional)'**
+  String get descriptionOptionalField;
+
+  /// Rating slider field title
+  ///
+  /// In en, this message translates to:
+  /// **'Rating (0.0 to 5.0)'**
+  String get ratingField;
+
+  /// Label when component has no properties to edit
+  ///
+  /// In en, this message translates to:
+  /// **'No properties to edit'**
+  String get noPropertiesToEdit;
+
+  /// Color picker dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Select Color'**
+  String get selectColorTitle;
+
+  /// High priority label
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get priorityHigh;
+
+  /// Medium priority label
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get priorityMedium;
+
+  /// Low priority label
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get priorityLow;
+
+  /// Success alert type label
+  ///
+  /// In en, this message translates to:
+  /// **'Success'**
+  String get typeSuccess;
+
+  /// Info alert type label
+  ///
+  /// In en, this message translates to:
+  /// **'Info'**
+  String get typeInfo;
+
+  /// Warning alert type label
+  ///
+  /// In en, this message translates to:
+  /// **'Warning'**
+  String get typeWarning;
+
+  /// Error alert type label
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get typeError;
+
+  /// Ready attachment status label
+  ///
+  /// In en, this message translates to:
+  /// **'Ready'**
+  String get statusReady;
+
+  /// Downloaded attachment status label
+  ///
+  /// In en, this message translates to:
+  /// **'Downloaded'**
+  String get statusDownloaded;
+
+  /// Downloading attachment status label
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading'**
+  String get statusDownloading;
+
+  /// Pending attachment status label
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get statusPending;
+
+  /// Failed attachment status label
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get statusFailed;
+
+  /// Generic file type label
+  ///
+  /// In en, this message translates to:
+  /// **'File'**
+  String get fileTypeFile;
+
+  /// Image file type label
+  ///
+  /// In en, this message translates to:
+  /// **'Image'**
+  String get fileTypeImage;
+
+  /// PDF file type label
+  ///
+  /// In en, this message translates to:
+  /// **'PDF'**
+  String get fileTypePdf;
+
+  /// Audio file type label
+  ///
+  /// In en, this message translates to:
+  /// **'Audio'**
+  String get fileTypeAudio;
+
+  /// Video file type label
+  ///
+  /// In en, this message translates to:
+  /// **'Video'**
+  String get fileTypeVideo;
+
+  /// Document file type label
+  ///
+  /// In en, this message translates to:
+  /// **'Document'**
+  String get fileTypeDocument;
+
+  /// Folder file type label
+  ///
+  /// In en, this message translates to:
+  /// **'Folder'**
+  String get fileTypeFolder;
+
+  /// Spreadsheet file type label
+  ///
+  /// In en, this message translates to:
+  /// **'Spreadsheet'**
+  String get fileTypeSpreadsheet;
+
+  /// Archive file type label
+  ///
+  /// In en, this message translates to:
+  /// **'Archive'**
+  String get fileTypeArchive;
+
+  /// Label for dynamic UI surface bubbles in the chat
+  ///
+  /// In en, this message translates to:
+  /// **'Dynamic UI Surface ({id})'**
+  String dynamicUiSurface(String id);
+
+  /// Text for the buy button
+  ///
+  /// In en, this message translates to:
+  /// **'Buy'**
+  String get buyLabel;
+
+  /// Badge label on the product card widget
+  ///
+  /// In en, this message translates to:
+  /// **'PRODUCT'**
+  String get productBadgeLabel;
+
+  /// Title label for the stats progress card
+  ///
+  /// In en, this message translates to:
+  /// **'Progress Status'**
+  String get statsProgressStatus;
+
+  /// Format showing completed tasks out of total tasks
+  ///
+  /// In en, this message translates to:
+  /// **'{completed}/{total} Completed'**
+  String statsCompletedCount(int completed, int total);
 }
 
 class _AppLocalizationsDelegate

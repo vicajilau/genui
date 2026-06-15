@@ -476,4 +476,189 @@ class AppLocalizationsEs extends AppLocalizations {
   String copiedToClipboardMessage(String target) {
     return '¡$target copiado al portapapeles!';
   }
+
+  @override
+  String get statusActive => 'ACTIVO';
+
+  @override
+  String get statusOffline => 'DESCONECTADO';
+
+  @override
+  String get propertiesTitle => 'PROPIEDADES';
+
+  @override
+  String get labelField => 'Etiqueta';
+
+  @override
+  String get colorField => 'Color';
+
+  @override
+  String get titleField => 'Título';
+
+  @override
+  String get completedField => 'Completado';
+
+  @override
+  String get priorityField => 'Prioridad';
+
+  @override
+  String get totalTasksField => 'Total de tareas';
+
+  @override
+  String get completedTasksField => 'Tareas completadas';
+
+  @override
+  String get nameField => 'Nombre';
+
+  @override
+  String get roleField => 'Rol';
+
+  @override
+  String get activeField => 'Activo';
+
+  @override
+  String get valueField => 'Valor';
+
+  @override
+  String get legendLabelField => 'Etiqueta de leyenda';
+
+  @override
+  String get chartColorField => 'Color de gráfico';
+
+  @override
+  String get labelOptionalField => 'Etiqueta (Opcional)';
+
+  @override
+  String get itemsJsonField => 'JSON de elementos';
+
+  @override
+  String get eventsJsonField => 'JSON de eventos';
+
+  @override
+  String get typeField => 'Tipo';
+
+  @override
+  String get messageField => 'Mensaje';
+
+  @override
+  String get actionLabelOptionalField => 'Etiqueta de acción (Opcional)';
+
+  @override
+  String get fileNameField => 'Nombre de archivo';
+
+  @override
+  String get fileTypeField => 'Tipo de archivo';
+
+  @override
+  String get sizeOptionalField => 'Tamaño (Opcional)';
+
+  @override
+  String get statusField => 'Estado';
+
+  @override
+  String get titleOptionalField => 'Título (Opcional)';
+
+  @override
+  String get repliesJsonField =>
+      'JSON de respuestas (Arreglo de textos/objetos)';
+
+  @override
+  String get priceField => 'Precio';
+
+  @override
+  String get imageUrlField => 'URL de imagen';
+
+  @override
+  String get descriptionOptionalField => 'Descripción (Opcional)';
+
+  @override
+  String get ratingField => 'Calificación (0.0 a 5.0)';
+
+  @override
+  String get noPropertiesToEdit => 'Sin propiedades para editar';
+
+  @override
+  String get selectColorTitle => 'Seleccionar color';
+
+  @override
+  String get priorityHigh => 'Alta';
+
+  @override
+  String get priorityMedium => 'Media';
+
+  @override
+  String get priorityLow => 'Baja';
+
+  @override
+  String get typeSuccess => 'Éxito';
+
+  @override
+  String get typeInfo => 'Información';
+
+  @override
+  String get typeWarning => 'Advertencia';
+
+  @override
+  String get typeError => 'Error';
+
+  @override
+  String get statusReady => 'Listo';
+
+  @override
+  String get statusDownloaded => 'Descargado';
+
+  @override
+  String get statusDownloading => 'Descargando';
+
+  @override
+  String get statusPending => 'Pendiente';
+
+  @override
+  String get statusFailed => 'Fallido';
+
+  @override
+  String get fileTypeFile => 'Archivo';
+
+  @override
+  String get fileTypeImage => 'Imagen';
+
+  @override
+  String get fileTypePdf => 'PDF';
+
+  @override
+  String get fileTypeAudio => 'Audio';
+
+  @override
+  String get fileTypeVideo => 'Video';
+
+  @override
+  String get fileTypeDocument => 'Documento';
+
+  @override
+  String get fileTypeFolder => 'Carpeta';
+
+  @override
+  String get fileTypeSpreadsheet => 'Hoja de cálculo';
+
+  @override
+  String get fileTypeArchive => 'Archivo comprimido';
+
+  @override
+  String dynamicUiSurface(String id) {
+    return 'Superficie de IU Dinámica ($id)';
+  }
+
+  @override
+  String get buyLabel => 'Comprar';
+
+  @override
+  String get productBadgeLabel => 'PRODUCTO';
+
+  @override
+  String get statsProgressStatus => 'Estado de progreso';
+
+  @override
+  String statsCompletedCount(int completed, int total) {
+    return '$completed/$total completadas';
+  }
 }

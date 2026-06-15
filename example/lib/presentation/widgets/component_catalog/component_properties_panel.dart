@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// A widget panel that renders the property editor controls (text fields, sliders,
 /// toggles, and dropdowns) for modifying the active catalog component's properties.
@@ -149,6 +150,7 @@ class ComponentPropertiesPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       color: const Color(0x1F1E293B),
       shape: RoundedRectangleBorder(
@@ -160,13 +162,17 @@ class ComponentPropertiesPanel extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               children: [
-                Icon(Icons.tune_rounded, color: Color(0xFF818CF8), size: 18),
-                SizedBox(width: 8),
+                const Icon(
+                  Icons.tune_rounded,
+                  color: Color(0xFF818CF8),
+                  size: 18,
+                ),
+                const SizedBox(width: 8),
                 Text(
-                  'PROPERTIES',
-                  style: TextStyle(
+                  l10n.propertiesTitle,
+                  style: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
                     color: Colors.white38,
@@ -184,18 +190,19 @@ class ComponentPropertiesPanel extends StatelessWidget {
   }
 
   List<Widget> _buildComponentEditorControls(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     switch (selectedComponent) {
       case 'CustomButton':
         return [
           _buildTextField(
-            label: 'Label',
+            label: l10n.labelField,
             value: btnLabel,
             onChanged: onBtnLabelChanged,
           ),
           const SizedBox(height: 16),
           _buildColorField(
             context: context,
-            label: 'Color',
+            label: l10n.colorField,
             value: btnColor,
             onChanged: onBtnColorChanged,
           ),
@@ -204,19 +211,20 @@ class ComponentPropertiesPanel extends StatelessWidget {
       case 'TaskItemWidget':
         return [
           _buildTextField(
-            label: 'Title',
+            label: l10n.titleField,
             value: taskTitle,
             onChanged: onTaskTitleChanged,
           ),
           const SizedBox(height: 16),
           _buildSwitchField(
-            label: 'Completed',
+            label: l10n.completedField,
             value: taskCompleted,
             onChanged: onTaskCompletedChanged,
           ),
           const SizedBox(height: 16),
           _buildDropdownField(
-            label: 'Priority',
+            context: context,
+            label: l10n.priorityField,
             value: taskPriority,
             items: const ['high', 'medium', 'low'],
             onChanged: (value) {
@@ -230,7 +238,7 @@ class ComponentPropertiesPanel extends StatelessWidget {
       case 'StatsWidget':
         return [
           _buildSliderField(
-            label: 'Total Tasks',
+            label: l10n.totalTasksField,
             value: statsTotal.toDouble(),
             min: 0,
             max: 20,
@@ -239,7 +247,7 @@ class ComponentPropertiesPanel extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           _buildSliderField(
-            label: 'Completed Tasks',
+            label: l10n.completedTasksField,
             value: statsCompleted.toDouble(),
             min: 0,
             max: statsTotal > 0 ? statsTotal.toDouble() : 1,
@@ -251,19 +259,19 @@ class ComponentPropertiesPanel extends StatelessWidget {
       case 'UserCardWidget':
         return [
           _buildTextField(
-            label: 'Name',
+            label: l10n.nameField,
             value: userName,
             onChanged: onUserNameChanged,
           ),
           const SizedBox(height: 16),
           _buildTextField(
-            label: 'Role',
+            label: l10n.roleField,
             value: userRole,
             onChanged: onUserRoleChanged,
           ),
           const SizedBox(height: 16),
           _buildSwitchField(
-            label: 'Active',
+            label: l10n.activeField,
             value: userActive,
             onChanged: onUserActiveChanged,
           ),
@@ -272,13 +280,13 @@ class ComponentPropertiesPanel extends StatelessWidget {
       case 'MetricChartWidget':
         return [
           _buildTextField(
-            label: 'Title',
+            label: l10n.titleField,
             value: metricTitle,
             onChanged: onMetricTitleChanged,
           ),
           const SizedBox(height: 16),
           _buildSliderField(
-            label: 'Value',
+            label: l10n.valueField,
             value: metricValue,
             min: 0.0,
             max: 1.0,
@@ -287,14 +295,14 @@ class ComponentPropertiesPanel extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           _buildTextField(
-            label: 'Legend Label',
+            label: l10n.legendLabelField,
             value: metricLegend,
             onChanged: onMetricLegendChanged,
           ),
           const SizedBox(height: 16),
           _buildColorField(
             context: context,
-            label: 'Chart Color',
+            label: l10n.chartColorField,
             value: metricColor,
             onChanged: onMetricColorChanged,
           ),
@@ -303,7 +311,8 @@ class ComponentPropertiesPanel extends StatelessWidget {
       case 'PriorityPillWidget':
         return [
           _buildDropdownField(
-            label: 'Priority',
+            context: context,
+            label: l10n.priorityField,
             value: pillPriority,
             items: const ['high', 'medium', 'low'],
             onChanged: (value) {
@@ -314,7 +323,7 @@ class ComponentPropertiesPanel extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           _buildTextField(
-            label: 'Label (Optional)',
+            label: l10n.labelOptionalField,
             value: pillLabel,
             onChanged: onPillLabelChanged,
           ),
@@ -323,13 +332,13 @@ class ComponentPropertiesPanel extends StatelessWidget {
       case 'AttachmentListWidget':
         return [
           _buildTextField(
-            label: 'Title',
+            label: l10n.titleField,
             value: attachmentTitle,
             onChanged: onAttachmentTitleChanged,
           ),
           const SizedBox(height: 16),
           _buildTextField(
-            label: 'Items JSON',
+            label: l10n.itemsJsonField,
             value: attachmentItemsJson,
             onChanged: onAttachmentItemsJsonChanged,
             maxLines: 5,
@@ -339,13 +348,13 @@ class ComponentPropertiesPanel extends StatelessWidget {
       case 'TimelineWidget':
         return [
           _buildTextField(
-            label: 'Title',
+            label: l10n.titleField,
             value: timelineTitle,
             onChanged: onTimelineTitleChanged,
           ),
           const SizedBox(height: 16),
           _buildTextField(
-            label: 'Events JSON',
+            label: l10n.eventsJsonField,
             value: timelineEventsJson,
             onChanged: onTimelineEventsJsonChanged,
             maxLines: 6,
@@ -355,7 +364,8 @@ class ComponentPropertiesPanel extends StatelessWidget {
       case 'AlertBannerWidget':
         return [
           _buildDropdownField(
-            label: 'Type',
+            context: context,
+            label: l10n.typeField,
             value: alertType,
             items: const ['success', 'info', 'warning', 'error'],
             onChanged: (value) {
@@ -366,14 +376,14 @@ class ComponentPropertiesPanel extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           _buildTextField(
-            label: 'Message',
+            label: l10n.messageField,
             value: alertMessage,
             onChanged: onAlertMessageChanged,
             maxLines: 3,
           ),
           const SizedBox(height: 16),
           _buildTextField(
-            label: 'Action Label (Optional)',
+            label: l10n.actionLabelOptionalField,
             value: alertActionLabel,
             onChanged: onAlertActionLabelChanged,
           ),
@@ -382,13 +392,14 @@ class ComponentPropertiesPanel extends StatelessWidget {
       case 'SingleAttachmentWidget':
         return [
           _buildTextField(
-            label: 'File Name',
+            label: l10n.fileNameField,
             value: singleAttachmentName,
             onChanged: onSingleAttachmentNameChanged,
           ),
           const SizedBox(height: 16),
           _buildDropdownField(
-            label: 'File Type',
+            context: context,
+            label: l10n.fileTypeField,
             value: singleAttachmentType,
             items: const [
               'file',
@@ -409,13 +420,14 @@ class ComponentPropertiesPanel extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           _buildTextField(
-            label: 'Size (Optional)',
+            label: l10n.sizeOptionalField,
             value: singleAttachmentSize,
             onChanged: onSingleAttachmentSizeChanged,
           ),
           const SizedBox(height: 16),
           _buildDropdownField(
-            label: 'Status',
+            context: context,
+            label: l10n.statusField,
             value: singleAttachmentStatus,
             items: const [
               'ready',
@@ -435,13 +447,13 @@ class ComponentPropertiesPanel extends StatelessWidget {
       case 'QuickRepliesWidget':
         return [
           _buildTextField(
-            label: 'Title (Optional)',
+            label: l10n.titleOptionalField,
             value: quickRepliesTitle,
             onChanged: onQuickRepliesTitleChanged,
           ),
           const SizedBox(height: 16),
           _buildTextField(
-            label: 'Replies JSON (Array of Strings/Objects)',
+            label: l10n.repliesJsonField,
             value: quickRepliesJson,
             onChanged: onQuickRepliesJsonChanged,
             maxLines: 5,
@@ -451,32 +463,32 @@ class ComponentPropertiesPanel extends StatelessWidget {
       case 'ProductCardWidget':
         return [
           _buildTextField(
-            label: 'Title',
+            label: l10n.titleField,
             value: productTitle,
             onChanged: onProductTitleChanged,
           ),
           const SizedBox(height: 16),
           _buildTextField(
-            label: 'Price',
+            label: l10n.priceField,
             value: productPrice,
             onChanged: onProductPriceChanged,
           ),
           const SizedBox(height: 16),
           _buildTextField(
-            label: 'Image URL',
+            label: l10n.imageUrlField,
             value: productImageUrl,
             onChanged: onProductImageUrlChanged,
           ),
           const SizedBox(height: 16),
           _buildTextField(
-            label: 'Description (Optional)',
+            label: l10n.descriptionOptionalField,
             value: productDescription,
             onChanged: onProductDescriptionChanged,
             maxLines: 3,
           ),
           const SizedBox(height: 16),
           _buildSliderField(
-            label: 'Rating (0.0 to 5.0)',
+            label: l10n.ratingField,
             value: productRating,
             min: 0.0,
             max: 5.0,
@@ -487,9 +499,9 @@ class ComponentPropertiesPanel extends StatelessWidget {
 
       default:
         return [
-          const Text(
-            'No properties to edit',
-            style: TextStyle(color: Colors.white70),
+          Text(
+            l10n.noPropertiesToEdit,
+            style: const TextStyle(color: Colors.white70),
           ),
         ];
     }
@@ -526,6 +538,7 @@ class ComponentPropertiesPanel extends StatelessWidget {
     required String value,
     required ValueChanged<String> onChanged,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     final currentColor = _parseColor(value);
 
     return Column(
@@ -546,7 +559,7 @@ class ComponentPropertiesPanel extends StatelessWidget {
               context,
               currentColor,
               title: Text(
-                'Select Button Color',
+                l10n.selectColorTitle,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -629,6 +642,7 @@ class ComponentPropertiesPanel extends StatelessWidget {
   }
 
   Widget _buildDropdownField({
+    required BuildContext context,
     required String label,
     required String value,
     required List<String> items,
@@ -661,13 +675,44 @@ class ComponentPropertiesPanel extends StatelessWidget {
               style: const TextStyle(color: Colors.white, fontSize: 14),
               onChanged: onChanged,
               items: items.map<DropdownMenuItem<String>>((String val) {
-                return DropdownMenuItem<String>(value: val, child: Text(val));
+                return DropdownMenuItem<String>(
+                  value: val,
+                  child: Text(_getDropdownItemLabel(context, val)),
+                );
               }).toList(),
             ),
           ),
         ),
       ],
     );
+  }
+
+  String _getDropdownItemLabel(BuildContext context, String value) {
+    final l10n = AppLocalizations.of(context)!;
+    return switch (value) {
+      'high' => l10n.priorityHigh,
+      'medium' => l10n.priorityMedium,
+      'low' => l10n.priorityLow,
+      'success' => l10n.typeSuccess,
+      'info' => l10n.typeInfo,
+      'warning' => l10n.typeWarning,
+      'error' => l10n.typeError,
+      'ready' => l10n.statusReady,
+      'downloaded' => l10n.statusDownloaded,
+      'downloading' => l10n.statusDownloading,
+      'pending' => l10n.statusPending,
+      'failed' => l10n.statusFailed,
+      'file' => l10n.fileTypeFile,
+      'image' => l10n.fileTypeImage,
+      'pdf' => l10n.fileTypePdf,
+      'audio' => l10n.fileTypeAudio,
+      'video' => l10n.fileTypeVideo,
+      'document' => l10n.fileTypeDocument,
+      'folder' => l10n.fileTypeFolder,
+      'spreadsheet' => l10n.fileTypeSpreadsheet,
+      'archive' => l10n.fileTypeArchive,
+      _ => value,
+    };
   }
 
   Widget _buildSwitchField({

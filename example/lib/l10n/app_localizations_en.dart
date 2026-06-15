@@ -469,4 +469,188 @@ class AppLocalizationsEn extends AppLocalizations {
   String copiedToClipboardMessage(String target) {
     return 'Copied $target to clipboard!';
   }
+
+  @override
+  String get statusActive => 'ACTIVE';
+
+  @override
+  String get statusOffline => 'OFFLINE';
+
+  @override
+  String get propertiesTitle => 'PROPERTIES';
+
+  @override
+  String get labelField => 'Label';
+
+  @override
+  String get colorField => 'Color';
+
+  @override
+  String get titleField => 'Title';
+
+  @override
+  String get completedField => 'Completed';
+
+  @override
+  String get priorityField => 'Priority';
+
+  @override
+  String get totalTasksField => 'Total Tasks';
+
+  @override
+  String get completedTasksField => 'Completed Tasks';
+
+  @override
+  String get nameField => 'Name';
+
+  @override
+  String get roleField => 'Role';
+
+  @override
+  String get activeField => 'Active';
+
+  @override
+  String get valueField => 'Value';
+
+  @override
+  String get legendLabelField => 'Legend Label';
+
+  @override
+  String get chartColorField => 'Chart Color';
+
+  @override
+  String get labelOptionalField => 'Label (Optional)';
+
+  @override
+  String get itemsJsonField => 'Items JSON';
+
+  @override
+  String get eventsJsonField => 'Events JSON';
+
+  @override
+  String get typeField => 'Type';
+
+  @override
+  String get messageField => 'Message';
+
+  @override
+  String get actionLabelOptionalField => 'Action Label (Optional)';
+
+  @override
+  String get fileNameField => 'File Name';
+
+  @override
+  String get fileTypeField => 'File Type';
+
+  @override
+  String get sizeOptionalField => 'Size (Optional)';
+
+  @override
+  String get statusField => 'Status';
+
+  @override
+  String get titleOptionalField => 'Title (Optional)';
+
+  @override
+  String get repliesJsonField => 'Replies JSON (Array of Strings/Objects)';
+
+  @override
+  String get priceField => 'Price';
+
+  @override
+  String get imageUrlField => 'Image URL';
+
+  @override
+  String get descriptionOptionalField => 'Description (Optional)';
+
+  @override
+  String get ratingField => 'Rating (0.0 to 5.0)';
+
+  @override
+  String get noPropertiesToEdit => 'No properties to edit';
+
+  @override
+  String get selectColorTitle => 'Select Color';
+
+  @override
+  String get priorityHigh => 'High';
+
+  @override
+  String get priorityMedium => 'Medium';
+
+  @override
+  String get priorityLow => 'Low';
+
+  @override
+  String get typeSuccess => 'Success';
+
+  @override
+  String get typeInfo => 'Info';
+
+  @override
+  String get typeWarning => 'Warning';
+
+  @override
+  String get typeError => 'Error';
+
+  @override
+  String get statusReady => 'Ready';
+
+  @override
+  String get statusDownloaded => 'Downloaded';
+
+  @override
+  String get statusDownloading => 'Downloading';
+
+  @override
+  String get statusPending => 'Pending';
+
+  @override
+  String get statusFailed => 'Failed';
+
+  @override
+  String get fileTypeFile => 'File';
+
+  @override
+  String get fileTypeImage => 'Image';
+
+  @override
+  String get fileTypePdf => 'PDF';
+
+  @override
+  String get fileTypeAudio => 'Audio';
+
+  @override
+  String get fileTypeVideo => 'Video';
+
+  @override
+  String get fileTypeDocument => 'Document';
+
+  @override
+  String get fileTypeFolder => 'Folder';
+
+  @override
+  String get fileTypeSpreadsheet => 'Spreadsheet';
+
+  @override
+  String get fileTypeArchive => 'Archive';
+
+  @override
+  String dynamicUiSurface(String id) {
+    return 'Dynamic UI Surface ($id)';
+  }
+
+  @override
+  String get buyLabel => 'Buy';
+
+  @override
+  String get productBadgeLabel => 'PRODUCT';
+
+  @override
+  String get statsProgressStatus => 'Progress Status';
+
+  @override
+  String statsCompletedCount(int completed, int total) {
+    return '$completed/$total Completed';
+  }
 }

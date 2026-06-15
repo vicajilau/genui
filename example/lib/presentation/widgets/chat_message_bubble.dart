@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:genui/genui.dart';
 import '../../data/models/chat_timeline_item.dart';
+import '../../l10n/app_localizations.dart';
 import 'chat_ui_action_delegate.dart';
 
 /// A widget that renders a single item in the chat timeline, styled as either
@@ -90,7 +91,9 @@ class ChatMessageBubble extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'Dynamic UI Surface (${item.surfaceId})',
+                        AppLocalizations.of(
+                          context,
+                        )!.dynamicUiSurface(item.surfaceId ?? ''),
                         style: const TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.bold,

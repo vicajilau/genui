@@ -655,5 +655,261 @@
         "example": "A2UI payload"
       }
     }
+  },
+  "statusActive": "ACTIVE",
+  "@statusActive": {
+    "description": "Active status label"
+  },
+  "statusOffline": "OFFLINE",
+  "@statusOffline": {
+    "description": "Offline status label"
+  },
+  "propertiesTitle": "PROPERTIES",
+  "@propertiesTitle": {
+    "description": "Header title of the component properties panel"
+  },
+  "labelField": "Label",
+  "@labelField": {
+    "description": "Label field title"
+  },
+  "colorField": "Color",
+  "@colorField": {
+    "description": "Color field title"
+  },
+  "titleField": "Title",
+  "@titleField": {
+    "description": "Title field title"
+  },
+  "completedField": "Completed",
+  "@completedField": {
+    "description": "Completed checkbox field title"
+  },
+  "priorityField": "Priority",
+  "@priorityField": {
+    "description": "Priority selection field title"
+  },
+  "totalTasksField": "Total Tasks",
+  "@totalTasksField": {
+    "description": "Total tasks field title"
+  },
+  "completedTasksField": "Completed Tasks",
+  "@completedTasksField": {
+    "description": "Completed tasks field title"
+  },
+  "nameField": "Name",
+  "@nameField": {
+    "description": "Name field title"
+  },
+  "roleField": "Role",
+  "@roleField": {
+    "description": "Role field title"
+  },
+  "activeField": "Active",
+  "@activeField": {
+    "description": "Active switch field title"
+  },
+  "valueField": "Value",
+  "@valueField": {
+    "description": "Value slider field title"
+  },
+  "legendLabelField": "Legend Label",
+  "@legendLabelField": {
+    "description": "Legend label field title"
+  },
+  "chartColorField": "Chart Color",
+  "@chartColorField": {
+    "description": "Chart color field title"
+  },
+  "labelOptionalField": "Label (Optional)",
+  "@labelOptionalField": {
+    "description": "Optional label field title"
+  },
+  "itemsJsonField": "Items JSON",
+  "@itemsJsonField": {
+    "description": "Items JSON textarea field title"
+  },
+  "eventsJsonField": "Events JSON",
+  "@eventsJsonField": {
+    "description": "Events JSON textarea field title"
+  },
+  "typeField": "Type",
+  "@typeField": {
+    "description": "Type selection field title"
+  },
+  "messageField": "Message",
+  "@messageField": {
+    "description": "Message textarea field title"
+  },
+  "actionLabelOptionalField": "Action Label (Optional)",
+  "@actionLabelOptionalField": {
+    "description": "Optional action label field title"
+  },
+  "fileNameField": "File Name",
+  "@fileNameField": {
+    "description": "File name field title"
+  },
+  "fileTypeField": "File Type",
+  "@fileTypeField": {
+    "description": "File type selection field title"
+  },
+  "sizeOptionalField": "Size (Optional)",
+  "@sizeOptionalField": {
+    "description": "Optional size field title"
+  },
+  "statusField": "Status",
+  "@statusField": {
+    "description": "Status selection field title"
+  },
+  "titleOptionalField": "Title (Optional)",
+  "@titleOptionalField": {
+    "description": "Optional title field title"
+  },
+  "repliesJsonField": "Replies JSON (Array of Strings/Objects)",
+  "@repliesJsonField": {
+    "description": "Replies JSON textarea field title"
+  },
+  "priceField": "Price",
+  "@priceField": {
+    "description": "Price field title"
+  },
+  "imageUrlField": "Image URL",
+  "@imageUrlField": {
+    "description": "Image URL field title"
+  },
+  "descriptionOptionalField": "Description (Optional)",
+  "@descriptionOptionalField": {
+    "description": "Optional description textarea field title"
+  },
+  "ratingField": "Rating (0.0 to 5.0)",
+  "@ratingField": {
+    "description": "Rating slider field title"
+  },
+  "noPropertiesToEdit": "No properties to edit",
+  "@noPropertiesToEdit": {
+    "description": "Label when component has no properties to edit"
+  },
+  "selectColorTitle": "Select Color",
+  "@selectColorTitle": {
+    "description": "Color picker dialog title"
+  },
+  "priorityHigh": "High",
+  "@priorityHigh": {
+    "description": "High priority label"
+  },
+  "priorityMedium": "Medium",
+  "@priorityMedium": {
+    "description": "Medium priority label"
+  },
+  "priorityLow": "Low",
+  "@priorityLow": {
+    "description": "Low priority label"
+  },
+  "typeSuccess": "Success",
+  "@typeSuccess": {
+    "description": "Success alert type label"
+  },
+  "typeInfo": "Info",
+  "@typeInfo": {
+    "description": "Info alert type label"
+  },
+  "typeWarning": "Warning",
+  "@typeWarning": {
+    "description": "Warning alert type label"
+  },
+  "typeError": "Error",
+  "@typeError": {
+    "description": "Error alert type label"
+  },
+  "statusReady": "Ready",
+  "@statusReady": {
+    "description": "Ready attachment status label"
+  },
+  "statusDownloaded": "Downloaded",
+  "@statusDownloaded": {
+    "description": "Downloaded attachment status label"
+  },
+  "statusDownloading": "Downloading",
+  "@statusDownloading": {
+    "description": "Downloading attachment status label"
+  },
+  "statusPending": "Pending",
+  "@statusPending": {
+    "description": "Pending attachment status label"
+  },
+  "statusFailed": "Failed",
+  "@statusFailed": {
+    "description": "Failed attachment status label"
+  },
+  "fileTypeFile": "File",
+  "@fileTypeFile": {
+    "description": "Generic file type label"
+  },
+  "fileTypeImage": "Image",
+  "@fileTypeImage": {
+    "description": "Image file type label"
+  },
+  "fileTypePdf": "PDF",
+  "@fileTypePdf": {
+    "description": "PDF file type label"
+  },
+  "fileTypeAudio": "Audio",
+  "@fileTypeAudio": {
+    "description": "Audio file type label"
+  },
+  "fileTypeVideo": "Video",
+  "@fileTypeVideo": {
+    "description": "Video file type label"
+  },
+  "fileTypeDocument": "Document",
+  "@fileTypeDocument": {
+    "description": "Document file type label"
+  },
+  "fileTypeFolder": "Folder",
+  "@fileTypeFolder": {
+    "description": "Folder file type label"
+  },
+  "fileTypeSpreadsheet": "Spreadsheet",
+  "@fileTypeSpreadsheet": {
+    "description": "Spreadsheet file type label"
+  },
+  "fileTypeArchive": "Archive",
+  "@fileTypeArchive": {
+    "description": "Archive file type label"
+  },
+  "dynamicUiSurface": "Dynamic UI Surface ({id})",
+  "@dynamicUiSurface": {
+    "description": "Label for dynamic UI surface bubbles in the chat",
+    "placeholders": {
+      "id": {
+        "type": "String",
+        "example": "surface_1"
+      }
+    }
+  },
+  "buyLabel": "Buy",
+  "@buyLabel": {
+    "description": "Text for the buy button"
+  },
+  "productBadgeLabel": "PRODUCT",
+  "@productBadgeLabel": {
+    "description": "Badge label on the product card widget"
+  },
+  "statsProgressStatus": "Progress Status",
+  "@statsProgressStatus": {
+    "description": "Title label for the stats progress card"
+  },
+  "statsCompletedCount": "{completed}/{total} Completed",
+  "@statsCompletedCount": {
+    "description": "Format showing completed tasks out of total tasks",
+    "placeholders": {
+      "completed": {
+        "type": "int",
+        "example": "2"
+      },
+      "total": {
+        "type": "int",
+        "example": "5"
+      }
+    }
   }
 }

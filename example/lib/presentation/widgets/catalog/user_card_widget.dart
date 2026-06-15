@@ -3,6 +3,8 @@ import 'package:genui/genui.dart';
 import 'package:genui_annotations/genui_annotations.dart';
 import 'package:json_schema_builder/json_schema_builder.dart';
 
+import '../../../l10n/app_localizations.dart';
+
 part 'user_card_widget.genui.g.dart';
 
 @generativeUI
@@ -24,6 +26,7 @@ class UserCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final initials = name.isNotEmpty
         ? name
               .trim()
@@ -169,7 +172,7 @@ class UserCardWidget extends StatelessWidget {
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  isActive ? 'ACTIVE' : 'OFFLINE',
+                  isActive ? l10n.statusActive : l10n.statusOffline,
                   style: TextStyle(
                     fontSize: 9,
                     fontWeight: FontWeight.bold,
