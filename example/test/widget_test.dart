@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:genui/genui.dart';
 import 'package:example/main.dart';
 import 'package:example/genui_registry.g.dart';
+import 'package:example/l10n/app_localizations.dart';
 import 'package:example/presentation/widgets/catalog/user_card_widget.dart';
 import 'package:example/presentation/widgets/catalog/metric_chart_widget.dart';
 import 'package:example/presentation/widgets/catalog/priority_pill_widget.dart';
@@ -10,6 +12,19 @@ import 'package:example/presentation/widgets/catalog/attachment_list_widget.dart
 import 'package:example/presentation/widgets/catalog/timeline_widget.dart';
 import 'package:example/presentation/widgets/catalog/alert_banner_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+Widget _buildLocalizedApp(Widget child) {
+  return MaterialApp(
+    localizationsDelegates: const [
+      AppLocalizations.delegate,
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    supportedLocales: const [Locale('en', ''), Locale('es', '')],
+    home: Scaffold(body: child),
+  );
+}
 
 void main() {
   testWidgets('App renders UserCardWidget from JSON', (
@@ -32,7 +47,7 @@ void main() {
     await tester.pump(); // Rebuild with settings loaded
 
     // Verify that we are on the Component Catalog tab showing CustomButton preview initially
-    expect(find.text('CustomButton'), findsOneWidget);
+    expect(find.text('Custom Button'), findsWidgets);
 
     // Tap 'User Card' sidebar item to switch to it
     await tester.tap(find.text('User Card'));
@@ -71,31 +86,29 @@ void main() {
     final catalog = globalGenUICatalog;
 
     await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: Builder(
-            builder: (BuildContext context) {
-              final catalogContext = CatalogItemContext(
-                id: 'test_node',
-                type: $UserCardWidgetIdentifier,
-                data: const {
-                  'name': 'Alan Turing',
-                  'role': 'Computer Scientist',
-                  'isActive': false,
-                },
-                dispatchEvent: (_) {},
-                buildChild: (_, [_]) => const SizedBox.shrink(),
-                buildContext: context,
-                dataContext: DataContext(InMemoryDataModel(), DataPath.root),
-                getComponent: (_) => null,
-                getCatalogItem: (_) => null,
-                surfaceId: 'test_surface',
-                reportError: (_, [_]) {},
-              );
+      _buildLocalizedApp(
+        Builder(
+          builder: (BuildContext context) {
+            final catalogContext = CatalogItemContext(
+              id: 'test_node',
+              type: $UserCardWidgetIdentifier,
+              data: const {
+                'name': 'Alan Turing',
+                'role': 'Computer Scientist',
+                'isActive': false,
+              },
+              dispatchEvent: (_) {},
+              buildChild: (_, [_]) => const SizedBox.shrink(),
+              buildContext: context,
+              dataContext: DataContext(InMemoryDataModel(), DataPath.root),
+              getComponent: (_) => null,
+              getCatalogItem: (_) => null,
+              surfaceId: 'test_surface',
+              reportError: (_, [_]) {},
+            );
 
-              return catalog.buildWidget(catalogContext);
-            },
-          ),
+            return catalog.buildWidget(catalogContext);
+          },
         ),
       ),
     );
@@ -112,32 +125,30 @@ void main() {
     final catalog = globalGenUICatalog;
 
     await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: Builder(
-            builder: (BuildContext context) {
-              final catalogContext = CatalogItemContext(
-                id: 'test_node_avatar',
-                type: $UserCardWidgetIdentifier,
-                data: const {
-                  'name': 'Grace Hopper',
-                  'role': 'Computer Scientist',
-                  'isActive': true,
-                  'avatarUrl': 'https://example.com/avatar.jpg',
-                },
-                dispatchEvent: (_) {},
-                buildChild: (_, [_]) => const SizedBox.shrink(),
-                buildContext: context,
-                dataContext: DataContext(InMemoryDataModel(), DataPath.root),
-                getComponent: (_) => null,
-                getCatalogItem: (_) => null,
-                surfaceId: 'test_surface',
-                reportError: (_, [_]) {},
-              );
+      _buildLocalizedApp(
+        Builder(
+          builder: (BuildContext context) {
+            final catalogContext = CatalogItemContext(
+              id: 'test_node_avatar',
+              type: $UserCardWidgetIdentifier,
+              data: const {
+                'name': 'Grace Hopper',
+                'role': 'Computer Scientist',
+                'isActive': true,
+                'avatarUrl': 'https://example.com/avatar.jpg',
+              },
+              dispatchEvent: (_) {},
+              buildChild: (_, [_]) => const SizedBox.shrink(),
+              buildContext: context,
+              dataContext: DataContext(InMemoryDataModel(), DataPath.root),
+              getComponent: (_) => null,
+              getCatalogItem: (_) => null,
+              surfaceId: 'test_surface',
+              reportError: (_, [_]) {},
+            );
 
-              return catalog.buildWidget(catalogContext);
-            },
-          ),
+            return catalog.buildWidget(catalogContext);
+          },
         ),
       ),
     );
@@ -153,32 +164,30 @@ void main() {
     final catalog = globalGenUICatalog;
 
     await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: Builder(
-            builder: (BuildContext context) {
-              final catalogContext = CatalogItemContext(
-                id: 'test_node_chart',
-                type: $MetricChartWidgetIdentifier,
-                data: const {
-                  'title': 'Project Completion',
-                  'value': 0.85,
-                  'legendLabel': 'Done',
-                  'colorHex': '#6366F1',
-                },
-                dispatchEvent: (_) {},
-                buildChild: (_, [_]) => const SizedBox.shrink(),
-                buildContext: context,
-                dataContext: DataContext(InMemoryDataModel(), DataPath.root),
-                getComponent: (_) => null,
-                getCatalogItem: (_) => null,
-                surfaceId: 'test_surface',
-                reportError: (_, [_]) {},
-              );
+      _buildLocalizedApp(
+        Builder(
+          builder: (BuildContext context) {
+            final catalogContext = CatalogItemContext(
+              id: 'test_node_chart',
+              type: $MetricChartWidgetIdentifier,
+              data: const {
+                'title': 'Project Completion',
+                'value': 0.85,
+                'legendLabel': 'Done',
+                'colorHex': '#6366F1',
+              },
+              dispatchEvent: (_) {},
+              buildChild: (_, [_]) => const SizedBox.shrink(),
+              buildContext: context,
+              dataContext: DataContext(InMemoryDataModel(), DataPath.root),
+              getComponent: (_) => null,
+              getCatalogItem: (_) => null,
+              surfaceId: 'test_surface',
+              reportError: (_, [_]) {},
+            );
 
-              return catalog.buildWidget(catalogContext);
-            },
-          ),
+            return catalog.buildWidget(catalogContext);
+          },
         ),
       ),
     );
@@ -195,32 +204,30 @@ void main() {
       final catalog = globalGenUICatalog;
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: Builder(
-              builder: (BuildContext context) {
-                final catalogContext = CatalogItemContext(
-                  id: 'test_node_chart_int',
-                  type: $MetricChartWidgetIdentifier,
-                  data: const {
-                    'title': 'Completion Int',
-                    'value': 1,
-                    'legendLabel': 'Finished',
-                    'colorHex': '#6366F1',
-                  },
-                  dispatchEvent: (_) {},
-                  buildChild: (_, [_]) => const SizedBox.shrink(),
-                  buildContext: context,
-                  dataContext: DataContext(InMemoryDataModel(), DataPath.root),
-                  getComponent: (_) => null,
-                  getCatalogItem: (_) => null,
-                  surfaceId: 'test_surface',
-                  reportError: (_, [_]) {},
-                );
+        _buildLocalizedApp(
+          Builder(
+            builder: (BuildContext context) {
+              final catalogContext = CatalogItemContext(
+                id: 'test_node_chart_int',
+                type: $MetricChartWidgetIdentifier,
+                data: const {
+                  'title': 'Completion Int',
+                  'value': 1,
+                  'legendLabel': 'Finished',
+                  'colorHex': '#6366F1',
+                },
+                dispatchEvent: (_) {},
+                buildChild: (_, [_]) => const SizedBox.shrink(),
+                buildContext: context,
+                dataContext: DataContext(InMemoryDataModel(), DataPath.root),
+                getComponent: (_) => null,
+                getCatalogItem: (_) => null,
+                surfaceId: 'test_surface',
+                reportError: (_, [_]) {},
+              );
 
-                return catalog.buildWidget(catalogContext);
-              },
-            ),
+              return catalog.buildWidget(catalogContext);
+            },
           ),
         ),
       );
@@ -238,32 +245,30 @@ void main() {
       final catalog = globalGenUICatalog;
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: Builder(
-              builder: (BuildContext context) {
-                final catalogContext = CatalogItemContext(
-                  id: 'test_node_chart_large',
-                  type: $MetricChartWidgetIdentifier,
-                  data: const {
-                    'title': 'Storage Use',
-                    'value': 88,
-                    'legendLabel': 'Lleno',
-                    'colorHex': '#EF4444',
-                  },
-                  dispatchEvent: (_) {},
-                  buildChild: (_, [_]) => const SizedBox.shrink(),
-                  buildContext: context,
-                  dataContext: DataContext(InMemoryDataModel(), DataPath.root),
-                  getComponent: (_) => null,
-                  getCatalogItem: (_) => null,
-                  surfaceId: 'test_surface',
-                  reportError: (_, [_]) {},
-                );
+        _buildLocalizedApp(
+          Builder(
+            builder: (BuildContext context) {
+              final catalogContext = CatalogItemContext(
+                id: 'test_node_chart_large',
+                type: $MetricChartWidgetIdentifier,
+                data: const {
+                  'title': 'Storage Use',
+                  'value': 88,
+                  'legendLabel': 'Lleno',
+                  'colorHex': '#EF4444',
+                },
+                dispatchEvent: (_) {},
+                buildChild: (_, [_]) => const SizedBox.shrink(),
+                buildContext: context,
+                dataContext: DataContext(InMemoryDataModel(), DataPath.root),
+                getComponent: (_) => null,
+                getCatalogItem: (_) => null,
+                surfaceId: 'test_surface',
+                reportError: (_, [_]) {},
+              );
 
-                return catalog.buildWidget(catalogContext);
-              },
-            ),
+              return catalog.buildWidget(catalogContext);
+            },
           ),
         ),
       );
@@ -281,27 +286,25 @@ void main() {
     final catalog = globalGenUICatalog;
 
     await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: Builder(
-            builder: (BuildContext context) {
-              final catalogContext = CatalogItemContext(
-                id: 'test_node_pill',
-                type: $PriorityPillWidgetIdentifier,
-                data: const {'priority': 'high', 'label': 'CRITICAL'},
-                dispatchEvent: (_) {},
-                buildChild: (_, [_]) => const SizedBox.shrink(),
-                buildContext: context,
-                dataContext: DataContext(InMemoryDataModel(), DataPath.root),
-                getComponent: (_) => null,
-                getCatalogItem: (_) => null,
-                surfaceId: 'test_surface',
-                reportError: (_, [_]) {},
-              );
+      _buildLocalizedApp(
+        Builder(
+          builder: (BuildContext context) {
+            final catalogContext = CatalogItemContext(
+              id: 'test_node_pill',
+              type: $PriorityPillWidgetIdentifier,
+              data: const {'priority': 'high', 'label': 'CRITICAL'},
+              dispatchEvent: (_) {},
+              buildChild: (_, [_]) => const SizedBox.shrink(),
+              buildContext: context,
+              dataContext: DataContext(InMemoryDataModel(), DataPath.root),
+              getComponent: (_) => null,
+              getCatalogItem: (_) => null,
+              surfaceId: 'test_surface',
+              reportError: (_, [_]) {},
+            );
 
-              return catalog.buildWidget(catalogContext);
-            },
-          ),
+            return catalog.buildWidget(catalogContext);
+          },
         ),
       ),
     );
@@ -316,32 +319,30 @@ void main() {
     final catalog = globalGenUICatalog;
 
     await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: Builder(
-            builder: (BuildContext context) {
-              final catalogContext = CatalogItemContext(
-                id: 'test_node_attachments',
-                type: $AttachmentListWidgetIdentifier,
-                data: const {
-                  'title': 'Project Files',
-                  'items': [
-                    {'name': 'document.pdf', 'type': 'pdf', 'size': '1.5 MB'},
-                  ],
-                },
-                dispatchEvent: (_) {},
-                buildChild: (_, [_]) => const SizedBox.shrink(),
-                buildContext: context,
-                dataContext: DataContext(InMemoryDataModel(), DataPath.root),
-                getComponent: (_) => null,
-                getCatalogItem: (_) => null,
-                surfaceId: 'test_surface',
-                reportError: (_, [_]) {},
-              );
+      _buildLocalizedApp(
+        Builder(
+          builder: (BuildContext context) {
+            final catalogContext = CatalogItemContext(
+              id: 'test_node_attachments',
+              type: $AttachmentListWidgetIdentifier,
+              data: const {
+                'title': 'Project Files',
+                'items': [
+                  {'name': 'document.pdf', 'type': 'pdf', 'size': '1.5 MB'},
+                ],
+              },
+              dispatchEvent: (_) {},
+              buildChild: (_, [_]) => const SizedBox.shrink(),
+              buildContext: context,
+              dataContext: DataContext(InMemoryDataModel(), DataPath.root),
+              getComponent: (_) => null,
+              getCatalogItem: (_) => null,
+              surfaceId: 'test_surface',
+              reportError: (_, [_]) {},
+            );
 
-              return catalog.buildWidget(catalogContext);
-            },
-          ),
+            return catalog.buildWidget(catalogContext);
+          },
         ),
       ),
     );
@@ -358,49 +359,47 @@ void main() {
     final catalog = globalGenUICatalog;
 
     await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: Builder(
-            builder: (BuildContext context) {
-              final catalogContext = CatalogItemContext(
-                id: 'test_node_timeline',
-                type: $TimelineWidgetIdentifier,
-                data: const {
-                  'title': 'System Status Log',
-                  'events': [
-                    {
-                      'title': 'Server Started',
-                      'description': 'Main cluster operational.',
-                      'timestamp': '10:00 AM',
-                      'status': 'completed',
-                    },
-                    {
-                      'title': 'Backup Database',
-                      'description': 'Replicating storage.',
-                      'timestamp': '10:15 AM',
-                      'status': 'active',
-                    },
-                    {
-                      'title': 'Health Check',
-                      'description': 'Verify nodes.',
-                      'timestamp': '11:00 AM',
-                      'status': 'pending',
-                    },
-                  ],
-                },
-                dispatchEvent: (_) {},
-                buildChild: (_, [_]) => const SizedBox.shrink(),
-                buildContext: context,
-                dataContext: DataContext(InMemoryDataModel(), DataPath.root),
-                getComponent: (_) => null,
-                getCatalogItem: (_) => null,
-                surfaceId: 'test_surface',
-                reportError: (_, [_]) {},
-              );
+      _buildLocalizedApp(
+        Builder(
+          builder: (BuildContext context) {
+            final catalogContext = CatalogItemContext(
+              id: 'test_node_timeline',
+              type: $TimelineWidgetIdentifier,
+              data: const {
+                'title': 'System Status Log',
+                'events': [
+                  {
+                    'title': 'Server Started',
+                    'description': 'Main cluster operational.',
+                    'timestamp': '10:00 AM',
+                    'status': 'completed',
+                  },
+                  {
+                    'title': 'Backup Database',
+                    'description': 'Replicating storage.',
+                    'timestamp': '10:15 AM',
+                    'status': 'active',
+                  },
+                  {
+                    'title': 'Health Check',
+                    'description': 'Verify nodes.',
+                    'timestamp': '11:00 AM',
+                    'status': 'pending',
+                  },
+                ],
+              },
+              dispatchEvent: (_) {},
+              buildChild: (_, [_]) => const SizedBox.shrink(),
+              buildContext: context,
+              dataContext: DataContext(InMemoryDataModel(), DataPath.root),
+              getComponent: (_) => null,
+              getCatalogItem: (_) => null,
+              surfaceId: 'test_surface',
+              reportError: (_, [_]) {},
+            );
 
-              return catalog.buildWidget(catalogContext);
-            },
-          ),
+            return catalog.buildWidget(catalogContext);
+          },
         ),
       ),
     );
@@ -419,31 +418,29 @@ void main() {
     final catalog = globalGenUICatalog;
 
     await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: Builder(
-            builder: (BuildContext context) {
-              final catalogContext = CatalogItemContext(
-                id: 'test_node_alert',
-                type: $AlertBannerWidgetIdentifier,
-                data: const {
-                  'type': 'warning',
-                  'message': 'Storage quota is approaching 90% utilization.',
-                  'actionLabel': 'Resolve Now',
-                },
-                dispatchEvent: (_) {},
-                buildChild: (_, [_]) => const SizedBox.shrink(),
-                buildContext: context,
-                dataContext: DataContext(InMemoryDataModel(), DataPath.root),
-                getComponent: (_) => null,
-                getCatalogItem: (_) => null,
-                surfaceId: 'test_surface',
-                reportError: (_, [_]) {},
-              );
+      _buildLocalizedApp(
+        Builder(
+          builder: (BuildContext context) {
+            final catalogContext = CatalogItemContext(
+              id: 'test_node_alert',
+              type: $AlertBannerWidgetIdentifier,
+              data: const {
+                'type': 'warning',
+                'message': 'Storage quota is approaching 90% utilization.',
+                'actionLabel': 'Resolve Now',
+              },
+              dispatchEvent: (_) {},
+              buildChild: (_, [_]) => const SizedBox.shrink(),
+              buildContext: context,
+              dataContext: DataContext(InMemoryDataModel(), DataPath.root),
+              getComponent: (_) => null,
+              getCatalogItem: (_) => null,
+              surfaceId: 'test_surface',
+              reportError: (_, [_]) {},
+            );
 
-              return catalog.buildWidget(catalogContext);
-            },
-          ),
+            return catalog.buildWidget(catalogContext);
+          },
         ),
       ),
     );
