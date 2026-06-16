@@ -84,14 +84,10 @@ class SingleAttachmentWidget extends StatelessWidget {
           n.endsWith('.mkv')) {
         return 'video';
       }
-      if (n.endsWith('.docx') ||
-          n.endsWith('.doc') ||
-          n.endsWith('.txt')) {
+      if (n.endsWith('.docx') || n.endsWith('.doc') || n.endsWith('.txt')) {
         return 'document';
       }
-      if (n.endsWith('.xlsx') ||
-          n.endsWith('.xls') ||
-          n.endsWith('.csv')) {
+      if (n.endsWith('.xlsx') || n.endsWith('.xls') || n.endsWith('.csv')) {
         return 'spreadsheet';
       }
       if (n.endsWith('.zip') ||
