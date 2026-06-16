@@ -31,64 +31,77 @@ class SingleAttachmentWidget extends StatelessWidget {
     final normalizedType = (() {
       final t = type.toLowerCase().trim();
       final n = name.toLowerCase().trim();
-      if (t == 'pdf' || t == 'application/pdf' || n.endsWith('.pdf')) {
+
+      // First check if type is explicitly specified and matches a known type pattern.
+      if (t == 'pdf' || t == 'application/pdf') {
         return 'pdf';
       }
-      if (t == 'image' ||
-          t.startsWith('image/') ||
-          n.endsWith('.png') ||
+      if (t == 'image' || t.startsWith('image/')) {
+        return 'image';
+      }
+      if (t == 'audio' || t.startsWith('audio/')) {
+        return 'audio';
+      }
+      if (t == 'video' || t.startsWith('video/')) {
+        return 'video';
+      }
+      if (t == 'document' ||
+          t == 'txt' ||
+          t == 'text/plain' ||
+          t.contains('word')) {
+        return 'document';
+      }
+      if (t == 'spreadsheet' || t.contains('excel') || t.contains('sheet')) {
+        return 'spreadsheet';
+      }
+      if (t == 'archive' || t.contains('zip') || t.contains('compressed')) {
+        return 'archive';
+      }
+      if (t == 'folder') {
+        return 'folder';
+      }
+
+      // If type is generic ('file') or unrecognized, fallback to name extension checks.
+      if (n.endsWith('.pdf')) {
+        return 'pdf';
+      }
+      if (n.endsWith('.png') ||
           n.endsWith('.jpg') ||
           n.endsWith('.jpeg') ||
           n.endsWith('.webp') ||
           n.endsWith('.gif')) {
         return 'image';
       }
-      if (t == 'audio' ||
-          t.startsWith('audio/') ||
-          n.endsWith('.mp3') ||
+      if (n.endsWith('.mp3') ||
           n.endsWith('.wav') ||
           n.endsWith('.m4a') ||
           n.endsWith('.ogg')) {
         return 'audio';
       }
-      if (t == 'video' ||
-          t.startsWith('video/') ||
-          n.endsWith('.mp4') ||
+      if (n.endsWith('.mp4') ||
           n.endsWith('.mov') ||
           n.endsWith('.avi') ||
           n.endsWith('.mkv')) {
         return 'video';
       }
-      if (t == 'document' ||
-          t == 'txt' ||
-          t == 'text/plain' ||
-          t.contains('word') ||
-          n.endsWith('.docx') ||
+      if (n.endsWith('.docx') ||
           n.endsWith('.doc') ||
           n.endsWith('.txt')) {
         return 'document';
       }
-      if (t == 'spreadsheet' ||
-          t.contains('excel') ||
-          t.contains('sheet') ||
-          n.endsWith('.xlsx') ||
+      if (n.endsWith('.xlsx') ||
           n.endsWith('.xls') ||
           n.endsWith('.csv')) {
         return 'spreadsheet';
       }
-      if (t == 'archive' ||
-          t.contains('zip') ||
-          t.contains('compressed') ||
-          n.endsWith('.zip') ||
+      if (n.endsWith('.zip') ||
           n.endsWith('.tar') ||
           n.endsWith('.gz') ||
           n.endsWith('.rar')) {
         return 'archive';
       }
-      if (t == 'folder') {
-        return 'folder';
-      }
-      return 'file';
+
+      return t == 'file' ? 'file' : t;
     })();
 
     final fileIcon = (() {

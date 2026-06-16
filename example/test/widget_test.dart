@@ -11,6 +11,7 @@ import 'package:example/presentation/widgets/catalog/priority_pill_widget.dart';
 import 'package:example/presentation/widgets/catalog/attachment_list_widget.dart';
 import 'package:example/presentation/widgets/catalog/timeline_widget.dart';
 import 'package:example/presentation/widgets/catalog/alert_banner_widget.dart';
+import 'package:example/presentation/widgets/catalog/single_attachment_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Widget _buildLocalizedApp(Widget child) {
@@ -452,5 +453,81 @@ void main() {
     );
     expect(find.text('Resolve Now'), findsOneWidget);
     expect(find.byIcon(Icons.warning_amber_rounded), findsOneWidget);
+  });
+
+  testWidgets('Catalog builds SingleAttachmentWidget from CatalogItemContext and respects type overriding name extension', (
+    WidgetTester tester,
+  ) async {
+    final catalog = globalGenUICatalog;
+
+    // Test case 1: Explicit type 'image' overrides the name ending in '.pdf'
+    await tester.pumpWidget(
+      _buildLocalizedApp(
+        Builder(
+          builder: (BuildContext context) {
+            final catalogContext = CatalogItemContext(
+              id: 'test_node_single_attachment_1',
+              type: $SingleAttachmentWidgetIdentifier,
+              data: const {
+                'name': 'Quarterly_Report_2026.pdf',
+                'type': 'image',
+                'size': '2.4 MB',
+                'status': 'ready',
+              },
+              dispatchEvent: (_) {},
+              buildChild: (_, [_]) => const SizedBox.shrink(),
+              buildContext: context,
+              dataContext: DataContext(InMemoryDataModel(), DataPath.root),
+              getComponent: (_) => null,
+              getCatalogItem: (_) => null,
+              surfaceId: 'test_surface',
+              reportError: (_, [_]) {},
+            );
+
+            return catalog.buildWidget(catalogContext);
+          },
+        ),
+      ),
+    );
+
+    expect(find.byType(SingleAttachmentWidget), findsOneWidget);
+    expect(find.text('Quarterly_Report_2026.pdf'), findsOneWidget);
+    expect(find.text('2.4 MB'), findsOneWidget);
+    // Should render image icon because type was set to 'image'
+    expect(find.byIcon(Icons.image_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.picture_as_pdf_outlined), findsNothing);
+
+    // Test case 2: Default type fallback to name extension '.pdf'
+    await tester.pumpWidget(
+      _buildLocalizedApp(
+        Builder(
+          builder: (BuildContext context) {
+            final catalogContext = CatalogItemContext(
+              id: 'test_node_single_attachment_2',
+              type: $SingleAttachmentWidgetIdentifier,
+              data: const {
+                'name': 'Quarterly_Report_2026.pdf',
+                'type': 'file',
+                'size': '2.4 MB',
+                'status': 'ready',
+              },
+              dispatchEvent: (_) {},
+              buildChild: (_, [_]) => const SizedBox.shrink(),
+              buildContext: context,
+              dataContext: DataContext(InMemoryDataModel(), DataPath.root),
+              getComponent: (_) => null,
+              getCatalogItem: (_) => null,
+              surfaceId: 'test_surface',
+              reportError: (_, [_]) {},
+            );
+
+            return catalog.buildWidget(catalogContext);
+          },
+        ),
+      ),
+    );
+
+    // Should render PDF icon because type was set to 'file' (generic fallback) and name ends with '.pdf'
+    expect(find.byIcon(Icons.picture_as_pdf_outlined), findsOneWidget);
   });
 }
