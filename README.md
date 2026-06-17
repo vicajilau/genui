@@ -1,6 +1,7 @@
 # GenUI: Code Generation for Flutter Generative UI
 
 <p align="center">
+  <img src=".github/assets/logo.png" alt="GenUI Logo" width="160"><br><br>
   <img src="https://github.com/vicajilau/genui/actions/workflows/ci.yml/badge.svg" alt="CI Status">
   <img src="https://github.com/vicajilau/genui/actions/workflows/deploy_web.yml/badge.svg" alt="Web CD Status">
 </p>
